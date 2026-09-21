@@ -668,3 +668,39 @@ body.modal-open{overflow:hidden;touch-action:none}
   .calendar-grid > .day .event-main{font-size:8.4px;gap:2px}
   .calendar-grid > .day .event-sub{font-size:6.9px}
 }
+
+/* ===== DOTT v22 캘린더 7열 폭 완전 고정 (PC + 모바일) ===== */
+/* 1fr의 min-content 영향으로 일정 제목이 긴 열만 넓어지던 현상 방지 */
+.calendar-card,
+.calendar-scroll,
+.calendar-grid{width:100%;max-width:100%}
+.calendar-scroll{overflow-x:hidden!important}
+.calendar-grid{
+  min-width:0!important;
+  grid-template-columns:repeat(7,minmax(0,1fr))!important;
+}
+.calendar-grid > .dow,
+.calendar-grid > .day{
+  min-width:0!important;
+  width:auto!important;
+  max-width:none!important;
+}
+.calendar-grid > .day{overflow:hidden}
+.calendar-grid > .day .day-events,
+.calendar-grid > .day .day-event,
+.calendar-grid > .day .event-line,
+.calendar-grid > .day .event-title,
+.calendar-grid > .day .event-sub,
+.calendar-grid > .day .event-sub span{
+  min-width:0!important;
+  max-width:100%;
+}
+
+/* 태블릿/모바일에서도 과거 min-width 규칙이 다시 살아나지 않도록 고정 */
+@media(max-width:900px){
+  .calendar-grid{min-width:0!important;width:100%!important;grid-template-columns:repeat(7,minmax(0,1fr))!important}
+  .calendar-scroll{overflow-x:hidden!important}
+}
+@media(max-width:700px){
+  .calendar-grid{min-width:0!important;width:100%!important;grid-template-columns:repeat(7,minmax(0,1fr))!important}
+}
