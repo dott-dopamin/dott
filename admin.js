@@ -55,30 +55,22 @@ function schedulePanel(p){
   wireRows('schedules',scheduleModal);
 }
 
-function normalizeTime10(v='18:00'){
-  const [h,m]=String(v).slice(0,5).split(':').map(Number);
-  if(!Number.isFinite(h)||!Number.isFinite(m))return '18:00';
-  let total=(h*60+m);
-  total=Math.round(total/10)*10;
-  total=(total+1440)%1440;
-  return `${String(Math.floor(total/60)).padStart(2,'0')}:${String(total%60).padStart(2,'0')}`;
-}
-function timeOptions(selected='18:00'){
-  const pick=normalizeTime10(selected);
-  let html='';
-  for(let h=0;h<24;h++)for(let m=0;m<60;m+=10){
-    const v=`${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}`;
-    html+=`<option value="${v}" ${v===pick?'selected':''}>${v}</option>`;
-  }
-  return html;
+function normalizeManualTime(v=''){
+  let raw=String(v||'').trim().replace(/[.]/g,':').replace(/\s+/g,'');
+  if(/^\d{3,4}$/.test(raw)) raw=raw.length===3?`0${raw[0]}:${raw.slice(1)}`:`${raw.slice(0,2)}:${raw.slice(2)}`;
+  const m=raw.match(/^(\d{1,2}):(\d{1,2})$/);
+  if(!m)throw new Error('시간을 19:30 형식으로 입력해 주세요.');
+  const h=Number(m[1]), min=Number(m[2]);
+  if(h<0||h>23||min<0||min>59)throw new Error('올바른 시간을 입력해 주세요. 예: 19:30');
+  return `${String(h).padStart(2,'0')}:${String(min).padStart(2,'0')}`;
 }
 
 function scheduleModal(x={}){
   const currentStatus=isCancelledStatus(x.status)?'취소':'예약';
-  showModal(x.id?'일정 수정':'일정 추가',`<div class="form-grid"><div><label class="label">날짜</label><input id="f_date" class="field" type="date" value="${x.event_date||todayYmd()}"></div><div><label class="label">시간</label><select id="f_time" class="field">${timeOptions((x.event_time||'18:00').slice(0,5))}</select></div><div><label class="label">카테고리</label><select id="f_cat" class="field">${CFG.categories.map(c=>`<option value="${c.value}" ${x.category===c.value?'selected':''}>${c.label}</option>`).join('')}</select></div><div><label class="label">인원</label><input id="f_people" class="field" type="number" min="1" value="${x.people||4}"></div><div class="full"><label class="label">일정명</label><input id="f_title" class="field" value="${esc(x.title||'')}"></div><div><label class="label">벙주</label><input id="f_manager" class="field" value="${esc(x.manager||'')}"></div><div><label class="label">상태</label><select id="f_status" class="field"><option value="예약" ${currentStatus==='예약'?'selected':''}>예약</option><option value="취소" ${currentStatus==='취소'?'selected':''}>취소</option></select></div><div class="full"><label class="label">메모</label><textarea id="f_note" class="field" rows="3">${esc(x.note||'')}</textarea></div></div>`,async m=>{
+  showModal(x.id?'일정 수정':'일정 추가',`<div class="form-grid schedule-form"><div><label class="label">날짜</label><input id="f_date" class="field" type="date" value="${x.event_date||todayYmd()}"></div><div><label class="label">시간</label><input id="f_time" class="field" type="text" inputmode="numeric" maxlength="5" placeholder="예: 19:30" value="${esc((x.event_time||'18:00').slice(0,5))}"></div><div><label class="label">카테고리</label><select id="f_cat" class="field">${CFG.categories.map(c=>`<option value="${c.value}" ${x.category===c.value?'selected':''}>${c.label}</option>`).join('')}</select></div><div><label class="label">인원</label><input id="f_people" class="field" type="number" min="1" value="${x.people||4}"></div><div class="full"><label class="label">일정명</label><input id="f_title" class="field" value="${esc(x.title||'')}"></div><div><label class="label">벙주</label><input id="f_manager" class="field" value="${esc(x.manager||'')}"></div><div><label class="label">상태</label><select id="f_status" class="field"><option value="예약" ${currentStatus==='예약'?'selected':''}>예약</option><option value="취소" ${currentStatus==='취소'?'selected':''}>취소</option></select></div><div class="full"><label class="label">메모</label><textarea id="f_note" class="field" rows="2">${esc(x.note||'')}</textarea></div></div>`,async m=>{
     const row={
       event_date:m.querySelector('#f_date').value,
-      event_time:m.querySelector('#f_time').value,
+      event_time:normalizeManualTime(m.querySelector('#f_time').value),
       category:m.querySelector('#f_cat').value,
       title:m.querySelector('#f_title').value.trim(),
       people:+m.querySelector('#f_people').value||null,
@@ -90,6 +82,15 @@ function scheduleModal(x={}){
     x.id?await DOTT_DB.update('schedules',x.id,row):await DOTT_DB.insert('schedules',row);
     await loadAll();renderAdmin();toast('저장했습니다.');
   });
+  const scheduleModalEl=document.querySelector('#modal .modal');
+  if(scheduleModalEl)scheduleModalEl.classList.add('schedule-modal');
+  const timeInput=document.getElementById('f_time');
+  if(timeInput){
+    timeInput.addEventListener('blur',()=>{
+      if(!timeInput.value.trim())return;
+      try{timeInput.value=normalizeManualTime(timeInput.value)}catch(_e){}
+    });
+  }
 }
 
 function noticePanel(p){

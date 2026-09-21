@@ -333,3 +333,43 @@
 /* calendar-grid 안에는 요일 뒤에 날짜 셀이 이어지므로 :last-child 대신 7번째 요일을 직접 지정 */
 .dow:nth-child(1){color:#d04f29!important}
 .dow:nth-child(7){color:#5171b6!important}
+
+
+/* ===== DOTT v16 일정 시간 직접입력 + 모바일 일정 팝업 스크롤 제거 ===== */
+body.modal-open{overflow:hidden;touch-action:none}
+.modal-backdrop{overflow:hidden;box-sizing:border-box}
+.modal{max-width:100%;box-sizing:border-box}
+.modal-body{min-width:0}
+
+@media(max-width:700px){
+  .modal-backdrop{padding:8px;align-items:center;justify-content:center}
+  .schedule-modal{
+    width:calc(100vw - 16px);
+    max-width:560px;
+    max-height:calc(100dvh - 16px);
+    overflow:hidden;
+    display:flex;
+    flex-direction:column;
+    border-radius:14px;
+  }
+  .schedule-modal .modal-head{padding:11px 13px;flex:0 0 auto}
+  .schedule-modal .modal-head h3{font-size:16px}
+  .schedule-modal .modal-head .icon-btn{width:30px;height:30px}
+  .schedule-modal .modal-body{padding:11px 13px;overflow:hidden;min-height:0;flex:1 1 auto}
+  .schedule-modal .modal-foot{padding:9px 13px;flex:0 0 auto}
+  .schedule-modal .modal-foot .btn{padding:8px 12px}
+  .schedule-modal .schedule-form{
+    grid-template-columns:minmax(0,1fr) minmax(0,1fr)!important;
+    gap:8px 10px;
+  }
+  .schedule-modal .schedule-form .full{grid-column:1/-1!important}
+  .schedule-modal .label{margin-bottom:4px;font-size:10.5px}
+  .schedule-modal .field{padding:8px 9px;border-radius:8px;font-size:13px;min-width:0}
+  .schedule-modal textarea.field{resize:none;min-height:52px;max-height:52px}
+}
+
+@media(max-width:360px){
+  .schedule-modal .schedule-form{gap:7px 7px}
+  .schedule-modal .field{padding:7px 7px;font-size:12px}
+  .schedule-modal .modal-body{padding:9px 10px}
+}
