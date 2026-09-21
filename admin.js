@@ -225,8 +225,8 @@ function attendancePanel(p){
     if(attendanceSearch&&!String(member.name||'').toLowerCase().includes(attendanceSearch.toLowerCase()))return false;
     return true;
   });
-  const priority={overdue:0,grace:1,keep:2,left:3};
-  rows.sort((a,b)=>priority[a.state.key]-priority[b.state.key]||String(a.due||'9999').localeCompare(String(b.due||'9999'))||String(a.member.name||'').localeCompare(String(b.member.name||''),'ko'));
+  // 운영진은 항상 최상단에 고정하고, 운영진/일반회원 각각 이름 가나다순으로 정렬합니다.
+  rows.sort((a,b)=>Number(Boolean(b.member.is_staff))-Number(Boolean(a.member.is_staff))||String(a.member.name||'').localeCompare(String(b.member.name||''),'ko'));
   const filters=[['all','전체'],['keep','유지'],['overdue','경과'],['grace','유예'],['left','탈퇴']];
   p.innerHTML=`
     <div class="attendance-head">
@@ -245,8 +245,8 @@ function attendancePanel(p){
     <div class="attendance-table-wrap">
       <table class="attendance-table">
         <thead><tr><th>이름</th><th>가입일</th><th><span class="att-head-desktop">최근 참석일</span><span class="att-head-mobile">최근</span></th><th><span class="att-head-desktop">2개월 경과일</span><span class="att-head-mobile">경과일</span></th><th>상태</th><th><span class="att-head-desktop">유예 사유</span><span class="att-head-mobile">유예</span></th><th>관리</th></tr></thead>
-        <tbody>${rows.map(({member:x,state,due})=>`<tr class="attendance-row ${state.key}">
-          <td data-label="이름"><b>${esc(x.name)}</b></td>
+        <tbody>${rows.map(({member:x,state,due})=>`<tr class="attendance-row ${state.key} ${x.is_staff?'staff':''}">
+          <td data-label="이름"><span class="attendance-name-wrap"><b>${esc(x.name)}</b>${x.is_staff?'<span class="attendance-staff-badge">운영진</span>':''}</span></td>
           <td data-label="가입일"><span class="att-date-desktop">${shortDate(x.joined_at)}</span><span class="att-date-mobile">${compactAttendanceDate(x.joined_at)}</span></td>
           <td data-label="최근 참석일"><span class="att-date-desktop">${shortDate(x.last_attended_at)}</span><span class="att-date-mobile">${compactAttendanceDate(x.last_attended_at)}</span></td>
           <td data-label="2개월 경과일"><span class="att-date-desktop">${shortDate(due)}</span><span class="att-date-mobile">${compactAttendanceDate(due)}</span></td>
@@ -283,7 +283,7 @@ function attendanceModal(x={}){
     <div><label class="label">가입일</label><input id="m_joined" class="field" type="date" value="${x.joined_at||todayYmd()}"></div>
     <div><label class="label">최근 참석일</label><input id="m_last" class="field" type="date" value="${x.last_attended_at||''}"></div>
     <div><label class="label">회원 상태</label><select id="m_status" class="field"><option value="active" ${status==='active'?'selected':''}>활동중</option><option value="left" ${status==='left'?'selected':''}>탈퇴</option></select></div>
-    <div class="attendance-grace-box"><label class="attendance-check"><input id="m_grace" type="checkbox" ${x.grace?'checked':''}> 유예 적용</label></div>
+    <div class="attendance-grace-box attendance-check-group"><label class="attendance-check"><input id="m_staff" type="checkbox" ${x.is_staff?'checked':''}> 운영진 상단 고정</label><label class="attendance-check"><input id="m_grace" type="checkbox" ${x.grace?'checked':''}> 유예 적용</label></div>
     <div class="full"><label class="label">유예 사유</label><textarea id="m_reason" class="field" rows="2" placeholder="필요할 때만 입력">${esc(x.grace_reason||'')}</textarea></div>
   </div>`,async m=>{
     const memberStatus=m.querySelector('#m_status').value;
@@ -293,6 +293,7 @@ function attendanceModal(x={}){
       joined_at:m.querySelector('#m_joined').value,
       last_attended_at:m.querySelector('#m_last').value||null,
       member_status:memberStatus,
+      is_staff:m.querySelector('#m_staff').checked,
       grace,
       grace_reason:grace?m.querySelector('#m_reason').value.trim():'',
       left_at:memberStatus==='left'?(x.left_at||todayYmd()):null,

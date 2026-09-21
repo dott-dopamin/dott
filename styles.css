@@ -597,3 +597,17 @@ body.modal-open{overflow:hidden;touch-action:none}
   .attendance-table th{font-size:7.2px!important}
   .attendance-actions .btn,.attendance-actions .icon-btn{width:18px!important;height:18px!important;min-width:18px!important;font-size:8px!important}
 }
+
+
+/* ===== DOTT v20 출석관리 운영진 상단 고정 ===== */
+.attendance-name-wrap{display:inline-flex;align-items:center;gap:6px;min-width:0}
+.attendance-staff-badge{display:inline-flex;align-items:center;border-radius:999px;padding:3px 6px;background:#fff0e7;border:1px solid #ffd1bd;color:#c84d1d;font-size:9px;font-weight:700;line-height:1;white-space:nowrap}
+.attendance-row.staff{background:#fffdf9}
+.attendance-row.staff td:first-child{box-shadow:inset 3px 0 0 var(--accent)}
+.attendance-check-group{gap:16px;flex-wrap:wrap}
+@media(max-width:700px){
+  .attendance-name-wrap{gap:3px}
+  .attendance-staff-badge{padding:2px 3px;font-size:6.8px}
+  .attendance-row.staff td:first-child{box-shadow:inset 2px 0 0 var(--accent)}
+  .attendance-check-group{gap:10px}
+}
