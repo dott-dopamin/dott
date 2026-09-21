@@ -20,7 +20,7 @@ function render(){
 
 function todayEventHtml(e){
   const cancelled=isCancelledStatus(e.status);
-  return `<div class="mini-event ${cancelled?'is-cancelled':''}">${tag(e.category)} <b>${esc(e.title)}</b> <span>◷ ${(e.event_time||'').slice(0,5)}</span> <span>♙ ${e.people||'-'}명</span> <span>벙주 ${esc(e.manager||'-')}</span>${cancelled?'<span class="cancel-label">취소</span>':''}</div>`;
+  return `<div class="mini-event ${cancelled?'is-cancelled':''}">${tag(e.category)} <b>${esc(e.title)}</b> <span>◷ ${(e.event_time||'').slice(0,5)}</span> <span>♙ ${e.people||'-'}명</span> <span>벙주 ${esc(e.manager||'-')}${e.venue_flexible?'<b class="venue-flex-public">✓</b>':''}</span>${cancelled?'<span class="cancel-label">취소</span>':''}</div>`;
 }
 
 function calendarHtml(){
@@ -36,7 +36,7 @@ function calendarHtml(){
 
 function calendarEventHtml(e){
   const c=catInfo(e.category),cancelled=isCancelledStatus(e.status);
-  return `<div class="day-event ${cancelled?'is-cancelled':''}" style="background:${hexWithAlpha(c.color,'26')};color:#1f1f1f" title="${esc(e.title)}"><div class="event-line event-main"><span class="event-time">${(e.event_time||'').slice(0,5)}</span><span class="event-title">${esc(e.title)}</span>${cancelled?'<span class="cancel-label">취소</span>':''}</div><div class="event-line event-sub"><span>${e.people||'-'}명</span><span>벙주 ${esc(e.manager||'-')}</span></div></div>`;
+  return `<div class="day-event ${cancelled?'is-cancelled':''}" style="background:${hexWithAlpha(c.color,'26')};color:#1f1f1f" title="${esc(e.title)}"><div class="event-line event-main"><span class="event-time">${(e.event_time||'').slice(0,5)}</span><span class="event-title">${esc(e.title)}</span>${cancelled?'<span class="cancel-label">취소</span>':''}</div><div class="event-line event-sub"><span>${e.people||'-'}명</span><span>벙주 ${esc(e.manager||'-')}${e.venue_flexible?'<b class="venue-flex-public">✓</b>':''}</span></div></div>`;
 }
 
 function noticeHtml(){

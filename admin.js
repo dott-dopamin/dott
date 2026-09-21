@@ -1,6 +1,11 @@
 const app=document.getElementById('app');
 let tab='schedules';
-let data={schedules:[],notices:[],boardgame:[],murder:[],deduction:[],settings:null};
+let attendanceFilter='all';
+let attendanceSearch='';
+let scheduleView='month';
+let scheduleCursor=new Date(); scheduleCursor.setDate(1);
+let selectedScheduleIds=new Set();
+let data={schedules:[],notices:[],attendance:[],boardgame:[],murder:[],deduction:[],settings:null};
 
 (async()=>{
   const s=await DOTT_DB.session();
@@ -24,14 +29,14 @@ function renderLogin(){
 }
 
 async function loadAll(){
-  const [s,n,b,m,d,settings]=await Promise.all([
-    DOTT_DB.schedules(),DOTT_DB.notices(),DOTT_DB.catalog('boardgame'),DOTT_DB.catalog('murder'),DOTT_DB.catalog('deduction'),DOTT_DB.settings()
+  const [s,n,a,b,m,d,settings]=await Promise.all([
+    DOTT_DB.schedules(),DOTT_DB.notices(),DOTT_DB.attendance(),DOTT_DB.catalog('boardgame'),DOTT_DB.catalog('murder'),DOTT_DB.catalog('deduction'),DOTT_DB.settings()
   ]);
-  data={schedules:s,notices:n,boardgame:b,murder:m,deduction:d,settings};
+  data={schedules:s,notices:n,attendance:a,boardgame:b,murder:m,deduction:d,settings};
 }
 
 function renderAdmin(){
-  const tabs=[['schedules','일정 관리'],['notices','공지 관리'],['boardgame','보드게임'],['murder','머더미스터리'],['deduction','추리게임'],['settings','관리자 설정']];
+  const tabs=[['schedules','일정 관리'],['attendance','출석 관리'],['notices','공지 관리'],['boardgame','보드게임'],['murder','머더미스터리'],['deduction','추리게임'],['settings','관리자 설정']];
   app.innerHTML=`${nav('admin')}<main class="admin-wrap"><section class="admin-hero"><div><span class="eyebrow">⚙ 관리자 화면</span><h1>일정 · 공지 · 보유목록 관리</h1><p>여기서 등록한 내용은 공개 페이지에 바로 반영됩니다.</p></div><div class="toolbar"><a class="btn" href="index.html">공개 화면 보기</a><button class="btn" id="logout">로그아웃</button></div></section><div class="info-box">현재 데이터는 Supabase에 저장됩니다. 일반 방문자는 조회만 가능하고, 로그인한 관리자만 추가·수정·삭제할 수 있습니다.</div><div class="tabs">${tabs.map(([v,l])=>`<button class="tab ${tab===v?'active':''}" data-tab="${v}">${l}</button>`).join('')}</div><div id="panel"></div></main>${footer()}`;
   document.getElementById('logout').onclick=async()=>{await DOTT_DB.signOut();renderLogin()};
   document.querySelectorAll('[data-tab]').forEach(b=>b.onclick=()=>{tab=b.dataset.tab;renderAdmin()});
@@ -42,16 +47,92 @@ function renderPanel(){
   const p=document.getElementById('panel');
   if(tab==='settings')return settingsPanel(p);
   if(tab==='schedules')return schedulePanel(p);
+  if(tab==='attendance')return attendancePanel(p);
   if(tab==='notices')return noticePanel(p);
   return catalogPanel(p,tab);
 }
 
+function scheduleMonthLabel(){return `${scheduleCursor.getFullYear()}년 ${scheduleCursor.getMonth()+1}월`}
+function inScheduleMonth(dateStr){
+  if(!dateStr)return false;
+  const d=new Date(dateStr+'T00:00:00');
+  return d.getFullYear()===scheduleCursor.getFullYear()&&d.getMonth()===scheduleCursor.getMonth();
+}
+function scheduleRowsForView(){
+  const today=todayYmd();
+  let rows=[...data.schedules];
+  if(scheduleView==='month')rows=rows.filter(x=>inScheduleMonth(x.event_date));
+  else if(scheduleView==='upcoming')rows=rows.filter(x=>x.event_date>=today);
+  else if(scheduleView==='past')rows=rows.filter(x=>x.event_date<today);
+  rows.sort((a,b)=>{
+    const dateCmp=String(a.event_date||'').localeCompare(String(b.event_date||''));
+    const timeCmp=String(a.event_time||'').localeCompare(String(b.event_time||''));
+    return scheduleView==='past'?-(dateCmp||timeCmp):(dateCmp||timeCmp);
+  });
+  return rows;
+}
+
 function schedulePanel(p){
-  p.innerHTML=`<div class="admin-tools"><div></div><button class="btn primary" id="add">+ 일정 추가</button></div><div class="table-wrap"><table class="table"><thead><tr><th>날짜</th><th>시간</th><th>카테고리</th><th>일정명</th><th>인원</th><th>벙주</th><th>상태</th><th>관리</th></tr></thead><tbody>${data.schedules.map(x=>{
-    const cancelled=isCancelledStatus(x.status);
-    return `<tr class="${cancelled?'cancelled-row':''}"><td>${fmtDate(x.event_date)}</td><td>${(x.event_time||'').slice(0,5)}</td><td>${tag(x.category)}</td><td><b>${esc(x.title)}</b></td><td>${x.people||'-'}명</td><td>${esc(x.manager||'')}</td><td><span class="schedule-status ${cancelled?'cancelled':''}">${scheduleStatusLabel(x.status)}</span></td><td><div class="actions"><button class="icon-btn" data-edit="${x.id}">✎</button><button class="icon-btn" data-del="${x.id}">♲</button></div></td></tr>`
-  }).join('')||'<tr><td colspan="8">등록된 일정이 없습니다.</td></tr>'}</tbody></table></div>`;
+  const rows=scheduleRowsForView();
+  const visibleIds=new Set(rows.map(x=>x.id));
+  selectedScheduleIds=new Set([...selectedScheduleIds].filter(id=>visibleIds.has(id)));
+  const allSelected=rows.length>0&&rows.every(x=>selectedScheduleIds.has(x.id));
+  const tabs=[['month','월별 보기'],['upcoming','예정 일정'],['past','지난 일정']];
+  p.innerHTML=`
+    <div class="schedule-control-panel">
+      <div class="schedule-manage-head">
+        <div class="schedule-view-tabs">${tabs.map(([v,l])=>`<button class="schedule-view-btn ${scheduleView===v?'active':''}" data-schedule-view="${v}">${l}</button>`).join('')}</div>
+        <button class="btn primary schedule-add-btn" id="add">+ 일정 추가</button>
+      </div>
+      ${scheduleView==='month'?`<div class="schedule-monthbar">
+        <div class="schedule-month-nav">
+          <button class="btn schedule-month-arrow" id="monthPrev" aria-label="이전 달">‹</button>
+          <strong>${scheduleMonthLabel()}</strong>
+          <button class="btn schedule-month-arrow" id="monthNext" aria-label="다음 달">›</button>
+        </div>
+        <button class="btn schedule-month-today" id="monthToday">이번 달</button>
+        <span class="schedule-count">${rows.length}건</span>
+      </div>`:''}
+      <div class="schedule-bulkbar">
+        <label class="schedule-select-all"><input type="checkbox" id="scheduleSelectAll" ${allSelected?'checked':''}> <span>현재 목록 전체 선택</span></label>
+        <div class="schedule-bulk-actions"><span id="scheduleSelectedCount">${selectedScheduleIds.size}개 선택</span><button class="btn danger" id="deleteSelected" ${selectedScheduleIds.size?'':'disabled'}>선택 삭제</button></div>
+      </div>
+    </div>
+    <div class="table-wrap"><table class="table schedule-table"><thead><tr><th class="check-col"></th><th>날짜</th><th>시간</th><th>카테고리</th><th>일정명</th><th>인원</th><th>벙주</th><th>상태</th><th>관리</th></tr></thead><tbody>${rows.map(x=>{
+      const cancelled=isCancelledStatus(x.status);
+      return `<tr class="${cancelled?'cancelled-row':''}"><td class="check-col"><input class="schedule-check" type="checkbox" data-schedule-check="${x.id}" ${selectedScheduleIds.has(x.id)?'checked':''}></td><td>${fmtDate(x.event_date)}</td><td>${(x.event_time||'').slice(0,5)}</td><td>${tag(x.category)}</td><td><b>${esc(x.title)}</b></td><td>${x.people||'-'}명</td><td>${esc(x.manager||'')}${x.venue_flexible?' <span class="venue-flex-mark" title="장소 이동 가능">✓</span>':''}</td><td><span class="schedule-status ${cancelled?'cancelled':''}">${scheduleStatusLabel(x.status)}</span></td><td><div class="actions"><button class="icon-btn" data-edit="${x.id}">✎</button><button class="icon-btn" data-del="${x.id}">♲</button></div></td></tr>`
+    }).join('')||'<tr><td colspan="9">해당 일정이 없습니다.</td></tr>'}</tbody></table></div>`;
+
   document.getElementById('add').onclick=()=>scheduleModal();
+  document.querySelectorAll('[data-schedule-view]').forEach(btn=>btn.onclick=()=>{scheduleView=btn.dataset.scheduleView;selectedScheduleIds.clear();schedulePanel(p)});
+  if(scheduleView==='month'){
+    document.getElementById('monthPrev').onclick=()=>{scheduleCursor.setMonth(scheduleCursor.getMonth()-1);selectedScheduleIds.clear();schedulePanel(p)};
+    document.getElementById('monthNext').onclick=()=>{scheduleCursor.setMonth(scheduleCursor.getMonth()+1);selectedScheduleIds.clear();schedulePanel(p)};
+    document.getElementById('monthToday').onclick=()=>{scheduleCursor=new Date();scheduleCursor.setDate(1);selectedScheduleIds.clear();schedulePanel(p)};
+  }
+  const refreshBulk=()=>{
+    const count=document.getElementById('scheduleSelectedCount');
+    const del=document.getElementById('deleteSelected');
+    const all=document.getElementById('scheduleSelectAll');
+    if(count)count.textContent=`${selectedScheduleIds.size}개 선택`;
+    if(del)del.disabled=!selectedScheduleIds.size;
+    if(all)all.checked=rows.length>0&&rows.every(x=>selectedScheduleIds.has(x.id));
+  };
+  document.getElementById('scheduleSelectAll').onchange=e=>{
+    if(e.target.checked)rows.forEach(x=>selectedScheduleIds.add(x.id));
+    else rows.forEach(x=>selectedScheduleIds.delete(x.id));
+    document.querySelectorAll('[data-schedule-check]').forEach(cb=>cb.checked=e.target.checked);
+    refreshBulk();
+  };
+  document.querySelectorAll('[data-schedule-check]').forEach(cb=>cb.onchange=()=>{cb.checked?selectedScheduleIds.add(cb.dataset.scheduleCheck):selectedScheduleIds.delete(cb.dataset.scheduleCheck);refreshBulk()});
+  document.getElementById('deleteSelected').onclick=async()=>{
+    const ids=[...selectedScheduleIds];
+    if(!ids.length)return;
+    if(!confirm(`선택한 ${ids.length}개 일정을 삭제할까요?\n삭제 후에는 복구할 수 없습니다.`))return;
+    await DOTT_DB.removeMany('schedules',ids);
+    selectedScheduleIds.clear();
+    await loadAll();schedulePanel(p);toast('선택한 일정을 삭제했습니다.');
+  };
   wireRows('schedules',scheduleModal);
 }
 
@@ -67,7 +148,7 @@ function normalizeManualTime(v=''){
 
 function scheduleModal(x={}){
   const currentStatus=isCancelledStatus(x.status)?'취소':'예약';
-  showModal(x.id?'일정 수정':'일정 추가',`<div class="form-grid schedule-form"><div><label class="label">날짜</label><input id="f_date" class="field" type="date" value="${x.event_date||todayYmd()}"></div><div><label class="label">시간</label><input id="f_time" class="field" type="text" inputmode="numeric" maxlength="5" placeholder="예: 19:30" value="${esc((x.event_time||'18:00').slice(0,5))}"></div><div><label class="label">카테고리</label><select id="f_cat" class="field">${CFG.categories.map(c=>`<option value="${c.value}" ${x.category===c.value?'selected':''}>${c.label}</option>`).join('')}</select></div><div><label class="label">인원</label><input id="f_people" class="field" type="number" min="1" value="${x.people||4}"></div><div class="full"><label class="label">일정명</label><input id="f_title" class="field" value="${esc(x.title||'')}"></div><div><label class="label">벙주</label><input id="f_manager" class="field" value="${esc(x.manager||'')}"></div><div><label class="label">상태</label><select id="f_status" class="field"><option value="예약" ${currentStatus==='예약'?'selected':''}>예약</option><option value="취소" ${currentStatus==='취소'?'selected':''}>취소</option></select></div><div class="full"><label class="label">메모</label><textarea id="f_note" class="field" rows="2">${esc(x.note||'')}</textarea></div></div>`,async m=>{
+  showModal(x.id?'일정 수정':'일정 추가',`<div class="form-grid schedule-form"><div><label class="label">날짜</label><input id="f_date" class="field" type="date" value="${x.event_date||todayYmd()}"></div><div><label class="label">시간</label><input id="f_time" class="field" type="text" inputmode="numeric" maxlength="5" placeholder="예: 19:30" value="${esc((x.event_time||'18:00').slice(0,5))}"></div><div><label class="label">카테고리</label><select id="f_cat" class="field">${CFG.categories.map(c=>`<option value="${c.value}" ${x.category===c.value?'selected':''}>${c.label}</option>`).join('')}</select></div><div><label class="label">인원</label><input id="f_people" class="field" type="number" min="1" value="${x.people||4}"></div><div class="full"><label class="label">일정명</label><input id="f_title" class="field" value="${esc(x.title||'')}"></div><div><div class="label-row"><label class="label">벙주</label><label class="venue-flex-check"><input id="f_venue_flexible" type="checkbox" ${x.venue_flexible?'checked':''}> 장소 이동 가능</label></div><input id="f_manager" class="field" value="${esc(x.manager||'')}"></div><div><label class="label">상태</label><select id="f_status" class="field"><option value="예약" ${currentStatus==='예약'?'selected':''}>예약</option><option value="취소" ${currentStatus==='취소'?'selected':''}>취소</option></select></div><div class="full"><label class="label">메모</label><textarea id="f_note" class="field" rows="2">${esc(x.note||'')}</textarea></div></div>`,async m=>{
     const row={
       event_date:m.querySelector('#f_date').value,
       event_time:normalizeManualTime(m.querySelector('#f_time').value),
@@ -75,11 +156,14 @@ function scheduleModal(x={}){
       title:m.querySelector('#f_title').value.trim(),
       people:+m.querySelector('#f_people').value||null,
       manager:m.querySelector('#f_manager').value.trim(),
+      venue_flexible:m.querySelector('#f_venue_flexible').checked,
       status:m.querySelector('#f_status').value,
       note:m.querySelector('#f_note').value.trim()
     };
     if(!row.title)throw new Error('일정명을 입력해 주세요.');
     x.id?await DOTT_DB.update('schedules',x.id,row):await DOTT_DB.insert('schedules',row);
+    const savedDate=new Date(row.event_date+'T00:00:00');
+    if(!Number.isNaN(savedDate.getTime())){scheduleCursor=new Date(savedDate.getFullYear(),savedDate.getMonth(),1);scheduleView='month';selectedScheduleIds.clear()}
     await loadAll();renderAdmin();toast('저장했습니다.');
   });
   const scheduleModalEl=document.querySelector('#modal .modal');
@@ -91,6 +175,134 @@ function scheduleModal(x={}){
       try{timeInput.value=normalizeManualTime(timeInput.value)}catch(_e){}
     });
   }
+}
+
+
+function attendanceDueDate(member){
+  const base=member.last_attended_at||member.joined_at;
+  return base?addCalendarMonths(base,2):'';
+}
+
+function addCalendarMonths(dateStr,months){
+  const parts=String(dateStr||'').split('-').map(Number);
+  if(parts.length!==3||parts.some(Number.isNaN))return '';
+  const [y,m,d]=parts;
+  const target=new Date(y,m-1+months,1);
+  const lastDay=new Date(target.getFullYear(),target.getMonth()+1,0).getDate();
+  target.setDate(Math.min(d,lastDay));
+  return ymd(target);
+}
+
+function shortDate(dateStr){
+  if(!dateStr)return '-';
+  const [y,m,d]=String(dateStr).split('-').map(Number);
+  return `${y}. ${m}. ${d}`;
+}
+function compactAttendanceDate(dateStr){
+  if(!dateStr)return '-';
+  const [y,m,d]=String(dateStr).split('-').map(Number);
+  return `${String(y).slice(-2)}.${String(m).padStart(2,'0')}.${String(d).padStart(2,'0')}`;
+}
+
+function attendanceState(member){
+  if(member.member_status==='left')return {key:'left',label:'탈퇴'};
+  if(member.grace)return {key:'grace',label:'유예'};
+  const due=attendanceDueDate(member);
+  if(due&&todayYmd()>=due)return {key:'overdue',label:'경과'};
+  return {key:'keep',label:'유지'};
+}
+
+function attendancePanel(p){
+  if(window.DOTT_ATTENDANCE_ERROR){
+    p.innerHTML=`<div class="info-box attendance-setup"><b>출석관리 DB를 아직 만들지 않았습니다.</b><br>Supabase SQL Editor에서 <code>add-attendance.sql</code>을 한 번 실행하면 이 메뉴가 활성화됩니다.</div>`;
+    return;
+  }
+  const states=data.attendance.map(x=>({member:x,state:attendanceState(x),due:attendanceDueDate(x)}));
+  const counts={all:states.length,keep:0,overdue:0,grace:0,left:0};
+  states.forEach(x=>counts[x.state.key]=(counts[x.state.key]||0)+1);
+  let rows=states.filter(({member,state})=>{
+    if(attendanceFilter!=='all'&&state.key!==attendanceFilter)return false;
+    if(attendanceSearch&&!String(member.name||'').toLowerCase().includes(attendanceSearch.toLowerCase()))return false;
+    return true;
+  });
+  const priority={overdue:0,grace:1,keep:2,left:3};
+  rows.sort((a,b)=>priority[a.state.key]-priority[b.state.key]||String(a.due||'9999').localeCompare(String(b.due||'9999'))||String(a.member.name||'').localeCompare(String(b.member.name||''),'ko'));
+  const filters=[['all','전체'],['keep','유지'],['overdue','경과'],['grace','유예'],['left','탈퇴']];
+  p.innerHTML=`
+    <div class="attendance-head">
+      <div>
+        <div class="attendance-summary">
+          <span>전체 <b>${counts.all}</b></span><span class="keep">유지 <b>${counts.keep}</b></span><span class="overdue">경과 <b>${counts.overdue}</b></span><span class="grace">유예 <b>${counts.grace}</b></span><span>탈퇴 <b>${counts.left}</b></span>
+        </div>
+        <p class="attendance-help">최근 참석일이 없으면 가입일 기준으로 계산하고, 최근 참석일 + 2개월이 되면 자동으로 ‘경과’ 표시됩니다.</p>
+      </div>
+      <button class="btn primary" id="addMember">+ 회원 추가</button>
+    </div>
+    <div class="attendance-controls">
+      <div class="attendance-filters">${filters.map(([v,l])=>`<button class="attendance-filter ${attendanceFilter===v?'active':''}" data-att-filter="${v}">${l}</button>`).join('')}</div>
+      <input id="attendanceSearch" class="field attendance-search" placeholder="이름 검색" value="${esc(attendanceSearch)}">
+    </div>
+    <div class="attendance-table-wrap">
+      <table class="attendance-table">
+        <thead><tr><th>이름</th><th>가입일</th><th><span class="att-head-desktop">최근 참석일</span><span class="att-head-mobile">최근</span></th><th><span class="att-head-desktop">2개월 경과일</span><span class="att-head-mobile">경과일</span></th><th>상태</th><th><span class="att-head-desktop">유예 사유</span><span class="att-head-mobile">유예</span></th><th>관리</th></tr></thead>
+        <tbody>${rows.map(({member:x,state,due})=>`<tr class="attendance-row ${state.key}">
+          <td data-label="이름"><b>${esc(x.name)}</b></td>
+          <td data-label="가입일"><span class="att-date-desktop">${shortDate(x.joined_at)}</span><span class="att-date-mobile">${compactAttendanceDate(x.joined_at)}</span></td>
+          <td data-label="최근 참석일"><span class="att-date-desktop">${shortDate(x.last_attended_at)}</span><span class="att-date-mobile">${compactAttendanceDate(x.last_attended_at)}</span></td>
+          <td data-label="2개월 경과일"><span class="att-date-desktop">${shortDate(due)}</span><span class="att-date-mobile">${compactAttendanceDate(due)}</span></td>
+          <td data-label="상태"><span class="attendance-status ${state.key}">${state.label}</span></td>
+          <td data-label="유예 사유" class="attendance-reason" title="${esc(x.grace?x.grace_reason||'-':'-')}">${x.grace?esc(x.grace_reason||'-'):'-'}</td>
+          <td data-label="관리"><div class="attendance-actions">${x.member_status!=='left'?`<button class="btn attendance-today" data-attend="${x.id}" title="오늘 참석"><span class="att-action-desktop">오늘 참석</span><span class="att-action-mobile">✓</span></button>`:''}<button class="icon-btn" data-att-edit="${x.id}" title="수정">✎</button><button class="icon-btn" data-att-del="${x.id}" title="완전 삭제">♲</button></div></td>
+        </tr>`).join('')||`<tr><td colspan="7" class="attendance-empty">해당하는 회원이 없습니다.</td></tr>`}</tbody>
+      </table>
+    </div>`;
+  document.getElementById('addMember').onclick=()=>attendanceModal();
+  document.querySelectorAll('[data-att-filter]').forEach(btn=>btn.onclick=()=>{attendanceFilter=btn.dataset.attFilter;attendancePanel(p)});
+  const search=document.getElementById('attendanceSearch');
+  search.oninput=()=>{attendanceSearch=search.value;attendancePanel(p);const next=document.getElementById('attendanceSearch');if(next){next.focus();next.setSelectionRange(next.value.length,next.value.length)}};
+  document.querySelectorAll('[data-attend]').forEach(btn=>btn.onclick=async()=>{
+    btn.disabled=true;
+    try{
+      await DOTT_DB.update('attendance_members',btn.dataset.attend,{last_attended_at:todayYmd(),grace:false,grace_reason:'',member_status:'active',left_at:null,updated_at:new Date().toISOString()});
+      await loadAll();attendancePanel(p);toast('오늘 참석으로 처리했습니다.');
+    }catch(e){alert(e.message||e)}finally{btn.disabled=false}
+  });
+  document.querySelectorAll('[data-att-edit]').forEach(btn=>btn.onclick=()=>attendanceModal(data.attendance.find(x=>x.id===btn.dataset.attEdit)));
+  document.querySelectorAll('[data-att-del]').forEach(btn=>btn.onclick=async()=>{
+    const member=data.attendance.find(x=>x.id===btn.dataset.attDel);
+    if(!confirm(`${member?.name||'이 회원'}을(를) 완전히 삭제할까요?\n기록도 함께 사라집니다.`))return;
+    await DOTT_DB.remove('attendance_members',btn.dataset.attDel);
+    await loadAll();attendancePanel(p);toast('삭제했습니다.');
+  });
+}
+
+function attendanceModal(x={}){
+  const status=x.member_status||'active';
+  showModal(x.id?'회원 수정':'회원 추가',`<div class="form-grid attendance-form">
+    <div class="full"><label class="label">이름</label><input id="m_name" class="field" value="${esc(x.name||'')}"></div>
+    <div><label class="label">가입일</label><input id="m_joined" class="field" type="date" value="${x.joined_at||todayYmd()}"></div>
+    <div><label class="label">최근 참석일</label><input id="m_last" class="field" type="date" value="${x.last_attended_at||''}"></div>
+    <div><label class="label">회원 상태</label><select id="m_status" class="field"><option value="active" ${status==='active'?'selected':''}>활동중</option><option value="left" ${status==='left'?'selected':''}>탈퇴</option></select></div>
+    <div class="attendance-grace-box"><label class="attendance-check"><input id="m_grace" type="checkbox" ${x.grace?'checked':''}> 유예 적용</label></div>
+    <div class="full"><label class="label">유예 사유</label><textarea id="m_reason" class="field" rows="2" placeholder="필요할 때만 입력">${esc(x.grace_reason||'')}</textarea></div>
+  </div>`,async m=>{
+    const memberStatus=m.querySelector('#m_status').value;
+    const grace=memberStatus==='active'&&m.querySelector('#m_grace').checked;
+    const row={
+      name:m.querySelector('#m_name').value.trim(),
+      joined_at:m.querySelector('#m_joined').value,
+      last_attended_at:m.querySelector('#m_last').value||null,
+      member_status:memberStatus,
+      grace,
+      grace_reason:grace?m.querySelector('#m_reason').value.trim():'',
+      left_at:memberStatus==='left'?(x.left_at||todayYmd()):null,
+      updated_at:new Date().toISOString()
+    };
+    if(!row.name)throw new Error('이름을 입력해 주세요.');
+    if(!row.joined_at)throw new Error('가입일을 입력해 주세요.');
+    x.id?await DOTT_DB.update('attendance_members',x.id,row):await DOTT_DB.insert('attendance_members',row);
+    await loadAll();renderAdmin();toast('저장했습니다.');
+  });
 }
 
 function noticePanel(p){

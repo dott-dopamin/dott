@@ -373,3 +373,227 @@ body.modal-open{overflow:hidden;touch-action:none}
   .schedule-modal .field{padding:7px 7px;font-size:12px}
   .schedule-modal .modal-body{padding:9px 10px}
 }
+
+
+/* ===== DOTT v17 운영진 전용 출석관리 ===== */
+.attendance-head{display:flex;justify-content:space-between;align-items:flex-start;gap:14px;margin-bottom:14px}
+.attendance-summary{display:flex;gap:8px;flex-wrap:wrap}
+.attendance-summary span{border:1px solid var(--line);background:#fff;border-radius:999px;padding:7px 10px;font-size:11px;color:#6f655d}
+.attendance-summary span.keep{background:#eff9f1;border-color:#cfe7d4;color:#3b7550}
+.attendance-summary span.overdue{background:#fff0ee;border-color:#f1cbc5;color:#b8483d}
+.attendance-summary span.grace{background:#fff8e7;border-color:#efdfb5;color:#8b6b19}
+.attendance-help{margin:9px 0 0;color:var(--muted);font-size:11px;line-height:1.55}
+.attendance-controls{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:12px}
+.attendance-filters{display:flex;gap:6px;flex-wrap:wrap}
+.attendance-filter{border:1px solid var(--line);background:#fff;border-radius:999px;padding:7px 11px;font-size:11px;cursor:pointer}
+.attendance-filter.active{background:var(--accent);border-color:var(--accent);color:#fff}
+.attendance-search{width:190px;flex:0 0 190px;padding:8px 10px}
+.attendance-table-wrap{border:1px solid var(--line);border-radius:14px;overflow:hidden;background:#fff}
+.attendance-table{width:100%;border-collapse:collapse;table-layout:fixed}
+.attendance-table th,.attendance-table td{padding:11px 10px;border-bottom:1px solid var(--line);font-size:11.5px;text-align:left;vertical-align:middle}
+.attendance-table th{background:#fbf7f0;color:#756a60;font-size:10.5px;font-weight:600}
+.attendance-table th:nth-child(1){width:12%}.attendance-table th:nth-child(2){width:13%}.attendance-table th:nth-child(3){width:14%}.attendance-table th:nth-child(4){width:14%}.attendance-table th:nth-child(5){width:9%}.attendance-table th:nth-child(6){width:20%}.attendance-table th:nth-child(7){width:18%}
+.attendance-table tbody tr:last-child td{border-bottom:0}
+.attendance-row.overdue{background:#fffafa}.attendance-row.left{opacity:.62;background:#fafafa}
+.attendance-status{display:inline-flex;border-radius:999px;padding:5px 8px;font-size:10px;font-weight:700;white-space:nowrap}
+.attendance-status.keep{background:#e8f7ec;color:#327348}.attendance-status.overdue{background:#ffe8e5;color:#b63f35}.attendance-status.grace{background:#fff1c9;color:#88640c}.attendance-status.left{background:#efefef;color:#777}
+.attendance-actions{display:flex;gap:5px;align-items:center;flex-wrap:wrap}.attendance-today{padding:7px 9px;font-size:10.5px;background:#eff9f1;border-color:#cfe7d4;color:#346d48}.attendance-reason{overflow-wrap:anywhere}.attendance-empty{text-align:center!important;color:var(--muted);padding:30px!important}.attendance-check{display:flex;align-items:center;gap:7px;font-size:12px;height:100%}.attendance-grace-box{display:flex;align-items:end;padding-bottom:9px}.attendance-setup code{background:#fff;border:1px solid #cee4d3;border-radius:5px;padding:2px 5px}
+
+@media(max-width:700px){
+  .attendance-head{align-items:stretch}.attendance-head .btn{align-self:flex-start;white-space:nowrap}
+  .attendance-controls{align-items:stretch;flex-direction:column}.attendance-search{width:100%;flex:auto}
+  .attendance-table-wrap{border:0;background:transparent;overflow:visible}.attendance-table,.attendance-table tbody{display:block;width:100%}.attendance-table thead{display:none}.attendance-table tr{display:block;border:1px solid var(--line);border-radius:12px;background:#fff;margin-bottom:9px;overflow:hidden}.attendance-table td{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;width:100%!important;padding:8px 10px;border-bottom:1px solid #f1e7da;font-size:11px;text-align:right}.attendance-table td:last-child{border-bottom:0}.attendance-table td::before{content:attr(data-label);flex:0 0 82px;text-align:left;color:#8a7d72;font-size:10px;font-weight:600}.attendance-table td:first-child{background:#fbf7f0;font-size:12px}.attendance-table td:first-child::before{color:#675d54}.attendance-reason{max-width:none}.attendance-actions{justify-content:flex-end}.attendance-empty{display:block!important;text-align:center!important}.attendance-empty::before{display:none}.attendance-grace-box{padding-bottom:0;align-items:center}
+}
+
+/* ===== DOTT v19 일정관리 디자인 통일 + 장소이동 + 모바일 출석 1줄 ===== */
+.schedule-control-panel{
+  margin:0 0 13px;
+  padding:12px;
+  border:1px solid var(--line);
+  border-radius:14px;
+  background:#fffefa;
+}
+.schedule-manage-head{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+  margin:0 0 11px;
+}
+.schedule-view-tabs{
+  display:inline-flex;
+  align-items:center;
+  gap:3px;
+  padding:3px;
+  border:1px solid var(--line);
+  border-radius:999px;
+  background:#fbf3e6;
+}
+.schedule-view-btn{
+  border:0;
+  background:transparent;
+  color:#6d6258;
+  border-radius:999px;
+  padding:8px 12px;
+  font-size:11.5px;
+  line-height:1;
+  cursor:pointer;
+  transition:.15s ease;
+}
+.schedule-view-btn:hover{background:#fff8f2;color:#9b421c}
+.schedule-view-btn.active{
+  background:var(--accent);
+  color:#fff;
+  font-weight:700;
+  box-shadow:0 2px 8px rgba(233,93,32,.16);
+}
+.schedule-add-btn{white-space:nowrap;box-shadow:0 2px 8px rgba(233,93,32,.10)}
+.schedule-monthbar{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  padding:9px 10px;
+  margin:0;
+  border-top:1px solid #f0e5d7;
+  border-bottom:1px solid #f0e5d7;
+  background:#fff;
+}
+.schedule-month-nav{
+  display:flex;
+  align-items:center;
+  overflow:hidden;
+  border:1px solid var(--line);
+  border-radius:10px;
+  background:#fff;
+}
+.schedule-month-nav strong{
+  min-width:105px;
+  padding:0 10px;
+  text-align:center;
+  font-size:13px;
+  font-weight:700;
+  white-space:nowrap;
+}
+.schedule-month-arrow{
+  width:34px;
+  height:32px;
+  padding:0!important;
+  border:0!important;
+  border-radius:0!important;
+  background:#fff!important;
+  font-size:17px!important;
+  line-height:1;
+  display:grid;
+  place-items:center;
+}
+.schedule-month-arrow:first-child{border-right:1px solid var(--line)!important}
+.schedule-month-arrow:last-child{border-left:1px solid var(--line)!important}
+.schedule-month-arrow:hover{background:#fff8f2!important}
+.schedule-month-today{
+  padding:8px 10px;
+  font-size:11px;
+  background:#fff;
+  white-space:nowrap;
+}
+.schedule-count{
+  margin-left:auto;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  min-width:44px;
+  padding:5px 9px;
+  border-radius:999px;
+  background:#fbf3e6;
+  color:#7c6f63;
+  font-size:10.5px;
+  font-weight:700;
+}
+.schedule-bulkbar{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:10px;
+  padding:10px 2px 0;
+  margin:0;
+}
+.schedule-select-all{
+  display:flex;
+  align-items:center;
+  gap:7px;
+  min-width:0;
+  font-size:11px;
+  color:#6f655d;
+  cursor:pointer;
+}
+.schedule-select-all input,.schedule-check{accent-color:var(--accent)}
+.schedule-bulk-actions{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  color:var(--muted);
+  font-size:10.5px;
+  white-space:nowrap;
+}
+.schedule-bulk-actions .btn{padding:7px 9px;font-size:10.5px}
+.schedule-bulk-actions .btn:disabled{opacity:.38;cursor:not-allowed;background:#fff}
+.schedule-table .check-col{width:34px!important;text-align:center;padding-left:7px;padding-right:7px}
+.schedule-check{width:15px;height:15px}
+.label-row{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:6px}
+.label-row .label{margin:0}
+.venue-flex-check{display:inline-flex;align-items:center;gap:4px;font-size:10px;color:#6f655d;white-space:nowrap}
+.venue-flex-check input{margin:0;accent-color:#6558d8}
+.venue-flex-mark,.venue-flex-public{color:#6558d8;font-weight:800;text-decoration:none!important}
+.att-head-mobile,.att-date-mobile,.att-action-mobile{display:none}
+
+@media(max-width:700px){
+  .schedule-control-panel{padding:9px;border-radius:12px}
+  .schedule-manage-head{gap:8px;margin-bottom:9px}
+  .schedule-view-tabs{flex:1;min-width:0;display:grid;grid-template-columns:repeat(3,1fr);padding:3px}
+  .schedule-view-btn{padding:8px 4px;font-size:10.5px;text-align:center;white-space:nowrap}
+  .schedule-add-btn{padding:9px 10px;font-size:11px}
+  .schedule-monthbar{gap:6px;padding:8px 0}
+  .schedule-month-nav{flex:1;min-width:0}
+  .schedule-month-nav strong{flex:1;min-width:0;padding:0 5px;font-size:11.5px}
+  .schedule-month-arrow{width:30px;height:30px;font-size:15px!important}
+  .schedule-month-today{padding:7px 8px;font-size:10px}
+  .schedule-count{min-width:38px;padding:5px 7px;font-size:9.5px}
+  .schedule-bulkbar{padding-top:8px;gap:6px}
+  .schedule-select-all{font-size:9.5px;gap:5px}
+  .schedule-select-all input{width:14px;height:14px;margin:0}
+  .schedule-bulk-actions{gap:5px;font-size:9.5px}
+  .schedule-bulk-actions .btn{padding:6px 7px;font-size:9.5px}
+
+  /* 출석관리: 모바일에서도 회원 1명 = 표 1줄, 가로 스크롤 없이 표시 */
+  .attendance-table-wrap{border:1px solid var(--line)!important;border-radius:10px!important;overflow:hidden!important;background:#fff!important}
+  .attendance-table{display:table!important;width:100%!important;table-layout:fixed!important;border-collapse:collapse!important}
+  .attendance-table thead{display:table-header-group!important}
+  .attendance-table tbody{display:table-row-group!important;width:auto!important}
+  .attendance-table tr{display:table-row!important;border:0!important;border-radius:0!important;margin:0!important;background:transparent!important}
+  .attendance-table th,.attendance-table td{display:table-cell!important;width:auto!important;padding:6px 2px!important;border-bottom:1px solid var(--line)!important;font-size:8.2px!important;line-height:1.15!important;text-align:center!important;vertical-align:middle!important;white-space:nowrap!important;overflow:hidden!important;text-overflow:ellipsis!important}
+  .attendance-table th{font-size:7.8px!important;letter-spacing:-.35px!important;background:#fbf7f0!important;color:#756a60!important}
+  .attendance-table td::before{display:none!important}
+  .attendance-table th:nth-child(1),.attendance-table td:nth-child(1){width:14%!important;text-align:left!important;padding-left:4px!important}
+  .attendance-table th:nth-child(2),.attendance-table td:nth-child(2){width:12.5%!important}
+  .attendance-table th:nth-child(3),.attendance-table td:nth-child(3){width:12.5%!important}
+  .attendance-table th:nth-child(4),.attendance-table td:nth-child(4){width:12.5%!important}
+  .attendance-table th:nth-child(5),.attendance-table td:nth-child(5){width:9.5%!important}
+  .attendance-table th:nth-child(6),.attendance-table td:nth-child(6){width:17%!important}
+  .attendance-table th:nth-child(7),.attendance-table td:nth-child(7){width:22%!important;padding-right:3px!important}
+  .attendance-status{padding:3px 4px!important;font-size:7.5px!important}
+  .attendance-actions{display:flex!important;justify-content:center!important;align-items:center!important;gap:2px!important;flex-wrap:nowrap!important}
+  .attendance-actions .btn,.attendance-actions .icon-btn{width:19px!important;height:19px!important;min-width:19px!important;padding:0!important;border-radius:5px!important;font-size:8.5px!important;display:inline-grid!important;place-items:center!important}
+  .attendance-reason{max-width:none!important}
+  .att-head-desktop,.att-date-desktop,.att-action-desktop{display:none!important}
+  .att-head-mobile,.att-date-mobile,.att-action-mobile{display:inline!important}
+  .attendance-empty{display:table-cell!important;text-align:center!important;padding:20px!important}
+  .attendance-empty::before{display:none!important}
+}
+
+@media(max-width:390px){
+  .schedule-view-btn{font-size:10px}
+  .schedule-add-btn{padding-left:8px;padding-right:8px}
+  .schedule-month-today{display:none}
+  .attendance-table th,.attendance-table td{font-size:7.7px!important;padding-left:1px!important;padding-right:1px!important}
+  .attendance-table th{font-size:7.2px!important}
+  .attendance-actions .btn,.attendance-actions .icon-btn{width:18px!important;height:18px!important;min-width:18px!important;font-size:8px!important}
+}
