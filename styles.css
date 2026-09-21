@@ -611,3 +611,60 @@ body.modal-open{overflow:hidden;touch-action:none}
   .attendance-row.staff td:first-child{box-shadow:inset 2px 0 0 var(--accent)}
   .attendance-check-group{gap:10px}
 }
+
+/* ===== DOTT v21 캘린더 셀 크기 통일 (PC + 모바일) ===== */
+/* 일정 개수/제목 길이와 상관없이 모든 날짜 칸을 같은 높이로 유지 */
+.calendar-grid{
+  grid-template-rows:34px repeat(6,142px);
+  align-items:stretch;
+}
+.calendar-grid > .dow{
+  height:34px;
+  min-height:34px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+.calendar-grid > .day{
+  height:142px;
+  min-height:0!important;
+  padding:7px;
+  overflow:hidden;
+}
+.calendar-grid > .day .day-num{margin-bottom:5px}
+.calendar-grid > .day .day-events{gap:4px;min-height:0;overflow:hidden}
+.calendar-grid > .day .day-event{
+  height:29px;
+  min-height:29px;
+  padding:2px 5px;
+}
+.calendar-grid > .day .event-line{display:flex;align-items:center;min-width:0}
+.calendar-grid > .day .event-main{gap:4px;font-size:11px;line-height:1.1;white-space:nowrap}
+.calendar-grid > .day .event-time{display:inline;flex:0 0 auto;white-space:nowrap}
+.calendar-grid > .day .event-title{display:block;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.calendar-grid > .day .event-sub{display:flex;justify-content:space-between;gap:4px;margin-top:1px;font-size:9px;line-height:1.05;white-space:nowrap}
+.calendar-grid > .day .event-sub span{display:block;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.calendar-grid > .day .day-more{font-size:8.5px;line-height:1.05;padding:0 2px}
+
+@media(max-width:700px){
+  .calendar-grid{grid-template-rows:30px repeat(6,122px)}
+  .calendar-grid > .dow{height:30px;min-height:30px}
+  .calendar-grid > .day{height:122px;min-height:0!important;padding:3px 3px}
+  .calendar-grid > .day .day-num{margin-bottom:3px}
+  .calendar-grid > .day .day-events{gap:3px}
+  /* 모바일도 일정 1개 = 정확히 2줄: 시간+제목 / 인원+벙주 */
+  .calendar-grid > .day .day-event{height:27px;min-height:27px;padding:2px 2px}
+  .calendar-grid > .day .event-main{gap:2px;font-size:8.9px;line-height:1.05}
+  .calendar-grid > .day .event-sub{gap:1px;margin-top:1px;font-size:7.2px;line-height:1.05}
+  .calendar-grid > .day .day-more{font-size:7.5px;padding:0}
+}
+
+@media(max-width:390px){
+  .calendar-grid{grid-template-rows:28px repeat(6,116px)}
+  .calendar-grid > .dow{height:28px;min-height:28px}
+  .calendar-grid > .day{height:116px;min-height:0!important;padding:2px}
+  .calendar-grid > .day .day-num{margin-bottom:2px}
+  .calendar-grid > .day .day-event{height:25px;min-height:25px;padding:1px 2px}
+  .calendar-grid > .day .event-main{font-size:8.4px;gap:2px}
+  .calendar-grid > .day .event-sub{font-size:6.9px}
+}
