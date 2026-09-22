@@ -887,3 +887,9 @@ body.calendar-detail-open{overflow:hidden}
   .schedule-table th,.schedule-table td{font-size:7.1px!important;padding-left:1px!important;padding-right:1px!important}
   .schedule-table th{font-size:6.6px!important}
 }
+
+/* v29: mobile/network resilience */
+.public-load-warning{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:0 0 14px;padding:10px 12px;border:1px solid #ead7c4;background:#fff8ef;border-radius:12px;color:#765c43;font-size:12px;line-height:1.45}
+.public-load-warning button{flex:0 0 auto;border:0;background:#fff;border:1px solid #ddc6b0;border-radius:9px;padding:6px 9px;color:#765c43;font-weight:700;cursor:pointer}
+.public-fatal{text-align:center;line-height:1.65}.public-fatal small{color:#999}.public-fatal .btn{margin-top:12px}
+@media(max-width:700px){.public-load-warning{font-size:11px;padding:8px 10px}.public-load-warning button{padding:5px 7px;font-size:11px}}

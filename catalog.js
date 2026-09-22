@@ -39,10 +39,12 @@ function listRow(x){
 }
 
 (async()=>{
-  app.innerHTML=`${nav(kind)}<div class="loading">목록을 불러오는 중...</div>`;
-  try{
-    [items,settings]=await Promise.all([DOTT_DB.catalog(kind),DOTT_DB.settings()]);
-    render();
-  }
-  catch(e){app.innerHTML=`${nav(kind)}<main class="page"><div class="info-box">목록을 불러오지 못했습니다. supabase.sql 실행 여부를 확인해 주세요.<br>${esc(e.message)}</div></main>${footer()}`}
+  const cacheKey=`dott_catalog_${kind}_v1`;
+  let cached=null;
+  try{cached=JSON.parse(localStorage.getItem(cacheKey)||'null')}catch(_e){}
+  if(cached?.items){items=cached.items;settings=cached.settings||null;render()}
+  else app.innerHTML=`${nav(kind)}<div class="loading">목록을 불러오는 중...</div>`;
+  const [ir,sr]=await Promise.allSettled([DOTT_DB.catalog(kind),DOTT_DB.settings()]);
+  if(ir.status==='fulfilled'){items=ir.value;if(sr.status==='fulfilled')settings=sr.value;render();try{localStorage.setItem(cacheKey,JSON.stringify({items,settings,savedAt:Date.now()}))}catch(_e){}}
+  else if(!cached){app.innerHTML=`${nav(kind)}<main class="page"><div class="info-box">목록을 불러오지 못했습니다.<br>잠시 후 새로고침해 주세요.<br>${esc(ir.reason?.message||'')}</div></main>${footer()}`}
 })();

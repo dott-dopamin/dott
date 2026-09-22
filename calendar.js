@@ -84,12 +84,44 @@ function noticeHtml(){
   return notices.map(n=>`<article class="notice"><span class="notice-badge ${n.pinned?'pin':''}">${n.pinned?'📌 필독':'안내'}</span><div><h3>${esc(n.title)}</h3><div class="notice-content">${noticePublicHtml(n.content)}</div></div><time>${new Date(n.created_at).toLocaleDateString('ko-KR')}</time></article>`).join('');
 }
 
-(async()=>{
-  app.innerHTML=`${nav('calendar')}<div class="loading">일정을 불러오는 중...</div>`;
-  try{
-    [schedules,notices,siteSettings]=await Promise.all([DOTT_DB.schedules(),DOTT_DB.notices(),DOTT_DB.settings()]);
-    render();
-  }catch(e){
-    app.innerHTML=`${nav('calendar')}<div class="page"><div class="info-box">Supabase 연결은 됐지만 아직 테이블이 준비되지 않았습니다.<br><b>supabase.sql</b>을 먼저 실행해 주세요.<br><br>${esc(e.message)}</div></div>${footer()}`;
+const PUBLIC_CACHE_KEY='dott_public_cache_v2';
+function readPublicCache(){
+  try{const v=JSON.parse(localStorage.getItem(PUBLIC_CACHE_KEY)||'null');return v&&Array.isArray(v.schedules)?v:null}catch(_e){return null}
+}
+function writePublicCache(){
+  try{localStorage.setItem(PUBLIC_CACHE_KEY,JSON.stringify({schedules,notices,siteSettings,savedAt:Date.now()}))}catch(_e){}
+}
+function showPublicLoadWarning(parts){
+  if(!parts.length)return;
+  let el=document.getElementById('publicLoadWarning');
+  if(!el){
+    el=document.createElement('div');el.id='publicLoadWarning';el.className='public-load-warning';
+    document.querySelector('.page')?.prepend(el);
   }
-})();
+  el.innerHTML=`<span>연결이 잠시 불안정해 ${parts.join('·')} 일부를 최신 상태로 불러오지 못했습니다.</span><button type="button" id="publicRetry">다시 시도</button>`;
+  document.getElementById('publicRetry').onclick=()=>loadPublicData(false);
+}
+async function loadPublicData(initial=true){
+  const cached=readPublicCache();
+  if(initial&&cached){
+    schedules=cached.schedules||[];notices=cached.notices||[];siteSettings=cached.siteSettings||null;render();
+  }else if(initial){
+    app.innerHTML=`${nav('calendar')}<div class="loading">일정을 불러오는 중...</div>`;
+  }
+  const results=await Promise.allSettled([DOTT_DB.schedules(),DOTT_DB.notices(),DOTT_DB.settings()]);
+  const failed=[];
+  if(results[0].status==='fulfilled')schedules=results[0].value;else failed.push('일정');
+  if(results[1].status==='fulfilled')notices=results[1].value;else failed.push('공지');
+  if(results[2].status==='fulfilled')siteSettings=results[2].value;
+  const hasCore=results[0].status==='fulfilled'||cached;
+  if(hasCore){
+    render();
+    if(results[0].status==='fulfilled'&&results[1].status==='fulfilled')writePublicCache();
+    if(failed.length)showPublicLoadWarning(failed);
+    return;
+  }
+  const message=results[0].reason?.message||'네트워크 연결을 확인해 주세요.';
+  app.innerHTML=`${nav('calendar')}<main class="page"><div class="info-box public-fatal">일정을 불러오지 못했습니다.<br>잠시 후 다시 시도해 주세요.<br><small>${esc(message)}</small><br><button class="btn primary" id="fatalRetry" type="button">다시 시도</button></div></main>${footer()}`;
+  document.getElementById('fatalRetry').onclick=()=>loadPublicData(false);
+}
+loadPublicData(true);
