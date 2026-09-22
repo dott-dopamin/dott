@@ -53,6 +53,11 @@ function renderPanel(){
 }
 
 function scheduleMonthLabel(){return `${scheduleCursor.getFullYear()}년 ${scheduleCursor.getMonth()+1}월`}
+function compactScheduleDate(dateStr){
+  if(!dateStr)return '-';
+  const [y,m,d]=String(dateStr).split('-');
+  return `${String(y).slice(-2)}/${m}/${d}`;
+}
 function inScheduleMonth(dateStr){
   if(!dateStr)return false;
   const d=new Date(dateStr+'T00:00:00');
@@ -98,9 +103,9 @@ function schedulePanel(p){
         <div class="schedule-bulk-actions"><span id="scheduleSelectedCount">${selectedScheduleIds.size}개 선택</span><button class="btn danger" id="deleteSelected" ${selectedScheduleIds.size?'':'disabled'}>선택 삭제</button></div>
       </div>
     </div>
-    <div class="table-wrap"><table class="table schedule-table"><thead><tr><th class="check-col"></th><th>날짜</th><th>시간</th><th>카테고리</th><th>일정명</th><th>인원</th><th>벙주</th><th>상태</th><th>관리</th></tr></thead><tbody>${rows.map(x=>{
+    <div class="table-wrap schedule-table-wrap"><table class="table schedule-table"><thead><tr><th class="check-col"></th><th>날짜</th><th>시간</th><th>카테고리</th><th>일정명</th><th>인원</th><th>벙주</th><th>상태</th><th>관리</th></tr></thead><tbody>${rows.map(x=>{
       const cancelled=isCancelledStatus(x.status);
-      return `<tr class="${cancelled?'cancelled-row':''}"><td class="check-col"><input class="schedule-check" type="checkbox" data-schedule-check="${x.id}" ${selectedScheduleIds.has(x.id)?'checked':''}></td><td>${fmtDate(x.event_date)}</td><td>${(x.event_time||'').slice(0,5)}</td><td>${tag(x.category)}</td><td><b>${esc(x.title)}</b></td><td>${x.people||'-'}명</td><td>${esc(x.manager||'')}${x.venue_flexible?' <span class="venue-flex-mark" title="장소 이동 가능">✓</span>':''}</td><td><span class="schedule-status ${cancelled?'cancelled':''}">${scheduleStatusLabel(x.status)}</span></td><td><div class="actions"><button class="icon-btn" data-edit="${x.id}">✎</button><button class="icon-btn" data-del="${x.id}">♲</button></div></td></tr>`
+      return `<tr class="${cancelled?'cancelled-row':''}"><td class="check-col"><input class="schedule-check" type="checkbox" data-schedule-check="${x.id}" ${selectedScheduleIds.has(x.id)?'checked':''}></td><td><span class="schedule-date-desktop">${fmtDate(x.event_date)}</span><span class="schedule-date-mobile">${compactScheduleDate(x.event_date)}</span></td><td>${(x.event_time||'').slice(0,5)}</td><td>${tag(x.category)}</td><td><b>${esc(x.title)}</b></td><td>${x.people||'-'}명</td><td>${esc(x.manager||'')}${x.venue_flexible?' <span class="venue-flex-mark" title="장소 이동 가능">✓</span>':''}</td><td><span class="schedule-status ${cancelled?'cancelled':''}">${scheduleStatusLabel(x.status)}</span></td><td><div class="actions"><button class="icon-btn" data-edit="${x.id}">✎</button><button class="icon-btn" data-del="${x.id}">♲</button></div></td></tr>`
     }).join('')||'<tr><td colspan="9">해당 일정이 없습니다.</td></tr>'}</tbody></table></div>`;
 
   document.getElementById('add').onclick=()=>scheduleModal();

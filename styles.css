@@ -749,3 +749,141 @@ body.modal-open{overflow:hidden;touch-action:none}
   .calendar-grid > .day .event-main{font-size:9.8px}
   .calendar-grid > .day .event-sub{font-size:8.2px}
 }
+
+/* ===== DOTT v25 모바일 캘린더/일정관리 최적화 ===== */
+.schedule-date-mobile{display:none}
+
+/* 모바일 일정 상세 팝업 */
+.calendar-detail-backdrop{position:fixed;inset:0;z-index:300;display:none;align-items:center;justify-content:center;padding:16px;background:rgba(35,29,24,.42)}
+.calendar-detail-backdrop.open{display:flex}
+body.calendar-detail-open{overflow:hidden}
+.calendar-detail{width:min(420px,100%);max-height:calc(100dvh - 32px);overflow:auto;border:1px solid var(--line);border-radius:16px;background:#fffefa;box-shadow:0 24px 70px rgba(0,0,0,.22)}
+.calendar-detail-head{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;padding:16px 16px 13px;border-bottom:1px solid var(--line)}
+.calendar-detail-head h3{margin:8px 0 0;font-size:18px;line-height:1.35;font-weight:650;color:#2b2622}
+.calendar-detail-category{display:inline-flex;padding:4px 8px;border-radius:999px;font-size:10px;font-weight:700;color:#222}
+.calendar-detail-close{width:32px;height:32px;display:grid;place-items:center;flex:0 0 32px;border:1px solid var(--line);border-radius:9px;background:#fff;font-size:14px;color:#5d544d}
+.calendar-detail-body{padding:14px 16px 17px}
+.calendar-detail-row{display:grid;grid-template-columns:54px 1fr;gap:10px;align-items:center;padding:9px 0;border-bottom:1px solid #f0e7dc;font-size:12px}
+.calendar-detail-row>span{color:#8a7f76;font-size:10.5px}
+.calendar-detail-row>b{font-weight:600;color:#2d2824;min-width:0;overflow-wrap:anywhere}
+.calendar-detail-note{padding-top:12px}
+.calendar-detail-note>span{display:block;color:#8a7f76;font-size:10.5px;margin-bottom:6px}
+.calendar-detail-note p{margin:0;padding:10px 11px;border-radius:10px;background:#fbf7f0;font-size:12px;line-height:1.6;color:#3c3530;overflow-wrap:anywhere}
+.calendar-detail .detail-cancelled{color:#b34a42}
+.calendar-detail .is-cancelled-text{text-decoration:line-through;text-decoration-thickness:1px;color:#8b7f76}
+
+@media(max-width:700px){
+  /* 캘린더 날짜칸을 정확한 정사각형으로 고정 */
+  .calendar-grid>.day{
+    aspect-ratio:1 / 1!important;
+    min-height:0!important;
+    height:auto!important;
+    padding:3px 2px!important;
+  }
+  .calendar-grid>.day .day-num{
+    margin-bottom:2px!important;
+    font-size:9px!important;
+    line-height:1!important;
+  }
+  .calendar-grid>.day .day-events{
+    gap:1px!important;
+  }
+  /* 모바일은 카테고리 배경 + 시간만 노출. 상세는 탭 팝업에서 확인 */
+  .calendar-grid>.day .day-event{
+    min-height:11px!important;
+    height:11px!important;
+    padding:0 2px!important;
+    border-radius:3px!important;
+    display:flex!important;
+    align-items:center!important;
+    justify-content:center!important;
+    cursor:pointer;
+    overflow:hidden!important;
+  }
+  .calendar-grid>.day .event-main{
+    display:flex!important;
+    align-items:center!important;
+    justify-content:center!important;
+    width:100%!important;
+    font-size:8.3px!important;
+    line-height:1!important;
+    font-weight:600!important;
+  }
+  .calendar-grid>.day .event-time{
+    display:block!important;
+    width:auto!important;
+    text-align:center!important;
+    white-space:nowrap!important;
+    overflow:hidden!important;
+    text-overflow:clip!important;
+  }
+  .calendar-grid>.day .day-event.venue-flexible .event-main::after{
+    content:'✓';
+    display:inline-block;
+    margin-left:2px;
+    color:#6558d8;
+    font-size:8px;
+    line-height:1;
+    font-weight:800;
+    flex:0 0 auto;
+  }
+  .calendar-grid>.day .event-title,
+  .calendar-grid>.day .event-sub,
+  .calendar-grid>.day .cancel-label{display:none!important}
+  .calendar-grid>.day .day-more{
+    height:9px!important;
+    padding:0!important;
+    font-size:7.5px!important;
+    line-height:9px!important;
+    text-align:center!important;
+    overflow:hidden!important;
+  }
+  .calendar-grid>.day.today{box-shadow:inset 0 0 0 1.5px var(--accent)!important}
+
+  /* 관리자 일정관리: 모바일 한 줄 전체 표시 + 가로스크롤 제거 */
+  .schedule-table-wrap{overflow:hidden!important;border-radius:10px!important}
+  .schedule-table{
+    width:100%!important;
+    min-width:0!important;
+    table-layout:fixed!important;
+  }
+  .schedule-table th,.schedule-table td{
+    padding:6px 1.5px!important;
+    font-size:7.6px!important;
+    line-height:1.1!important;
+    white-space:nowrap!important;
+    overflow:hidden!important;
+    text-overflow:ellipsis!important;
+    vertical-align:middle!important;
+  }
+  .schedule-table th{font-size:7px!important;letter-spacing:-.3px!important;text-align:center!important}
+  .schedule-table td{text-align:center!important}
+  .schedule-table .check-col{width:4%!important;padding:0!important}
+  .schedule-table .schedule-check{width:11px!important;height:11px!important;margin:0!important}
+  .schedule-table th:nth-child(2),.schedule-table td:nth-child(2){width:14%!important}
+  .schedule-table th:nth-child(3),.schedule-table td:nth-child(3){width:9%!important}
+  .schedule-table th:nth-child(4),.schedule-table td:nth-child(4){width:10%!important}
+  .schedule-table th:nth-child(5),.schedule-table td:nth-child(5){width:25%!important;text-align:left!important}
+  .schedule-table th:nth-child(6),.schedule-table td:nth-child(6){width:7%!important}
+  .schedule-table th:nth-child(7),.schedule-table td:nth-child(7){width:12%!important}
+  .schedule-table th:nth-child(8),.schedule-table td:nth-child(8){width:8%!important}
+  .schedule-table th:nth-child(9),.schedule-table td:nth-child(9){width:11%!important}
+  .schedule-date-desktop{display:none!important}
+  .schedule-date-mobile{display:inline!important}
+  .schedule-table .cat-tag{padding:2px 3px!important;font-size:6.8px!important;border-radius:4px!important}
+  .schedule-table td:nth-child(5) b{font-weight:600!important}
+  .schedule-table .schedule-status{padding:2px 3px!important;font-size:6.8px!important}
+  .schedule-table .venue-flex-mark{font-size:7px!important}
+  .schedule-table .actions{display:flex!important;justify-content:center!important;gap:1px!important;flex-wrap:nowrap!important}
+  .schedule-table .icon-btn{width:16px!important;height:16px!important;min-width:16px!important;border-radius:4px!important;padding:0!important;font-size:7px!important;display:grid!important;place-items:center!important}
+}
+
+@media(max-width:390px){
+  .calendar-grid>.day{padding:2px 1px!important}
+  .calendar-grid>.day .day-num{font-size:8.5px!important}
+  .calendar-grid>.day .day-event{height:10px!important;min-height:10px!important;padding:0 1px!important}
+  .calendar-grid>.day .event-main{font-size:7.8px!important}
+  .calendar-grid>.day .day-event.venue-flexible .event-main::after{font-size:7.4px!important;margin-left:1px}
+  .schedule-table th,.schedule-table td{font-size:7.1px!important;padding-left:1px!important;padding-right:1px!important}
+  .schedule-table th{font-size:6.6px!important}
+}

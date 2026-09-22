@@ -16,6 +16,7 @@ function render(){
   document.getElementById('prev').onclick=()=>{cursor.setMonth(cursor.getMonth()-1);render()};
   document.getElementById('next').onclick=()=>{cursor.setMonth(cursor.getMonth()+1);render()};
   document.getElementById('today').onclick=()=>{cursor=new Date();cursor.setDate(1);render()};
+  wireMobileCalendarEvents();
 }
 
 function todayEventHtml(e){
@@ -36,7 +37,46 @@ function calendarHtml(){
 
 function calendarEventHtml(e){
   const c=catInfo(e.category),cancelled=isCancelledStatus(e.status);
-  return `<div class="day-event ${cancelled?'is-cancelled':''}" style="background:${hexWithAlpha(c.color,'26')};color:#1f1f1f" title="${esc(e.title)}"><div class="event-line event-main"><span class="event-time">${(e.event_time||'').slice(0,5)}</span><span class="event-title">${esc(e.title)}</span>${cancelled?'<span class="cancel-label">취소</span>':''}</div><div class="event-line event-sub"><span>${e.people||'-'}명</span><span>벙주 ${esc(e.manager||'-')}${e.venue_flexible?'<b class="venue-flex-public">✓</b>':''}</span></div></div>`;
+  return `<div class="day-event ${cancelled?'is-cancelled':''} ${e.venue_flexible?'venue-flexible':''}" data-event-id="${esc(e.id||'')}" role="button" tabindex="0" style="background:${hexWithAlpha(c.color,'26')};color:#1f1f1f" title="${esc(e.title)}"><div class="event-line event-main"><span class="event-time">${(e.event_time||'').slice(0,5)}</span><span class="event-title">${esc(e.title)}</span>${cancelled?'<span class="cancel-label">취소</span>':''}</div><div class="event-line event-sub"><span>${e.people||'-'}명</span><span>벙주 ${esc(e.manager||'-')}${e.venue_flexible?'<b class="venue-flex-public">✓</b>':''}</span></div></div>`;
+}
+
+function wireMobileCalendarEvents(){
+  document.querySelectorAll('.day-event[data-event-id]').forEach(card=>{
+    const open=()=>{
+      if(!window.matchMedia('(max-width:700px)').matches)return;
+      const event=schedules.find(x=>String(x.id)===String(card.dataset.eventId));
+      if(event)openCalendarDetail(event);
+    };
+    card.addEventListener('click',open);
+    card.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();open()}});
+  });
+}
+
+function openCalendarDetail(e){
+  const cancelled=isCancelledStatus(e.status),c=catInfo(e.category);
+  let back=document.getElementById('calendarDetailModal');
+  if(!back){
+    back=document.createElement('div');
+    back.id='calendarDetailModal';
+    back.className='calendar-detail-backdrop';
+    document.body.appendChild(back);
+  }
+  back.innerHTML=`<div class="calendar-detail" role="dialog" aria-modal="true" aria-label="일정 상세">
+    <div class="calendar-detail-head"><div><span class="calendar-detail-category" style="background:${hexWithAlpha(c.color,'35')}">${esc(c.label)}</span><h3 class="${cancelled?'is-cancelled-text':''}">${esc(e.title)}</h3></div><button class="calendar-detail-close" type="button" aria-label="닫기">✕</button></div>
+    <div class="calendar-detail-body">
+      <div class="calendar-detail-row"><span>날짜</span><b>${fmtDate(e.event_date)}</b></div>
+      <div class="calendar-detail-row"><span>시간</span><b>${esc((e.event_time||'').slice(0,5)||'-')}</b></div>
+      <div class="calendar-detail-row"><span>인원</span><b>${e.people||'-'}명</b></div>
+      <div class="calendar-detail-row"><span>벙주</span><b>${esc(e.manager||'-')}${e.venue_flexible?' <span class="venue-flex-public">✓</span>':''}</b></div>
+      <div class="calendar-detail-row"><span>상태</span><b class="${cancelled?'detail-cancelled':''}">${scheduleStatusLabel(e.status)}</b></div>
+      ${e.note?`<div class="calendar-detail-note"><span>메모</span><p>${nl2br(e.note)}</p></div>`:''}
+    </div>
+  </div>`;
+  const close=()=>{back.classList.remove('open');document.body.classList.remove('calendar-detail-open')};
+  back.classList.add('open');
+  document.body.classList.add('calendar-detail-open');
+  back.querySelector('.calendar-detail-close').onclick=close;
+  back.onclick=ev=>{if(ev.target===back)close()};
 }
 
 function noticeHtml(){
