@@ -394,14 +394,35 @@ const ONLINE_MURDER_MARKER='__DOTT_ONLINE_MURDER__';
 function catalogPlaytimeLabel(v){
   const s=String(v??'').trim();
   if(!s)return '-';
-  if(/^\d+$/.test(s))return s+'분';
-  if(/^\d+\s*분$/.test(s))return s.replace(/\s+/g,'');
+  let m=s.match(/^\s*(\d+)\s*(?:분)?\s*$/);
+  if(m)return `${m[1]}분`;
+  m=s.match(/^\s*(\d+)\s*[~～\-–—]\s*(\d+)\s*(?:분)?\s*$/);
+  if(m)return `${m[1]}~${m[2]}분`;
   return s;
 }
 function catalogPlaytimeInputValue(v){
   const s=String(v??'').trim();
-  const m=s.match(/^\s*(\d+)\s*(?:분)?\s*$/);
-  return m?m[1]:(s.match(/\d+/)?.[0]||'');
+  let m=s.match(/^\s*(\d+)\s*(?:분)?\s*$/);
+  if(m)return m[1];
+  m=s.match(/^\s*(\d+)\s*[~～\-–—]\s*(\d+)\s*(?:분)?\s*$/);
+  if(m)return `${m[1]}~${m[2]}`;
+  return s.replace(/분/g,'').trim();
+}
+function normalizeCatalogPlaytimeInput(v,{allowRange=false}={}){
+  const s=String(v??'').trim();
+  if(!s)return '';
+  let m=s.match(/^\s*(\d+)\s*$/);
+  if(m)return m[1];
+  if(allowRange){
+    m=s.match(/^\s*(\d+)\s*[~～\-–—]\s*(\d+)\s*$/);
+    if(m){
+      const a=Number(m[1]),b=Number(m[2]);
+      if(a<=0||b<=0)throw new Error('플레이시간은 1 이상의 숫자로 입력해 주세요.');
+      if(a>b)throw new Error('플레이시간 범위는 작은 숫자~큰 숫자 순서로 입력해 주세요. 예: 60~90');
+      return `${a}~${b}`;
+    }
+  }
+  throw new Error(allowRange?'플레이시간은 60 또는 60~90 형식으로 입력해 주세요.':'플레이시간은 숫자만 입력해 주세요. 예: 180');
 }
 
 function catalogDifficultyInputValue(v){
@@ -477,7 +498,9 @@ function catalogModal(x={},kind){
     : kind==='boardgame'
       ? `<div class="full murder-name-row"><div><label class="label">이름</label><input id="f_name" class="field" value="${esc(x.name||'')}"></div><label class="catalog-flag-check murder-online-check-name"><input id="f_boardgame_expansion" type="checkbox" ${boardgameExpansion?'checked':''}> 확장</label></div>`
       : `<div class="full"><label class="label">이름</label><input id="f_name" class="field" value="${esc(x.name||'')}"></div>`;
-  const timeField=`<div><label class="label">플레이시간</label><div style="display:flex;align-items:center;gap:7px"><input id="f_time" class="field" type="text" inputmode="numeric" pattern="[0-9]*" maxlength="4" placeholder="예: 180" value="${esc(catalogPlaytimeInputValue(x.playtime))}" oninput="this.value=this.value.replace(/\D/g,'')"><span style="flex:0 0 auto;color:var(--muted);font-size:13px;font-weight:700">분</span></div></div>`;
+  const timeField=kind==='murder'
+    ? `<div><label class="label">플레이시간</label><div style="display:flex;align-items:center;gap:7px"><input id="f_time" class="field" type="text" inputmode="numeric" pattern="[0-9]*" maxlength="4" placeholder="예: 180" value="${esc(catalogPlaytimeInputValue(x.playtime))}" oninput="this.value=this.value.replace(/\D/g,'')"><span style="flex:0 0 auto;color:var(--muted);font-size:13px;font-weight:700">분</span></div></div>`
+    : `<div><label class="label">플레이시간</label><div style="display:flex;align-items:center;gap:7px"><input id="f_time" class="field" type="text" inputmode="text" maxlength="9" placeholder="예: 60 또는 60~90" value="${esc(catalogPlaytimeInputValue(x.playtime))}" oninput="this.value=this.value.replace(/[^0-9~～\-–—]/g,'')"><span style="flex:0 0 auto;color:var(--muted);font-size:13px;font-weight:700">분</span></div><div style="margin-top:5px;font-size:11px;color:var(--muted)">숫자 또는 범위 입력 · 예: 60 / 60~90</div></div>`;
   const commonTop=`<div class="form-grid">${nameField}<div><label class="label">최소 인원</label><input id="f_min" class="field" type="number" min="1" value="${x.min_players||2}"></div><div><label class="label">최대 인원</label><input id="f_max" class="field" type="number" min="1" value="${x.max_players||4}"></div>${timeField}`;
   let middle='';
   let bottom='';
@@ -498,12 +521,9 @@ function catalogModal(x={},kind){
       min_players:+m.querySelector('#f_min').value||null,
       max_players:+m.querySelector('#f_max').value||null,
       playtime:(()=>{
-        const raw=m.querySelector('#f_time').value.replace(/\D/g,'').trim();
-        const original=String(x.playtime||'').trim();
-        const simple=/^\d+\s*(?:분)?$/.test(original);
-        const shown=catalogPlaytimeInputValue(original);
-        if(x.id&&!simple&&original&&raw===shown)return original;
-        return raw;
+        const raw=m.querySelector('#f_time').value.trim();
+        if(kind==='murder')return normalizeCatalogPlaytimeInput(raw,{allowRange:false});
+        return normalizeCatalogPlaytimeInput(raw,{allowRange:true});
       })(),
       status:m.querySelector('#f_status').value,
       note:m.querySelector('#f_note').value.trim()
