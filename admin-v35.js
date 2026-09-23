@@ -451,8 +451,8 @@ function catalogPanel(p,kind){
   const currentDesc=(data.settings&&data.settings[descKey])||defaultDesc;
   const rows=data[kind];
   const head=kind==='murder'
-    ? '<th>게임명</th><th>인원</th><th>시간</th><th>난이도</th><th>상태 및 위치</th><th>소유주</th><th>비고</th><th>관리</th>'
-    : '<th>이름</th><th>인원</th><th>시간</th><th>난이도</th><th>장르</th><th>상태 및 위치</th><th>소유주</th><th>관리</th>';
+    ? '<th style="text-align:center">게임명</th><th style="text-align:center">인원</th><th style="text-align:center">시간</th><th style="text-align:center">난이도</th><th style="text-align:center">상태 및 위치</th><th style="text-align:center">소유주</th><th style="text-align:center">비고</th><th style="text-align:center">관리</th>'
+    : '<th style="text-align:center">게임명</th><th style="text-align:center">인원</th><th style="text-align:center">시간</th><th style="text-align:center">난이도</th><th style="text-align:center">장르</th><th style="text-align:center">상태 및 위치</th><th style="text-align:center">소유주</th><th style="text-align:center">관리</th>';
   const body=rows.map(x=>{
     if(kind==='murder'){
       const isOnline=x.genre===ONLINE_MURDER_MARKER;
