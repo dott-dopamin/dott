@@ -49,30 +49,32 @@
   .catalog-kind-table .catalog-status{font-size:7.6px;padding:2px 3px}
 
   /* 모바일 비율 - 짧은 수치 칸은 최소 폭, 장르/상태/소유주는 비슷한 폭으로 균형 배치 */
-  .catalog-kind-table.boardgame-table th:nth-child(1),.catalog-kind-table.boardgame-table td:nth-child(1){width:27%!important}
+  /* DOTT v60 mobile: 난이도 5칸이 항상 전부 보이도록 난이도 열을 넓혀 재배분 */
+  .catalog-kind-table.boardgame-table th:nth-child(1),.catalog-kind-table.boardgame-table td:nth-child(1){width:25%!important}
   .catalog-kind-table.boardgame-table th:nth-child(2),.catalog-kind-table.boardgame-table td:nth-child(2){width:9%!important}
-  .catalog-kind-table.boardgame-table th:nth-child(3),.catalog-kind-table.boardgame-table td:nth-child(3){width:9%!important}
-  .catalog-kind-table.boardgame-table th:nth-child(4),.catalog-kind-table.boardgame-table td:nth-child(4){width:10%!important}
-  .catalog-kind-table.boardgame-table th:nth-child(5),.catalog-kind-table.boardgame-table td:nth-child(5){width:15%!important}
-  .catalog-kind-table.boardgame-table th:nth-child(6),.catalog-kind-table.boardgame-table td:nth-child(6){width:15%!important}
-  .catalog-kind-table.boardgame-table th:nth-child(7),.catalog-kind-table.boardgame-table td:nth-child(7){width:15%!important}
+  .catalog-kind-table.boardgame-table th:nth-child(3),.catalog-kind-table.boardgame-table td:nth-child(3){width:10%!important}
+  .catalog-kind-table.boardgame-table th:nth-child(4),.catalog-kind-table.boardgame-table td:nth-child(4){width:16%!important}
+  .catalog-kind-table.boardgame-table th:nth-child(5),.catalog-kind-table.boardgame-table td:nth-child(5){width:12%!important}
+  .catalog-kind-table.boardgame-table th:nth-child(6),.catalog-kind-table.boardgame-table td:nth-child(6){width:14%!important}
+  .catalog-kind-table.boardgame-table th:nth-child(7),.catalog-kind-table.boardgame-table td:nth-child(7){width:14%!important}
 
-  .catalog-kind-table.deduction-table th:nth-child(1),.catalog-kind-table.deduction-table td:nth-child(1){width:27%!important}
+  .catalog-kind-table.deduction-table th:nth-child(1),.catalog-kind-table.deduction-table td:nth-child(1){width:25%!important}
   .catalog-kind-table.deduction-table th:nth-child(2),.catalog-kind-table.deduction-table td:nth-child(2){width:9%!important}
-  .catalog-kind-table.deduction-table th:nth-child(3),.catalog-kind-table.deduction-table td:nth-child(3){width:9%!important}
-  .catalog-kind-table.deduction-table th:nth-child(4),.catalog-kind-table.deduction-table td:nth-child(4){width:10%!important}
-  .catalog-kind-table.deduction-table th:nth-child(5),.catalog-kind-table.deduction-table td:nth-child(5){width:15%!important}
-  .catalog-kind-table.deduction-table th:nth-child(6),.catalog-kind-table.deduction-table td:nth-child(6){width:15%!important}
-  .catalog-kind-table.deduction-table th:nth-child(7),.catalog-kind-table.deduction-table td:nth-child(7){width:15%!important}
+  .catalog-kind-table.deduction-table th:nth-child(3),.catalog-kind-table.deduction-table td:nth-child(3){width:10%!important}
+  .catalog-kind-table.deduction-table th:nth-child(4),.catalog-kind-table.deduction-table td:nth-child(4){width:16%!important}
+  .catalog-kind-table.deduction-table th:nth-child(5),.catalog-kind-table.deduction-table td:nth-child(5){width:12%!important}
+  .catalog-kind-table.deduction-table th:nth-child(6),.catalog-kind-table.deduction-table td:nth-child(6){width:14%!important}
+  .catalog-kind-table.deduction-table th:nth-child(7),.catalog-kind-table.deduction-table td:nth-child(7){width:14%!important}
 }
 
 
-/* DOTT v59: 보드게임/추리게임 난이도 5칸 게이지 */
+/* DOTT v60: 보드게임/추리게임 난이도 5칸 게이지 + 모바일 5칸 보장 */
 .catalog-kind-table .catalog-difficulty{text-align:center!important;white-space:nowrap!important}
 .difficulty-meter{display:inline-flex;align-items:center;gap:3px;vertical-align:middle;white-space:nowrap}
 .difficulty-box{display:inline-block;width:11px;height:11px;box-sizing:border-box;border:1px solid #dccdc0;border-radius:2px;background:linear-gradient(90deg,#e46f3a 0 var(--fill),#fffaf6 var(--fill) 100%)}
 @media(max-width:700px){
-  .difficulty-meter{gap:1.5px}
-  .difficulty-box{width:7px;height:7px;border-radius:1.5px}
+  .catalog-kind-table .catalog-difficulty{padding-left:1px!important;padding-right:1px!important;overflow:visible!important}
+  .difficulty-meter{gap:1.5px;max-width:100%}
+  .difficulty-box{width:8px;height:8px;border-radius:1.5px;flex:0 0 8px}
 }
-</style></head><body data-kind="deduction"><div class="shell" id="app"></div><script src="bootstrap-v33.js?v=dott-v59-difficulty" data-entry="catalog-v59.js"></script></body></html>
+</style></head><body data-kind="deduction"><div class="shell" id="app"></div><script src="bootstrap-v33.js?v=dott-v60-difficulty-mobile" data-entry="catalog-v60.js"></script></body></html>
