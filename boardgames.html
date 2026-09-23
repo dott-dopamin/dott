@@ -1,4 +1,4 @@
-<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>DOTT 보드게임</title><link rel="stylesheet" href="styles-v33.css?v=61"><style>
+<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>DOTT 보드게임</title><link rel="stylesheet" href="styles-v33.css?v=68"><style>
 /* 보유 리스트 설명문 폰트 - 머더미스터리와 동일 */
 .catalog-page .hero p{font-size:14px!important;line-height:1.7!important}
 
@@ -81,5 +81,28 @@
   .catalog-kind-table .catalog-difficulty{padding-left:1px!important;padding-right:1px!important;overflow:visible!important}
   .difficulty-meter{gap:1.5px;max-width:100%}
   .difficulty-box{width:8px;height:8px;border-radius:1.5px;flex:0 0 8px}
+}
+
+/* DOTT v68: mobile filters synced to murder page sizing */
+@media(max-width:700px){
+  .catalog-page .filters{
+    display:grid!important;
+    grid-template-columns:minmax(0,1fr) minmax(0,1fr)!important;
+    gap:7px!important;
+    margin:16px 0!important;
+  }
+  .catalog-page .filters .search-field{
+    grid-column:1/-1!important;
+  }
+  .catalog-page .filters .field{
+    width:100%!important;
+    min-width:0!important;
+    box-sizing:border-box!important;
+    padding:9px 8px!important;
+    min-height:36px!important;
+    border-radius:10px!important;
+    font-size:11px!important;
+    line-height:1.2!important;
+  }
 }
 </style></head><body data-kind="boardgame"><div class="shell" id="app"></div><script src="bootstrap-v33.js?v=dott-v61-playtime-range" data-entry="catalog-v61.js"></script></body></html>
