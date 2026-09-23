@@ -391,14 +391,14 @@ function noticeModal(x={}){
 const ONLINE_MURDER_MARKER='__DOTT_ONLINE_MURDER__';
 
 
-function murderPlaytimeLabel(v){
+function catalogPlaytimeLabel(v){
   const s=String(v??'').trim();
   if(!s)return '-';
   if(/^\d+$/.test(s))return s+'분';
   if(/^\d+\s*분$/.test(s))return s.replace(/\s+/g,'');
   return s;
 }
-function murderPlaytimeInputValue(v){
+function catalogPlaytimeInputValue(v){
   const s=String(v??'').trim();
   const m=s.match(/^\s*(\d+)\s*(?:분)?\s*$/);
   return m?m[1]:(s.match(/\d+/)?.[0]||'');
@@ -417,10 +417,10 @@ function catalogPanel(p,kind){
     if(kind==='murder'){
       const isOnline=x.genre===ONLINE_MURDER_MARKER;
       const onlineBadge=isOnline?'<span class="online-murder-badge">온라인</span>':'';
-      return `<tr><td><b>${esc(x.name)}</b>${onlineBadge}</td><td>${x.min_players||'?'}~${x.max_players||'?'}인</td><td>${esc(murderPlaytimeLabel(x.playtime))}</td><td>${esc(x.difficulty||'-')}</td><td>${esc(x.status||'보유')}</td><td>${esc(x.location||'-')}</td><td>${esc(x.note||'-')}</td><td><div class="actions"><button class="icon-btn" data-edit="${x.id}">✎</button><button class="icon-btn" data-del="${x.id}">♲</button></div></td></tr>`;
+      return `<tr><td><b>${esc(x.name)}</b>${onlineBadge}</td><td>${x.min_players||'?'}~${x.max_players||'?'}인</td><td>${esc(catalogPlaytimeLabel(x.playtime))}</td><td>${esc(x.difficulty||'-')}</td><td>${esc(x.status||'보유')}</td><td>${esc(x.location||'-')}</td><td>${esc(x.note||'-')}</td><td><div class="actions"><button class="icon-btn" data-edit="${x.id}">✎</button><button class="icon-btn" data-del="${x.id}">♲</button></div></td></tr>`;
     }
     const expansionBadge=kind==='boardgame'&&x.is_expansion?'<span class="boardgame-expansion-badge">확장</span>':'';
-    return `<tr><td><b>${esc(x.name)}</b>${expansionBadge}</td><td>${x.min_players||'?'}~${x.max_players||'?'}인</td><td>${esc(x.playtime||'')}</td><td>${esc(x.difficulty||'')}</td><td>${esc(x.genre||'')}</td><td>${esc(x.status||'-')}</td><td>${esc(x.note||'-')}</td><td><div class="actions"><button class="icon-btn" data-edit="${x.id}">✎</button><button class="icon-btn" data-del="${x.id}">♲</button></div></td></tr>`;
+    return `<tr><td><b>${esc(x.name)}</b>${expansionBadge}</td><td>${x.min_players||'?'}~${x.max_players||'?'}인</td><td>${esc(catalogPlaytimeLabel(x.playtime))}</td><td>${esc(x.difficulty||'')}</td><td>${esc(x.genre||'')}</td><td>${esc(x.status||'-')}</td><td>${esc(x.note||'-')}</td><td><div class="actions"><button class="icon-btn" data-edit="${x.id}">✎</button><button class="icon-btn" data-del="${x.id}">♲</button></div></td></tr>`;
   }).join('')||`<tr><td colspan="8">등록된 ${title}이 없습니다.</td></tr>`;
   const murderNoticeEditor=kind==='murder'?`<div class="catalog-admin-desc"><label class="label">머더미스터리 이용수칙 · 공지 팝업</label><p style="font-size:11px;color:var(--muted);line-height:1.55;margin:0 0 9px">공개 머더미스터리 페이지의 공지 버튼을 눌렀을 때 뜨는 별도 팝업입니다. 버튼 이름과 공지 내용을 각각 수정할 수 있습니다.</p><div style="margin-bottom:10px"><label class="label" style="font-size:11px">공지 버튼 이름</label><input id="murderNoticeButtonLabel" class="field" maxlength="30" placeholder="예: 이용수칙 · 공지 보기" value="${esc((data.settings&&data.settings.murder_notice_button_label)||'이용수칙 · 공지 보기')}"></div><div class="catalog-admin-desc-row"><textarea id="murderNotice" class="field" rows="7" placeholder="이용수칙, 플레이 안내, 주의사항 등을 입력하세요.">${esc((data.settings&&data.settings.murder_notice)||'')}</textarea><button class="btn" id="saveMurderNotice">버튼·공지 저장</button></div><div class="error" id="murderNoticeErr"></div></div>`:'';
   p.innerHTML=`<div class="catalog-admin-desc"><label class="label">${title} 리스트 제목 아래 설명 문구</label><div class="catalog-admin-desc-row"><textarea id="catalogDesc" class="field" rows="2">${esc(currentDesc)}</textarea><button class="btn" id="saveCatalogDesc">설명 저장</button></div><div class="error" id="catalogDescErr"></div></div>${murderNoticeEditor}<div class="admin-tools"><div>${rows.length}개 등록됨</div><button class="btn primary" id="add">+ ${title} 추가</button></div><div class="table-wrap"><table class="table"><thead><tr>${head}</tr></thead><tbody>${body}</tbody></table></div>`;
@@ -458,9 +458,7 @@ function catalogModal(x={},kind){
     : kind==='boardgame'
       ? `<div class="full murder-name-row"><div><label class="label">이름</label><input id="f_name" class="field" value="${esc(x.name||'')}"></div><label class="catalog-flag-check murder-online-check-name"><input id="f_boardgame_expansion" type="checkbox" ${boardgameExpansion?'checked':''}> 확장</label></div>`
       : `<div class="full"><label class="label">이름</label><input id="f_name" class="field" value="${esc(x.name||'')}"></div>`;
-  const timeField=kind==='murder'
-    ? `<div><label class="label">플레이시간</label><div style="display:flex;align-items:center;gap:7px"><input id="f_time" class="field" type="text" inputmode="numeric" pattern="[0-9]*" maxlength="4" placeholder="예: 180" value="${esc(murderPlaytimeInputValue(x.playtime))}" oninput="this.value=this.value.replace(/\D/g,'')"><span style="flex:0 0 auto;color:var(--muted);font-size:13px;font-weight:700">분</span></div></div>`
-    : `<div><label class="label">플레이시간</label><input id="f_time" class="field" placeholder="60~90분" value="${esc(x.playtime||'')}"></div>`;
+  const timeField=`<div><label class="label">플레이시간</label><div style="display:flex;align-items:center;gap:7px"><input id="f_time" class="field" type="text" inputmode="numeric" pattern="[0-9]*" maxlength="4" placeholder="예: 180" value="${esc(catalogPlaytimeInputValue(x.playtime))}" oninput="this.value=this.value.replace(/\D/g,'')"><span style="flex:0 0 auto;color:var(--muted);font-size:13px;font-weight:700">분</span></div></div>`;
   const commonTop=`<div class="form-grid">${nameField}<div><label class="label">최소 인원</label><input id="f_min" class="field" type="number" min="1" value="${x.min_players||2}"></div><div><label class="label">최대 인원</label><input id="f_max" class="field" type="number" min="1" value="${x.max_players||4}"></div>${timeField}`;
   let middle='';
   let bottom='';
@@ -472,7 +470,7 @@ function catalogModal(x={},kind){
       ? `<select id="f_genre" class="field"><option value="">선택 안함</option>${boardgameGenres.map(v=>`<option value="${esc(v)}" ${x.genre===v?'selected':''}>${esc(v)}</option>`).join('')}</select>`
       : `<input id="f_genre" class="field" placeholder="장르 입력" value="${esc(x.genre||'')}">`;
     middle=`<div><label class="label">난이도</label><select id="f_diff" class="field"><option value="">선택 안함</option>${['쉬움','보통','어려움'].map(v=>`<option value="${v}" ${x.difficulty===v?'selected':''}>${v}</option>`).join('')}</select></div><div><label class="label">장르</label>${genreField}</div>`;
-    bottom=`<div><label class="label">상태 및 위치</label><select id="f_status" class="field">${['도트','공방','대여중','분실'].map(v=>`<option value="${v}" ${x.status===v?'selected':''}>${v}</option>`).join('')}</select></div><div><label class="label">소유주</label><input id="f_note" class="field" placeholder="소유주 입력" value="${esc(x.note||'')}"></div></div>`;
+    bottom=`<div><label class="label">상태 및 위치</label><select id="f_status" class="field">${['보유','도트','공방','대여중','분실'].map(v=>`<option value="${v}" ${x.status===v?'selected':''}>${v}</option>`).join('')}</select></div><div><label class="label">소유주</label><input id="f_note" class="field" placeholder="소유주 입력" value="${esc(x.note||'')}"></div></div>`;
   }
   showModal(x.id?'항목 수정':'항목 추가',commonTop+middle+bottom,async m=>{
     const row={
@@ -480,7 +478,14 @@ function catalogModal(x={},kind){
       name:m.querySelector('#f_name').value.trim(),
       min_players:+m.querySelector('#f_min').value||null,
       max_players:+m.querySelector('#f_max').value||null,
-      playtime:kind==='murder'?m.querySelector('#f_time').value.replace(/\D/g,'').trim():m.querySelector('#f_time').value.trim(),
+      playtime:(()=>{
+        const raw=m.querySelector('#f_time').value.replace(/\D/g,'').trim();
+        const original=String(x.playtime||'').trim();
+        const simple=/^\d+\s*(?:분)?$/.test(original);
+        const shown=catalogPlaytimeInputValue(original);
+        if(x.id&&!simple&&original&&raw===shown)return original;
+        return raw;
+      })(),
       status:m.querySelector('#f_status').value,
       note:m.querySelector('#f_note').value.trim()
     };
