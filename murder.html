@@ -93,9 +93,28 @@
     document.body.classList.remove('murder-notice-open');
     document.body.style.paddingRight=murderNoticeScrollPad;
   }
-  function openMurderNotice(){
+  async function refreshMurderNotice(){
+    try{
+      const rows=await get('/rest/v1/site_settings?select=murder_notice,murder_notice_button_label&id=eq.main&limit=1&_t='+Date.now(),0);
+      const st=Array.isArray(rows)&&rows[0]?rows[0]:null;
+      if(st){
+        murderNotice=st.murder_notice||'';
+        murderNoticeButtonLabel=(st.murder_notice_button_label||'이용수칙 · 공지 보기').trim()||'이용수칙 · 공지 보기';
+        $('murderNoticeBtn').textContent='📌 '+murderNoticeButtonLabel;
+        syncMurderNotice();
+      }
+    }catch(e){
+      console.warn('최신 머더미스터리 공지를 다시 불러오지 못했습니다.',e);
+    }
+  }
+  async function openMurderNotice(){
     const modal=$('murderNoticeModal');
-    syncMurderNotice();lockMurderNoticeScroll();modal.classList.add('open');modal.setAttribute('aria-hidden','false');
+    const btn=$('murderNoticeBtn');
+    if(btn)btn.disabled=true;
+    await refreshMurderNotice();
+    syncMurderNotice();
+    if(btn)btn.disabled=false;
+    lockMurderNoticeScroll();modal.classList.add('open');modal.setAttribute('aria-hidden','false');
   }
   function closeMurderNotice(){
     const modal=$('murderNoticeModal');modal.classList.remove('open');modal.setAttribute('aria-hidden','true');unlockMurderNoticeScroll();
