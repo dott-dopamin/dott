@@ -401,7 +401,7 @@ function catalogPanel(p,kind){
     : '<th>이름</th><th>인원</th><th>시간</th><th>난이도</th><th>장르</th><th>상태</th><th>관리</th>';
   const body=rows.map(x=>{
     if(kind==='murder'){
-      const isOnline=x.genre===ONLINE_MURDER_MARKER||x.online_murder===true;
+      const isOnline=x.genre===ONLINE_MURDER_MARKER;
       const onlineBadge=isOnline?'<span class="online-murder-badge">온라인머미</span>':'';
       return `<tr><td><b>${esc(x.name)}</b>${onlineBadge}</td><td>${x.min_players||'?'}~${x.max_players||'?'}인</td><td>${esc(x.playtime||'')}</td><td>${esc(x.difficulty||'-')}</td><td>${esc(x.status||'보유')}</td><td>${esc(x.location||'-')}</td><td>${esc(x.note||'-')}</td><td><div class="actions"><button class="icon-btn" data-edit="${x.id}">✎</button><button class="icon-btn" data-del="${x.id}">♲</button></div></td></tr>`;
     }
@@ -425,7 +425,7 @@ function catalogModal(x={},kind){
   const boardgameGenres=['전략','파티/패밀리','협력'];
   const murderDifficulties=['입문','쉬움','중간','어려움','매우어려움'];
   const murderStatuses=['보유','대여중','분실','도트','공방'];
-  const murderOnline=x.genre===ONLINE_MURDER_MARKER||x.online_murder===true;
+  const murderOnline=x.genre===ONLINE_MURDER_MARKER;
   const nameField=kind==='murder'
     ? `<div class="full murder-name-row"><div><label class="label">게임명</label><input id="f_name" class="field" value="${esc(x.name||'')}"></div><label class="murder-online-check murder-online-check-name"><input id="f_online_murder" type="checkbox" ${murderOnline?'checked':''}> 온라인머미</label></div>`
     : `<div class="full"><label class="label">이름</label><input id="f_name" class="field" value="${esc(x.name||'')}"></div>`;
@@ -458,11 +458,9 @@ function catalogModal(x={},kind){
       // 머더미스터리에서는 사용하지 않는 genre 필드에 온라인머미 여부를 저장합니다.
       row.genre=m.querySelector('#f_online_murder')?.checked?ONLINE_MURDER_MARKER:null;
       row.location=m.querySelector('#f_owner').value.trim();
-      row.participation_condition=null;
     }else{
       row.difficulty=m.querySelector('#f_diff').value;
       row.genre=m.querySelector('#f_genre').value.trim();
-      row.participation_condition=null;
     }
     if(!row.name)throw new Error('이름을 입력해 주세요.');
     x.id?await DOTT_DB.update('catalog_items',x.id,row):await DOTT_DB.insert('catalog_items',row);

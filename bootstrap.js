@@ -3,6 +3,7 @@
   const entry=bootScript?.dataset?.entry||'';
   const app=document.getElementById('app');
   const sleep=ms=>new Promise(r=>setTimeout(r,ms));
+  const BUILD='dott-v32';
 
   function loadScript(src,{timeout=9000,retries=2}={}){
     return (async()=>{
@@ -21,7 +22,7 @@
             };
             const timer=setTimeout(()=>finish(false,new Error(`${src} 로드 시간 초과`)),timeout);
             const join=src.includes('?')?'&':'?';
-            s.src=attempt?`${src}${join}retry=${Date.now()}_${attempt}`:src;
+            s.src=`${src}${join}v=${BUILD}${attempt?`&retry=${Date.now()}_${attempt}`:''}`;
             s.async=false;
             s.onload=()=>finish(true);
             s.onerror=()=>finish(false,new Error(`${src} 로드 실패`));

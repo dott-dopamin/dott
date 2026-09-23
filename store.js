@@ -96,7 +96,19 @@ async function restSelect(table,query='',label='데이터',requireAuth=false){
     return (await parseResponse(res))||[];
   });
 }
+function sanitizeWriteRow(table,row){
+  if(row===null||typeof row!=='object')return row;
+  const clean={...row};
+  // DOTT v32: catalog_items의 예전 실험용 컬럼은 절대 API 요청에 싣지 않습니다.
+  // Supabase PostgREST 스키마 캐시가 오래된 프로젝트에서도 저장이 깨지지 않게 하는 안전장치입니다.
+  if(table==='catalog_items'){
+    delete clean.participation_condition;
+    delete clean.online_murder;
+  }
+  return clean;
+}
 async function restWrite(method,table,{id=null,row=null,ids=null,query='',prefer='return=representation'}={}){
+  row=sanitizeWriteRow(table,row);
   let q=query;
   if(id)q+=(q?'&':'')+`id=eq.${enc(id)}`;
   if(ids?.length)q+=(q?'&':'')+`id=in.(${ids.map(enc).join(',')})`;
