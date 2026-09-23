@@ -751,26 +751,23 @@ body.modal-open{overflow:hidden;touch-action:none}
 }
 
 
-/* ===== DOTT v38 PC 일정 클릭 인터랙션 ===== */
+/* ===== DOTT v41 PC 일정 클릭 인터랙션: 심플 hover ===== */
 @media(min-width:701px){
   .calendar-grid > .day .day-event[role="button"]{
     cursor:pointer !important;
     position:relative;
     z-index:1;
-    border:1px solid transparent;
-    transition:transform .16s ease,filter .16s ease,box-shadow .16s ease,border-color .16s ease;
-    will-change:transform;
+    transition:transform .14s ease,filter .14s ease;
+    will-change:transform,filter;
   }
   .calendar-grid > .day .day-event[role="button"]:hover{
-    transform:translateY(-2px) scale(1.015);
-    filter:brightness(.94) saturate(1.08);
-    border-color:rgba(94,72,55,.28);
-    box-shadow:0 7px 16px rgba(58,45,34,.20),0 0 0 2px rgba(255,255,255,.82);
-    z-index:5;
+    transform:translateY(-1px);
+    filter:brightness(.96);
+    z-index:2;
   }
   .calendar-grid > .day .day-event[role="button"]:active{
-    transform:translateY(0) scale(.99);
-    box-shadow:0 2px 6px rgba(58,45,34,.16);
+    transform:translateY(0);
+    filter:brightness(.92);
   }
   .calendar-grid > .day .day-event[role="button"]:focus-visible{
     outline:2px solid rgba(233,93,32,.72);
