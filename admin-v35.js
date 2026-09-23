@@ -391,6 +391,19 @@ function noticeModal(x={}){
 const ONLINE_MURDER_MARKER='__DOTT_ONLINE_MURDER__';
 
 
+function murderPlaytimeLabel(v){
+  const s=String(v??'').trim();
+  if(!s)return '-';
+  if(/^\d+$/.test(s))return s+'분';
+  if(/^\d+\s*분$/.test(s))return s.replace(/\s+/g,'');
+  return s;
+}
+function murderPlaytimeInputValue(v){
+  const s=String(v??'').trim();
+  const m=s.match(/^\s*(\d+)\s*(?:분)?\s*$/);
+  return m?m[1]:(s.match(/\d+/)?.[0]||'');
+}
+
 function catalogPanel(p,kind){
   const title={boardgame:'보드게임',murder:'머더미스터리',deduction:'추리게임'}[kind];
   const descKey={boardgame:'boardgame_description',murder:'murder_description',deduction:'deduction_description'}[kind];
@@ -403,8 +416,8 @@ function catalogPanel(p,kind){
   const body=rows.map(x=>{
     if(kind==='murder'){
       const isOnline=x.genre===ONLINE_MURDER_MARKER;
-      const onlineBadge=isOnline?'<span class="online-murder-badge">온라인머미</span>':'';
-      return `<tr><td><b>${esc(x.name)}</b>${onlineBadge}</td><td>${x.min_players||'?'}~${x.max_players||'?'}인</td><td>${esc(x.playtime||'')}</td><td>${esc(x.difficulty||'-')}</td><td>${esc(x.status||'보유')}</td><td>${esc(x.location||'-')}</td><td>${esc(x.note||'-')}</td><td><div class="actions"><button class="icon-btn" data-edit="${x.id}">✎</button><button class="icon-btn" data-del="${x.id}">♲</button></div></td></tr>`;
+      const onlineBadge=isOnline?'<span class="online-murder-badge">온라인</span>':'';
+      return `<tr><td><b>${esc(x.name)}</b>${onlineBadge}</td><td>${x.min_players||'?'}~${x.max_players||'?'}인</td><td>${esc(murderPlaytimeLabel(x.playtime))}</td><td>${esc(x.difficulty||'-')}</td><td>${esc(x.status||'보유')}</td><td>${esc(x.location||'-')}</td><td>${esc(x.note||'-')}</td><td><div class="actions"><button class="icon-btn" data-edit="${x.id}">✎</button><button class="icon-btn" data-del="${x.id}">♲</button></div></td></tr>`;
     }
     const expansionBadge=kind==='boardgame'&&x.is_expansion?'<span class="boardgame-expansion-badge">확장</span>':'';
     return `<tr><td><b>${esc(x.name)}</b>${expansionBadge}</td><td>${x.min_players||'?'}~${x.max_players||'?'}인</td><td>${esc(x.playtime||'')}</td><td>${esc(x.difficulty||'')}</td><td>${esc(x.genre||'')}</td><td>${esc(x.status||'-')}</td><td>${esc(x.note||'-')}</td><td><div class="actions"><button class="icon-btn" data-edit="${x.id}">✎</button><button class="icon-btn" data-del="${x.id}">♲</button></div></td></tr>`;
@@ -441,11 +454,14 @@ function catalogModal(x={},kind){
   const murderOnline=x.genre===ONLINE_MURDER_MARKER;
   const boardgameExpansion=!!x.is_expansion;
   const nameField=kind==='murder'
-    ? `<div class="full murder-name-row"><div><label class="label">게임명</label><input id="f_name" class="field" value="${esc(x.name||'')}"></div><label class="murder-online-check murder-online-check-name"><input id="f_online_murder" type="checkbox" ${murderOnline?'checked':''}> 온라인머미</label></div>`
+    ? `<div class="full murder-name-row"><div><label class="label">게임명</label><input id="f_name" class="field" value="${esc(x.name||'')}"></div><label class="murder-online-check murder-online-check-name"><input id="f_online_murder" type="checkbox" ${murderOnline?'checked':''}> 온라인</label></div>`
     : kind==='boardgame'
       ? `<div class="full murder-name-row"><div><label class="label">이름</label><input id="f_name" class="field" value="${esc(x.name||'')}"></div><label class="catalog-flag-check murder-online-check-name"><input id="f_boardgame_expansion" type="checkbox" ${boardgameExpansion?'checked':''}> 확장</label></div>`
       : `<div class="full"><label class="label">이름</label><input id="f_name" class="field" value="${esc(x.name||'')}"></div>`;
-  const commonTop=`<div class="form-grid">${nameField}<div><label class="label">최소 인원</label><input id="f_min" class="field" type="number" min="1" value="${x.min_players||2}"></div><div><label class="label">최대 인원</label><input id="f_max" class="field" type="number" min="1" value="${x.max_players||4}"></div><div><label class="label">플레이시간</label><input id="f_time" class="field" placeholder="60~90분" value="${esc(x.playtime||'')}"></div>`;
+  const timeField=kind==='murder'
+    ? `<div><label class="label">플레이시간</label><div style="display:flex;align-items:center;gap:7px"><input id="f_time" class="field" type="text" inputmode="numeric" pattern="[0-9]*" maxlength="4" placeholder="예: 180" value="${esc(murderPlaytimeInputValue(x.playtime))}" oninput="this.value=this.value.replace(/\D/g,'')"><span style="flex:0 0 auto;color:var(--muted);font-size:13px;font-weight:700">분</span></div></div>`
+    : `<div><label class="label">플레이시간</label><input id="f_time" class="field" placeholder="60~90분" value="${esc(x.playtime||'')}"></div>`;
+  const commonTop=`<div class="form-grid">${nameField}<div><label class="label">최소 인원</label><input id="f_min" class="field" type="number" min="1" value="${x.min_players||2}"></div><div><label class="label">최대 인원</label><input id="f_max" class="field" type="number" min="1" value="${x.max_players||4}"></div>${timeField}`;
   let middle='';
   let bottom='';
   if(kind==='murder'){
@@ -464,7 +480,7 @@ function catalogModal(x={},kind){
       name:m.querySelector('#f_name').value.trim(),
       min_players:+m.querySelector('#f_min').value||null,
       max_players:+m.querySelector('#f_max').value||null,
-      playtime:m.querySelector('#f_time').value.trim(),
+      playtime:kind==='murder'?m.querySelector('#f_time').value.replace(/\D/g,'').trim():m.querySelector('#f_time').value.trim(),
       status:m.querySelector('#f_status').value,
       note:m.querySelector('#f_note').value.trim()
     };
