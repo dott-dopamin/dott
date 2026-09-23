@@ -3,7 +3,7 @@
   const entry=bootScript?.dataset?.entry||'admin-v35.js';
   const app=document.getElementById('app');
   const sleep=ms=>new Promise(r=>setTimeout(r,ms));
-  const BUILD='dott-v54-admin-selfcontained';
+  const BUILD='dott-v59-admin-difficulty';
 
   function loadScript(src,{timeout=9000,retries=2}={}){
     return (async()=>{

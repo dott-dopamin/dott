@@ -66,4 +66,13 @@
   .catalog-kind-table.deduction-table th:nth-child(7),.catalog-kind-table.deduction-table td:nth-child(7){width:15%!important}
 }
 
-</style></head><body data-kind="deduction"><div class="shell" id="app"></div><script src="bootstrap-v33.js?v=dott-v57-catalog" data-entry="catalog-v54.js"></script></body></html>
+
+/* DOTT v59: 보드게임/추리게임 난이도 5칸 게이지 */
+.catalog-kind-table .catalog-difficulty{text-align:center!important;white-space:nowrap!important}
+.difficulty-meter{display:inline-flex;align-items:center;gap:3px;vertical-align:middle;white-space:nowrap}
+.difficulty-box{display:inline-block;width:11px;height:11px;box-sizing:border-box;border:1px solid #dccdc0;border-radius:2px;background:linear-gradient(90deg,#e46f3a 0 var(--fill),#fffaf6 var(--fill) 100%)}
+@media(max-width:700px){
+  .difficulty-meter{gap:1.5px}
+  .difficulty-box{width:7px;height:7px;border-radius:1.5px}
+}
+</style></head><body data-kind="deduction"><div class="shell" id="app"></div><script src="bootstrap-v33.js?v=dott-v59-difficulty" data-entry="catalog-v59.js"></script></body></html>

@@ -404,6 +404,25 @@ function catalogPlaytimeInputValue(v){
   return m?m[1]:(s.match(/\d+/)?.[0]||'');
 }
 
+function catalogDifficultyInputValue(v){
+  const s=String(v??'').trim();
+  if(!s)return '';
+  const n=Number(s);
+  return Number.isFinite(n)&&n>=1&&n<=5?String(Math.round(n*100)/100):'';
+}
+function catalogDifficultyMeterHtml(v){
+  const raw=String(v??'').trim();
+  const score=parseFloat(raw);
+  if(!Number.isFinite(score)||score<1||score>5)return esc(raw||'-');
+  const safe=Math.max(1,Math.min(5,score));
+  const boxes=Array.from({length:5},(_,i)=>{
+    const fill=Math.max(0,Math.min(100,(safe-i)*100));
+    return `<span style="display:inline-block;width:10px;height:10px;border:1px solid #d8c9bc;border-radius:2px;margin-right:2px;background:linear-gradient(90deg,#e46f3a 0 var(--fill),#fff 0 100%);--fill:${fill}%"></span>`;
+  }).join('');
+  const label=(Math.round(safe*100)/100).toString();
+  return `<span title="난이도 ${esc(label)} / 5" style="display:inline-flex;align-items:center;white-space:nowrap">${boxes}</span>`;
+}
+
 function catalogPanel(p,kind){
   const title={boardgame:'보드게임',murder:'머더미스터리',deduction:'추리게임'}[kind];
   const descKey={boardgame:'boardgame_description',murder:'murder_description',deduction:'deduction_description'}[kind];
@@ -420,7 +439,7 @@ function catalogPanel(p,kind){
       return `<tr><td><b>${esc(x.name)}</b>${onlineBadge}</td><td>${x.min_players||'?'}~${x.max_players||'?'}인</td><td>${esc(catalogPlaytimeLabel(x.playtime))}</td><td>${esc(x.difficulty||'-')}</td><td>${esc(x.status||'보유')}</td><td>${esc(x.location||'-')}</td><td>${esc(x.note||'-')}</td><td><div class="actions"><button class="icon-btn" data-edit="${x.id}">✎</button><button class="icon-btn" data-del="${x.id}">♲</button></div></td></tr>`;
     }
     const expansionBadge=kind==='boardgame'&&x.is_expansion?'<span class="boardgame-expansion-badge">확장</span>':'';
-    return `<tr><td><b>${esc(x.name)}</b>${expansionBadge}</td><td>${x.min_players||'?'}~${x.max_players||'?'}인</td><td>${esc(catalogPlaytimeLabel(x.playtime))}</td><td>${esc(x.difficulty||'')}</td><td>${esc(x.genre||'')}</td><td>${esc(x.status||'-')}</td><td>${esc(x.note||'-')}</td><td><div class="actions"><button class="icon-btn" data-edit="${x.id}">✎</button><button class="icon-btn" data-del="${x.id}">♲</button></div></td></tr>`;
+    return `<tr><td><b>${esc(x.name)}</b>${expansionBadge}</td><td>${x.min_players||'?'}~${x.max_players||'?'}인</td><td>${esc(catalogPlaytimeLabel(x.playtime))}</td><td>${catalogDifficultyMeterHtml(x.difficulty)}</td><td>${esc(x.genre||'')}</td><td>${esc(x.status||'-')}</td><td>${esc(x.note||'-')}</td><td><div class="actions"><button class="icon-btn" data-edit="${x.id}">✎</button><button class="icon-btn" data-del="${x.id}">♲</button></div></td></tr>`;
   }).join('')||`<tr><td colspan="8">등록된 ${title}이 없습니다.</td></tr>`;
   const murderNoticeEditor=kind==='murder'?`<div class="catalog-admin-desc"><label class="label">머더미스터리 이용수칙 · 공지 팝업</label><p style="font-size:11px;color:var(--muted);line-height:1.55;margin:0 0 9px">공개 머더미스터리 페이지의 공지 버튼을 눌렀을 때 뜨는 별도 팝업입니다. 버튼 이름과 공지 내용을 각각 수정할 수 있습니다.</p><div style="margin-bottom:10px"><label class="label" style="font-size:11px">공지 버튼 이름</label><input id="murderNoticeButtonLabel" class="field" maxlength="30" placeholder="예: 이용수칙 · 공지 보기" value="${esc((data.settings&&data.settings.murder_notice_button_label)||'이용수칙 · 공지 보기')}"></div><div class="catalog-admin-desc-row"><textarea id="murderNotice" class="field" rows="7" placeholder="이용수칙, 플레이 안내, 주의사항 등을 입력하세요.">${esc((data.settings&&data.settings.murder_notice)||'')}</textarea><button class="btn" id="saveMurderNotice">버튼·공지 저장</button></div><div class="error" id="murderNoticeErr"></div></div>`:'';
   p.innerHTML=`<div class="catalog-admin-desc"><label class="label">${title} 리스트 제목 아래 설명 문구</label><div class="catalog-admin-desc-row"><textarea id="catalogDesc" class="field" rows="2">${esc(currentDesc)}</textarea><button class="btn" id="saveCatalogDesc">설명 저장</button></div><div class="error" id="catalogDescErr"></div></div>${murderNoticeEditor}<div class="admin-tools"><div>${rows.length}개 등록됨</div><button class="btn primary" id="add">+ ${title} 추가</button></div><div class="table-wrap"><table class="table"><thead><tr>${head}</tr></thead><tbody>${body}</tbody></table></div>`;
@@ -469,7 +488,7 @@ function catalogModal(x={},kind){
     const genreField=kind==='boardgame'
       ? `<select id="f_genre" class="field"><option value="">선택 안함</option>${boardgameGenres.map(v=>`<option value="${esc(v)}" ${x.genre===v?'selected':''}>${esc(v)}</option>`).join('')}</select>`
       : `<input id="f_genre" class="field" placeholder="장르 입력" value="${esc(x.genre||'')}">`;
-    middle=`<div><label class="label">난이도</label><select id="f_diff" class="field"><option value="">선택 안함</option>${['쉬움','보통','어려움'].map(v=>`<option value="${v}" ${x.difficulty===v?'selected':''}>${v}</option>`).join('')}</select></div><div><label class="label">장르</label>${genreField}</div>`;
+    middle=`<div><label class="label">난이도</label><input id="f_diff" class="field" type="number" min="1" max="5" step="0.01" inputmode="decimal" placeholder="예: 1.78" value="${esc(catalogDifficultyInputValue(x.difficulty))}"><div style="margin-top:5px;font-size:11px;color:var(--muted)">1~5 사이 소수점 입력 · 예: 1.78</div></div><div><label class="label">장르</label>${genreField}</div>`;
     bottom=`<div><label class="label">상태 및 위치</label><select id="f_status" class="field">${['보유','도트','공방','대여중','분실'].map(v=>`<option value="${v}" ${x.status===v?'selected':''}>${v}</option>`).join('')}</select></div><div><label class="label">소유주</label><input id="f_note" class="field" placeholder="소유주 입력" value="${esc(x.note||'')}"></div></div>`;
   }
   showModal(x.id?'항목 수정':'항목 추가',commonTop+middle+bottom,async m=>{
@@ -496,7 +515,16 @@ function catalogModal(x={},kind){
       row.genre=m.querySelector('#f_online_murder')?.checked?ONLINE_MURDER_MARKER:null;
       row.location=m.querySelector('#f_owner').value.trim();
     }else{
-      row.difficulty=m.querySelector('#f_diff').value;
+      const diffInput=m.querySelector('#f_diff').value.trim();
+      const originalDifficulty=String(x.difficulty||'').trim();
+      const originalNumeric=originalDifficulty!==''&&Number.isFinite(Number(originalDifficulty))&&Number(originalDifficulty)>=1&&Number(originalDifficulty)<=5;
+      if(diffInput){
+        const score=Number(diffInput);
+        if(!Number.isFinite(score)||score<1||score>5)throw new Error('난이도는 1~5 사이 숫자로 입력해 주세요. 예: 1.78');
+        row.difficulty=String(Math.round(score*100)/100);
+      }else{
+        row.difficulty=(x.id&&!originalNumeric&&originalDifficulty)?originalDifficulty:'';
+      }
       row.genre=m.querySelector('#f_genre').value.trim();
       if(kind==='boardgame')row.is_expansion=!!m.querySelector('#f_boardgame_expansion')?.checked;
     }
