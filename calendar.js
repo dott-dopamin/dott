@@ -1,6 +1,7 @@
 const app=document.getElementById('app');
 let cursor=new Date();cursor.setDate(1);
 let schedules=[],notices=[],siteSettings=null;
+let calendarDetailScrollPad='';
 const DEFAULT_HERO={hero_badge:'◎ 전체 공개 일정',hero_title:'우리의 모든 일정을\n한눈에 확인하세요',hero_description:'월별 캘린더에서 예약 일정을 확인하고, 보드게임·머더미스터리·추리게임 보유 목록도 함께 살펴볼 수 있습니다.'};
 
 function monthEvents(){
@@ -78,9 +79,16 @@ function openCalendarDetail(e){
       ${e.note?`<div class="calendar-detail-note"><span>메모</span><p>${nl2br(e.note)}</p></div>`:''}
     </div>
   </div>`;
-  const close=()=>{back.classList.remove('open');document.body.classList.remove('calendar-detail-open')};
-  back.classList.add('open');
+  const close=()=>{
+    back.classList.remove('open');
+    document.body.classList.remove('calendar-detail-open');
+    document.body.style.paddingRight=calendarDetailScrollPad;
+  };
+  const scrollbarWidth=window.innerWidth-document.documentElement.clientWidth;
+  calendarDetailScrollPad=document.body.style.paddingRight;
+  if(scrollbarWidth>0)document.body.style.paddingRight=scrollbarWidth+'px';
   document.body.classList.add('calendar-detail-open');
+  back.classList.add('open');
   back.querySelector('.calendar-detail-close').onclick=close;
   back.onclick=ev=>{if(ev.target===back)close()};
 }
