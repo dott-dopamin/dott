@@ -7,26 +7,108 @@
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
 <title>DOTT 머더미스터리</title>
-<!-- DOTT murder v67: topbar typography synced to boardgame PC baseline; layout stability retained -->
+<!-- v71: public UI baseline shared with boardgame/deduction; no duplicated topbar/hero CSS -->
+<link rel="stylesheet" href="styles-v33.css?v=dott-v71-murder-shared-ui">
+<!-- DOTT murder v71: shared public UI baseline + murder-only overrides -->
 <style>
-:root{--bg:#f8f4ec;--paper:#fffdf9;--ink:#2f2a25;--muted:#8d8176;--line:#eadfce;--accent:#e95d20;--accent-soft:#ffe8dc;--green:#43875a;--green-soft:#edf7ef;--red:#a04d4d;--red-soft:#f7eded;--purple:#6d55a0;--purple-soft:#eee7fb}
-*{box-sizing:border-box}html{overflow-y:scroll;scrollbar-gutter:stable}html,body{margin:0;background:var(--bg);color:var(--ink);font-family:Pretendard,"Noto Sans KR",system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}a{color:inherit;text-decoration:none}button,input,select{font:inherit}
-.shell{max-width:1180px;min-height:calc(100vh - 44px);margin:22px auto;background:var(--paper);border:1px solid var(--line);border-radius:22px;overflow:hidden}
-.topbar{height:72px;padding:0 28px;display:flex;align-items:center;gap:24px;border-bottom:1px solid var(--line);background:#fffefa}.brand{display:flex;align-items:center;gap:12px;min-width:220px}.brand-mark{width:38px;height:38px;border-radius:10px;background:var(--accent);color:#fff;display:grid;place-items:center;font-weight:900}.brand strong{display:block;font-size:15px}.brand small{display:block;color:var(--muted);margin-top:2px}.nav{display:flex;justify-content:center;gap:5px;flex:1}.nav a{padding:10px 12px;border-radius:10px;font-size:14px;color:#5d554d;white-space:nowrap}.nav a.active{background:var(--accent-soft);color:#8d3714;font-weight:700}.admin-link{border:1px solid var(--line);border-radius:10px;background:#fff;padding:9px 11px;font-size:13px;white-space:nowrap}
-.page{padding:46px 30px 60px}.hero{padding:10px 0 22px;border-bottom:1px solid var(--line)}.eyebrow{display:inline-flex;background:var(--accent-soft);color:#a14118;border-radius:999px;padding:6px 10px;font-size:12px;font-weight:700}.hero h1{margin:18px 0 14px;font-size:42px;line-height:1.18;font-weight:500;letter-spacing:-1.6px}.hero p{margin:0;color:var(--muted);font-size:14px;line-height:1.7;white-space:pre-wrap;min-height:48px}.hero-actions{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-top:18px;min-height:38px}.stat-row{margin:0}.stat-pill{display:inline-flex;align-items:center;border:1px solid var(--line);border-radius:999px;background:#fff;padding:7px 10px;font-size:12px}.stat-pill b{margin-left:4px;color:var(--accent)}
-.section{margin-top:20px}#content{min-height:120px}.filters{display:grid;grid-template-columns:minmax(180px,1.4fr) minmax(120px,.7fr) minmax(140px,.7fr);gap:10px;margin-bottom:16px}.field{width:100%;padding:11px 12px;border:1px solid var(--line);border-radius:10px;background:#fff;color:var(--ink);outline:none}.field:focus{border-color:#dca37e;box-shadow:0 0 0 3px #fde9db}.catalog-meta{margin:0 0 14px;font-size:13px}.catalog-table-wrap{overflow:hidden;border:1px solid var(--line);border-radius:14px;background:#fff}.catalog-table{width:100%;border-collapse:collapse;table-layout:fixed}.catalog-table th,.catalog-table td{padding:12px 12px;border-bottom:1px solid var(--line);font-size:12px;vertical-align:middle;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.catalog-table th{background:#fbf7f0;color:#756a60;font-size:11px;font-weight:600;text-align:center}.catalog-table tbody tr:last-child td{border-bottom:0}.catalog-table tbody tr:hover{background:#fffaf4}.catalog-table td:nth-child(1),.catalog-table td:nth-child(7){text-align:left}.catalog-table td:nth-child(n+2):nth-child(-n+6){text-align:center}.catalog-table th:nth-child(1),.catalog-table td:nth-child(1){width:29%}.catalog-table th:nth-child(2),.catalog-table td:nth-child(2){width:8%}.catalog-table th:nth-child(3),.catalog-table td:nth-child(3){width:10%}.catalog-table th:nth-child(4),.catalog-table td:nth-child(4){width:11%}.catalog-table th:nth-child(5),.catalog-table td:nth-child(5){width:14%}.catalog-table th:nth-child(6),.catalog-table td:nth-child(6){width:13%}.catalog-table th:nth-child(7),.catalog-table td:nth-child(7){width:15%}.catalog-name{font-weight:600}.catalog-name-inner{display:flex;align-items:flex-start;gap:7px;min-width:0;width:100%;max-width:100%}.catalog-name-text{display:-webkit-box;flex:0 1 auto;min-width:0;max-width:calc(100% - 48px);overflow:hidden;-webkit-box-orient:vertical;-webkit-line-clamp:2;white-space:normal;line-height:1.3;overflow-wrap:anywhere}.catalog-owner,.catalog-note{color:var(--muted)!important;font-weight:400!important}.note-mobile{display:none}.status{display:inline-flex;padding:4px 7px;border-radius:999px;background:#e8f5eb;color:#2f7a45;font-size:10.5px;font-weight:700}.status.owned{background:#e8f5eb;color:#2f7a45}.status.rented{background:#fff1dd;color:#b76513}.status.lost{background:#fde7e7;color:#b63b3b}.status.dott{background:#e8f1ff;color:#3567a8}.status.workshop{background:#f1e9fb;color:#7350a5}.online-badge{display:inline-flex;flex:0 0 auto;padding:3px 6px;border-radius:999px;background:var(--purple-soft);color:var(--purple);font-size:9px;font-weight:700;vertical-align:middle}.loading,.empty{padding:40px;text-align:center;color:var(--muted)}.warn{margin-bottom:14px;padding:10px 12px;border:1px solid #ead7c4;border-radius:12px;background:#fff8ef;color:#765c43;font-size:12px;line-height:1.5}.retry{margin-left:8px;border:1px solid #ddc6b0;background:#fff;border-radius:8px;padding:5px 8px;color:#765c43;cursor:pointer}.footer{padding:22px 28px;border-top:1px solid var(--line);background:#fbf3e6;color:#9a9086;font-size:11px;display:flex;justify-content:space-between}
+/*
+  v71 구조 정리 원칙
+  - shell/topbar/brand/nav/admin-link/page/hero/eyebrow/footer/기본 field 등 공통 UI는 styles-v33.css를 그대로 사용한다.
+  - 이 파일에서는 머더미스터리 전용 기능과 표/공지 팝업만 정의한다.
+  - 상단 공통 UI를 이 파일에서 다시 정의하지 않아 다른 공개 페이지와 크기가 어긋나는 일을 막는다.
+*/
+html{overflow-y:scroll;scrollbar-gutter:stable}
+.murder-page .hero p{white-space:pre-wrap;font-size:14px;line-height:1.7;min-height:48px}
+.murder-page .hero-actions{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-top:18px;min-height:38px}
+.murder-page .hero-actions .stat-row{margin-top:0}
+.murder-page .section{margin-top:20px}
+#content{min-height:120px}
 
-.notice-action-row{display:flex;align-items:center;gap:10px;margin:0}.notice-open-btn{border:1px solid #e8a27f;border-radius:10px;background:var(--accent-soft);padding:10px 14px;color:#9a3f18;font-size:12px;font-weight:800;cursor:pointer;box-shadow:0 2px 7px rgba(233,93,32,.10);transition:background .16s ease,border-color .16s ease,box-shadow .16s ease,transform .16s ease}.notice-open-btn:hover{background:#ffdccc;border-color:#df8458;box-shadow:0 5px 13px rgba(233,93,32,.16);transform:translateY(-1px)}.notice-open-btn:focus-visible{outline:3px solid rgba(233,93,32,.20);outline-offset:2px}.murder-notice-backdrop{position:fixed;inset:0;z-index:400;display:none;align-items:center;justify-content:center;padding:18px;background:rgba(35,29,24,.46)}.murder-notice-backdrop.open{display:flex}.murder-notice-modal{width:min(560px,100%);max-height:calc(100dvh - 36px);overflow:auto;border:1px solid var(--line);border-radius:18px;background:#fffefa;box-shadow:0 24px 70px rgba(0,0,0,.22)}.murder-notice-head{display:flex;justify-content:space-between;align-items:center;gap:14px;padding:18px 20px;border-bottom:1px solid var(--line)}.murder-notice-head h3{margin:0;font-size:19px}.murder-notice-close{width:34px;height:34px;border:1px solid var(--line);border-radius:10px;background:#fff;color:#5d544d;cursor:pointer}.murder-notice-content{padding:20px;font-size:13px;line-height:1.8;white-space:pre-wrap;overflow-wrap:anywhere;color:#3b342e}.murder-notice-empty{color:var(--muted)}body.murder-notice-open{overflow:hidden}
-/* DOTT v66: PC typography synced to boardgame list baseline */
-@media(min-width:701px){
-  .hero h1{font-size:42px!important;line-height:1.18!important;font-weight:500!important;letter-spacing:-1.6px!important}
-  .hero p{font-size:14px!important;line-height:1.7!important}
-  .catalog-table th,.catalog-table td{font-size:12px!important}
-  .catalog-table th{font-size:11px!important}
-  .eyebrow{font-size:12px!important;background:var(--accent-soft)!important;color:#a14118!important}
+/* 필터: 공통 field 디자인을 사용하고 배치만 머더용 3개로 고정 */
+.murder-page .filters.filters-compact{display:grid;grid-template-columns:minmax(180px,1.4fr) minmax(120px,.7fr) minmax(140px,.7fr);gap:10px;margin:20px 0 16px}
+.murder-page .catalog-meta{margin:0 0 14px;font-size:13px}
+
+/* 머더 리스트 전용 표 */
+.murder-page .catalog-table-wrap{overflow:hidden}
+.murder-page .catalog-table{width:100%;min-width:0;border-collapse:collapse;table-layout:fixed}
+.murder-page .catalog-table th,.murder-page .catalog-table td{padding:12px;border-bottom:1px solid var(--line);font-size:12px;vertical-align:middle;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.murder-page .catalog-table th{background:#fbf7f0;color:#756a60;font-size:11px;font-weight:600;text-align:center}
+.murder-page .catalog-table tbody tr:last-child td{border-bottom:0}
+.murder-page .catalog-table tbody tr:hover{background:#fffaf4}
+.murder-page .catalog-table td:nth-child(1),.murder-page .catalog-table td:nth-child(7){text-align:left}
+.murder-page .catalog-table td:nth-child(n+2):nth-child(-n+6){text-align:center}
+.murder-page .catalog-table th:nth-child(1),.murder-page .catalog-table td:nth-child(1){width:29%}
+.murder-page .catalog-table th:nth-child(2),.murder-page .catalog-table td:nth-child(2){width:8%}
+.murder-page .catalog-table th:nth-child(3),.murder-page .catalog-table td:nth-child(3){width:10%}
+.murder-page .catalog-table th:nth-child(4),.murder-page .catalog-table td:nth-child(4){width:11%}
+.murder-page .catalog-table th:nth-child(5),.murder-page .catalog-table td:nth-child(5){width:14%}
+.murder-page .catalog-table th:nth-child(6),.murder-page .catalog-table td:nth-child(6){width:13%}
+.murder-page .catalog-table th:nth-child(7),.murder-page .catalog-table td:nth-child(7){width:15%}
+.murder-page .catalog-name{font-weight:600}
+.murder-page .catalog-name-inner{display:flex;align-items:flex-start;gap:7px;min-width:0;width:100%;max-width:100%}
+.murder-page .catalog-name-text{display:-webkit-box;flex:0 1 auto;min-width:0;max-width:calc(100% - 48px);overflow:hidden;-webkit-box-orient:vertical;-webkit-line-clamp:2;white-space:normal;line-height:1.3;overflow-wrap:anywhere}
+.murder-page .catalog-owner,.murder-page .catalog-note{color:var(--muted)!important;font-weight:400!important}
+.note-mobile{display:none}
+.murder-page .status{display:inline-flex;padding:4px 7px;border-radius:999px;font-size:10.5px;font-weight:700}
+.murder-page .status.owned{background:#e8f5eb;color:#2f7a45}
+.murder-page .status.rented{background:#fff1dd;color:#b76513}
+.murder-page .status.lost{background:#fde7e7;color:#b63b3b}
+.murder-page .status.dott{background:#e8f1ff;color:#3567a8}
+.murder-page .status.workshop{background:#f1e9fb;color:#7350a5}
+.online-badge{display:inline-flex;flex:0 0 auto;padding:3px 6px;border-radius:999px;background:#eee7fb;color:#6d55a0;font-size:9px;font-weight:700;vertical-align:middle}
+.warn{margin-bottom:14px;padding:10px 12px;border:1px solid #ead7c4;border-radius:12px;background:#fff8ef;color:#765c43;font-size:12px;line-height:1.5}
+.retry{margin-left:8px;border:1px solid #ddc6b0;background:#fff;border-radius:8px;padding:5px 8px;color:#765c43;cursor:pointer}
+
+/* 머더 공지 버튼/팝업 전용 */
+.notice-action-row{display:flex;align-items:center;gap:10px;margin:0}
+.notice-open-btn{border:1px solid #e8a27f;border-radius:10px;background:var(--accent-soft);padding:10px 14px;color:#9a3f18;font-size:12px;font-weight:800;cursor:pointer;box-shadow:0 2px 7px rgba(233,93,32,.10);transition:background .16s ease,border-color .16s ease,box-shadow .16s ease,transform .16s ease;min-width:156px;text-align:center;white-space:nowrap}
+.notice-open-btn.is-loading{visibility:hidden}
+.notice-open-btn:hover{background:#ffdccc;border-color:#df8458;box-shadow:0 5px 13px rgba(233,93,32,.16);transform:translateY(-1px)}
+.notice-open-btn:focus-visible{outline:3px solid rgba(233,93,32,.20);outline-offset:2px}
+.murder-notice-backdrop{position:fixed;inset:0;z-index:400;display:none;align-items:center;justify-content:center;padding:18px;background:rgba(35,29,24,.46)}
+.murder-notice-backdrop.open{display:flex}
+.murder-notice-modal{width:min(560px,100%);max-height:calc(100dvh - 36px);overflow:auto;border:1px solid var(--line);border-radius:18px;background:#fffefa;box-shadow:0 24px 70px rgba(0,0,0,.22)}
+.murder-notice-head{display:flex;justify-content:space-between;align-items:center;gap:14px;padding:18px 20px;border-bottom:1px solid var(--line)}
+.murder-notice-head h3{margin:0;font-size:19px}
+.murder-notice-close{width:34px;height:34px;border:1px solid var(--line);border-radius:10px;background:#fff;color:#5d544d;cursor:pointer}
+.murder-notice-content{padding:20px;font-size:13px;line-height:1.8;white-space:pre-wrap;overflow-wrap:anywhere;color:#3b342e}
+.murder-notice-empty{color:var(--muted)}
+body.murder-notice-open{overflow:hidden}
+
+@media(max-width:700px){
+  /* 상단/메뉴/페이지/제목은 공통 CSS에 맡기고 머더 고유 영역만 조정 */
+  .murder-page .hero p{min-height:72px}
+  .murder-page .hero-actions{gap:8px;margin-top:16px;min-height:36px}
+  .notice-open-btn{padding:9px 11px;font-size:11px}
+  .murder-page .section{margin-top:16px}
+  .murder-page .filters.filters-compact{grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:7px;margin:16px 0}
+  .murder-page .filters .search-field{grid-column:1/-1}
+  .murder-page .filters .field{padding:9px 8px;min-height:36px;font-size:11px;line-height:1.2}
+
+  .murder-page .catalog-table-wrap{overflow:hidden}
+  .murder-page .catalog-table{min-width:0!important;width:100%!important;table-layout:fixed}
+  .murder-page .catalog-table th,.murder-page .catalog-table td{padding:7px 1px;font-size:7.2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .murder-page .catalog-table th{font-size:6.7px;letter-spacing:-.38px;text-align:center!important}
+  .murder-page .catalog-table th:nth-child(1),.murder-page .catalog-table td:nth-child(1){width:36%;padding-left:3px}
+  .murder-page .catalog-table th:nth-child(2),.murder-page .catalog-table td:nth-child(2){width:7%}
+  .murder-page .catalog-table th:nth-child(3),.murder-page .catalog-table td:nth-child(3){width:7%}
+  .murder-page .catalog-table th:nth-child(4),.murder-page .catalog-table td:nth-child(4){width:10%;overflow:visible;text-overflow:clip}
+  .murder-page .catalog-table th:nth-child(5),.murder-page .catalog-table td:nth-child(5){width:10%}
+  .murder-page .catalog-table th:nth-child(6),.murder-page .catalog-table td:nth-child(6){width:12%;overflow:visible;text-overflow:clip}
+  .murder-page .catalog-table th:nth-child(7),.murder-page .catalog-table td:nth-child(7){width:18%;padding-right:3px;padding-left:2px}
+  .murder-page .catalog-table td:nth-child(1),.murder-page .catalog-table td:nth-child(7){text-align:left}
+  .murder-page .catalog-table td:nth-child(n+2):nth-child(-n+6){text-align:center}
+  .murder-page .catalog-table td.catalog-name{overflow:hidden;text-overflow:clip;line-height:1.18;padding-top:7px;padding-bottom:7px}
+  .murder-page .catalog-name-inner{gap:2px;align-items:flex-start;width:100%;max-width:100%}
+  .murder-page .catalog-name-text{display:-webkit-box;flex:0 1 auto;min-width:0;max-width:calc(100% - 22px);font-size:7.2px;letter-spacing:-.28px;line-height:1.22;white-space:normal;overflow:hidden;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow-wrap:anywhere}
+  .online-badge{padding:2px 2px;font-size:5.6px;white-space:nowrap;margin-top:0}
+  .murder-page .catalog-table td:nth-child(4),.murder-page .catalog-table td:nth-child(6){font-size:7px;letter-spacing:-.28px}
+  .murder-page .catalog-note{font-size:6.6px!important;letter-spacing:-.3px}
+  .note-desktop{display:none}.note-mobile{display:block;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
+  .murder-page .status{padding:2px 3px;font-size:6.6px}
 }
-@media(max-width:700px){.shell{margin:0;border-radius:0;border-left:0;border-right:0;min-height:100vh}.topbar{padding:10px 12px 8px;gap:8px 10px;flex-wrap:wrap}.brand{order:1;flex:1 1 auto;min-width:0;gap:9px}.brand-mark{width:34px;height:34px;flex:0 0 34px}.brand strong{font-size:14px}.brand small{font-size:10px}.admin-link{order:2;margin-left:auto;padding:8px 9px;font-size:11px}.nav{order:3;flex:0 0 100%;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:4px;width:100%}.nav a{padding:8px 2px;text-align:center;font-size:10.5px;overflow:hidden}.page{padding:30px 8px 44px}.hero{padding-left:5px;padding-right:5px;padding-bottom:18px}.hero h1{font-size:30px}.hero p{min-height:72px}.hero-actions{gap:8px;margin-top:16px;min-height:36px}.notice-open-btn{padding:9px 11px;font-size:11px}.section{margin-top:16px}.filters{grid-template-columns:1fr 1fr;gap:7px}.filters .search{grid-column:1/-1}.field{padding:9px 8px;font-size:11px}.catalog-table-wrap{overflow:hidden}.catalog-table{min-width:0;width:100%;table-layout:fixed}.catalog-table th,.catalog-table td{padding:7px 1px;font-size:7.2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.catalog-table th{font-size:6.7px;letter-spacing:-.38px;text-align:center!important}.catalog-table th:nth-child(1),.catalog-table td:nth-child(1){width:36%;padding-left:3px}.catalog-table th:nth-child(2),.catalog-table td:nth-child(2){width:7%}.catalog-table th:nth-child(3),.catalog-table td:nth-child(3){width:7%}.catalog-table th:nth-child(4),.catalog-table td:nth-child(4){width:10%;overflow:visible;text-overflow:clip}.catalog-table th:nth-child(5),.catalog-table td:nth-child(5){width:10%}.catalog-table th:nth-child(6),.catalog-table td:nth-child(6){width:12%;overflow:visible;text-overflow:clip}.catalog-table th:nth-child(7),.catalog-table td:nth-child(7){width:18%;padding-right:3px;padding-left:2px}.catalog-table td:nth-child(1),.catalog-table td:nth-child(7){text-align:left}.catalog-table td:nth-child(n+2):nth-child(-n+6){text-align:center}.catalog-table td.catalog-name{overflow:hidden;text-overflow:clip;line-height:1.18;padding-top:7px;padding-bottom:7px}.catalog-name-inner{gap:2px;align-items:flex-start;width:100%;max-width:100%}.catalog-name-text{display:-webkit-box;flex:0 1 auto;min-width:0;max-width:calc(100% - 22px);font-size:7px;letter-spacing:-.28px;line-height:1.22;white-space:normal;overflow:hidden;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow-wrap:anywhere}.online-badge{padding:2px 2px;font-size:5.6px;white-space:nowrap;margin-top:0}.catalog-table td:nth-child(4),.catalog-table td:nth-child(6){font-size:7px;letter-spacing:-.28px}.catalog-note{font-size:6.6px!important;letter-spacing:-.3px}.note-desktop{display:none}.note-mobile{display:block;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}.status{padding:2px 3px;font-size:6.6px}.footer{padding:18px 12px}}
 </style>
+
 </head>
 <body>
 <div class="shell">
@@ -35,20 +117,20 @@
     <nav class="nav"><a href="index.html">예약 캘린더</a><a href="boardgames.html">보드게임</a><a class="active" href="murder.html">머더미스터리</a><a href="deduction.html">추리게임</a></nav>
     <a class="admin-link" href="admin.html">🔒 관리</a>
   </header>
-  <main class="page">
+  <main class="page catalog-page murder-page">
     <section class="hero">
       <span class="eyebrow">🎲 보유 현황</span>
       <h1>머더미스터리 리스트</h1>
       <p id="desc"></p>
       <div class="hero-actions">
         <div class="stat-row"><span class="stat-pill">전체 <b id="total">0개</b></span></div>
-        <div class="notice-action-row"><button id="murderNoticeBtn" class="notice-open-btn" type="button">📌 이용수칙 · 공지 보기</button></div>
+        <div class="notice-action-row"><button id="murderNoticeBtn" class="notice-open-btn is-loading" type="button" aria-label="머더미스터리 공지">📌 공지</button></div>
       </div>
     </section>
     <section class="section">
       <div id="notice"></div>
-      <div class="filters">
-        <input id="q" class="field search" placeholder="게임명 검색">
+      <div class="filters filters-compact">
+        <input id="q" class="field search-field" placeholder="게임명 검색">
         <select id="players" class="field"><option value="">인원 전체</option><option>2</option><option>3</option><option>4</option><option>5</option><option>6</option><option>7</option><option>8</option><option>9</option></select>
         <select id="difficulty" class="field"><option value="">난이도 전체</option><option>입문</option><option>쉬움</option><option>중간</option><option>어려움</option><option>매우어려움</option></select>
       </div>
@@ -58,7 +140,7 @@
   </main>
   <footer class="footer"><span>📅 DOTT · 예약과 보유 게임을 한눈에</span><span>© 2026 도파민</span></footer>
 </div>
-<div id="murderNoticeModal" class="murder-notice-backdrop" aria-hidden="true"><div id="murderNoticeDialog" class="murder-notice-modal" role="dialog" aria-modal="true" aria-label="이용수칙 · 공지 보기"><div class="murder-notice-head"><h3 id="murderNoticeTitle">📌 이용수칙 · 공지 보기</h3><button id="murderNoticeClose" class="murder-notice-close" type="button" aria-label="닫기">✕</button></div><div id="murderNoticeContent" class="murder-notice-content murder-notice-empty">등록된 공지가 없습니다.</div></div></div>
+<div id="murderNoticeModal" class="murder-notice-backdrop" aria-hidden="true"><div id="murderNoticeDialog" class="murder-notice-modal" role="dialog" aria-modal="true" aria-label="머더미스터리 공지"><div class="murder-notice-head"><h3 id="murderNoticeTitle"></h3><button id="murderNoticeClose" class="murder-notice-close" type="button" aria-label="닫기">✕</button></div><div id="murderNoticeContent" class="murder-notice-content murder-notice-empty">등록된 공지가 없습니다.</div></div></div>
 <script>
 (function(){
   'use strict';
@@ -95,6 +177,8 @@
     murderNotice=st.murder_notice||'';
     murderNoticeButtonLabel=(st.murder_notice_button_label||'이용수칙 · 공지 보기').trim()||'이용수칙 · 공지 보기';
     $('murderNoticeBtn').textContent='📌 '+murderNoticeButtonLabel;
+    $('murderNoticeBtn').setAttribute('aria-label',murderNoticeButtonLabel);
+    $('murderNoticeBtn').classList.remove('is-loading');
     $('murderNoticeTitle').textContent='📌 '+murderNoticeButtonLabel;
     $('murderNoticeDialog').setAttribute('aria-label',murderNoticeButtonLabel);
     syncMurderNotice();
@@ -177,6 +261,10 @@
     }else if(cached&&cached.settings){
       latestSettings=cached.settings;
       applySettings(latestSettings);
+    }else{
+      // No settings were available. Reveal the fallback only now, after the fetch attempt,
+      // so an old hard-coded label never flashes during page transition.
+      applySettings({murder_description:'',murder_notice:'',murder_notice_button_label:'이용수칙 · 공지 보기'});
     }
 
     if(games.status==='fulfilled'){
