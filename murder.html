@@ -7,6 +7,7 @@
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
 <title>DOTT 머더미스터리</title>
+<!-- DOTT murder v44: notice button/title sync -->
 <style>
 :root{--bg:#f8f4ec;--paper:#fffdf9;--ink:#2f2a25;--muted:#8d8176;--line:#eadfce;--accent:#e95d20;--accent-soft:#ffe8dc;--green:#43875a;--green-soft:#edf7ef;--red:#a04d4d;--red-soft:#f7eded;--purple:#6d55a0;--purple-soft:#eee7fb}
 *{box-sizing:border-box}html,body{margin:0;background:var(--bg);color:var(--ink);font-family:Pretendard,"Noto Sans KR",system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}a{color:inherit;text-decoration:none}button,input,select{font:inherit}
@@ -46,7 +47,7 @@
   </main>
   <footer class="footer"><span>📅 DOTT · 예약과 보유 게임을 한눈에</span><span>© 2026 도파민</span></footer>
 </div>
-<div id="murderNoticeModal" class="murder-notice-backdrop" aria-hidden="true"><div class="murder-notice-modal" role="dialog" aria-modal="true" aria-label="머더미스터리 이용수칙 및 공지"><div class="murder-notice-head"><h3>📌 이용수칙 · 공지</h3><button id="murderNoticeClose" class="murder-notice-close" type="button" aria-label="닫기">✕</button></div><div id="murderNoticeContent" class="murder-notice-content murder-notice-empty">등록된 공지가 없습니다.</div></div></div>
+<div id="murderNoticeModal" class="murder-notice-backdrop" aria-hidden="true"><div id="murderNoticeDialog" class="murder-notice-modal" role="dialog" aria-modal="true" aria-label="이용수칙 · 공지 보기"><div class="murder-notice-head"><h3 id="murderNoticeTitle">📌 이용수칙 · 공지 보기</h3><button id="murderNoticeClose" class="murder-notice-close" type="button" aria-label="닫기">✕</button></div><div id="murderNoticeContent" class="murder-notice-content murder-notice-empty">등록된 공지가 없습니다.</div></div></div>
 <script>
 (function(){
   'use strict';
@@ -101,6 +102,8 @@
         murderNotice=st.murder_notice||'';
         murderNoticeButtonLabel=(st.murder_notice_button_label||'이용수칙 · 공지 보기').trim()||'이용수칙 · 공지 보기';
         $('murderNoticeBtn').textContent='📌 '+murderNoticeButtonLabel;
+        $('murderNoticeTitle').textContent='📌 '+murderNoticeButtonLabel;
+        $('murderNoticeDialog').setAttribute('aria-label',murderNoticeButtonLabel);
         syncMurderNotice();
       }
     }catch(e){
@@ -162,6 +165,8 @@
       murderNotice=st.murder_notice||'';
       murderNoticeButtonLabel=(st.murder_notice_button_label||'이용수칙 · 공지 보기').trim()||'이용수칙 · 공지 보기';
       $('murderNoticeBtn').textContent='📌 '+murderNoticeButtonLabel;
+      $('murderNoticeTitle').textContent='📌 '+murderNoticeButtonLabel;
+      $('murderNoticeDialog').setAttribute('aria-label',murderNoticeButtonLabel);
       syncMurderNotice();
     }
   });
