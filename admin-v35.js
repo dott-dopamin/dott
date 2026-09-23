@@ -390,6 +390,7 @@ function noticeModal(x={}){
 
 const ONLINE_MURDER_MARKER='__DOTT_ONLINE_MURDER__';
 
+
 function catalogPanel(p,kind){
   const title={boardgame:'보드게임',murder:'머더미스터리',deduction:'추리게임'}[kind];
   const descKey={boardgame:'boardgame_description',murder:'murder_description',deduction:'deduction_description'}[kind];
@@ -405,7 +406,8 @@ function catalogPanel(p,kind){
       const onlineBadge=isOnline?'<span class="online-murder-badge">온라인머미</span>':'';
       return `<tr><td><b>${esc(x.name)}</b>${onlineBadge}</td><td>${x.min_players||'?'}~${x.max_players||'?'}인</td><td>${esc(x.playtime||'')}</td><td>${esc(x.difficulty||'-')}</td><td>${esc(x.status||'보유')}</td><td>${esc(x.location||'-')}</td><td>${esc(x.note||'-')}</td><td><div class="actions"><button class="icon-btn" data-edit="${x.id}">✎</button><button class="icon-btn" data-del="${x.id}">♲</button></div></td></tr>`;
     }
-    return `<tr><td><b>${esc(x.name)}</b></td><td>${x.min_players||'?'}~${x.max_players||'?'}인</td><td>${esc(x.playtime||'')}</td><td>${esc(x.difficulty||'')}</td><td>${esc(x.genre||'')}</td><td>${esc(x.status||'-')}</td><td>${esc(x.note||'-')}</td><td><div class="actions"><button class="icon-btn" data-edit="${x.id}">✎</button><button class="icon-btn" data-del="${x.id}">♲</button></div></td></tr>`;
+    const expansionBadge=kind==='boardgame'&&x.is_expansion?'<span class="boardgame-expansion-badge">확장</span>':'';
+    return `<tr><td><b>${esc(x.name)}</b>${expansionBadge}</td><td>${x.min_players||'?'}~${x.max_players||'?'}인</td><td>${esc(x.playtime||'')}</td><td>${esc(x.difficulty||'')}</td><td>${esc(x.genre||'')}</td><td>${esc(x.status||'-')}</td><td>${esc(x.note||'-')}</td><td><div class="actions"><button class="icon-btn" data-edit="${x.id}">✎</button><button class="icon-btn" data-del="${x.id}">♲</button></div></td></tr>`;
   }).join('')||`<tr><td colspan="8">등록된 ${title}이 없습니다.</td></tr>`;
   const murderNoticeEditor=kind==='murder'?`<div class="catalog-admin-desc"><label class="label">머더미스터리 이용수칙 · 공지 팝업</label><p style="font-size:11px;color:var(--muted);line-height:1.55;margin:0 0 9px">공개 머더미스터리 페이지의 공지 버튼을 눌렀을 때 뜨는 별도 팝업입니다. 버튼 이름과 공지 내용을 각각 수정할 수 있습니다.</p><div style="margin-bottom:10px"><label class="label" style="font-size:11px">공지 버튼 이름</label><input id="murderNoticeButtonLabel" class="field" maxlength="30" placeholder="예: 이용수칙 · 공지 보기" value="${esc((data.settings&&data.settings.murder_notice_button_label)||'이용수칙 · 공지 보기')}"></div><div class="catalog-admin-desc-row"><textarea id="murderNotice" class="field" rows="7" placeholder="이용수칙, 플레이 안내, 주의사항 등을 입력하세요.">${esc((data.settings&&data.settings.murder_notice)||'')}</textarea><button class="btn" id="saveMurderNotice">버튼·공지 저장</button></div><div class="error" id="murderNoticeErr"></div></div>`:'';
   p.innerHTML=`<div class="catalog-admin-desc"><label class="label">${title} 리스트 제목 아래 설명 문구</label><div class="catalog-admin-desc-row"><textarea id="catalogDesc" class="field" rows="2">${esc(currentDesc)}</textarea><button class="btn" id="saveCatalogDesc">설명 저장</button></div><div class="error" id="catalogDescErr"></div></div>${murderNoticeEditor}<div class="admin-tools"><div>${rows.length}개 등록됨</div><button class="btn primary" id="add">+ ${title} 추가</button></div><div class="table-wrap"><table class="table"><thead><tr>${head}</tr></thead><tbody>${body}</tbody></table></div>`;
@@ -437,9 +439,12 @@ function catalogModal(x={},kind){
   const murderDifficulties=['입문','쉬움','중간','어려움','매우어려움'];
   const murderStatuses=['보유','대여중','분실','도트','공방'];
   const murderOnline=x.genre===ONLINE_MURDER_MARKER;
+  const boardgameExpansion=!!x.is_expansion;
   const nameField=kind==='murder'
     ? `<div class="full murder-name-row"><div><label class="label">게임명</label><input id="f_name" class="field" value="${esc(x.name||'')}"></div><label class="murder-online-check murder-online-check-name"><input id="f_online_murder" type="checkbox" ${murderOnline?'checked':''}> 온라인머미</label></div>`
-    : `<div class="full"><label class="label">이름</label><input id="f_name" class="field" value="${esc(x.name||'')}"></div>`;
+    : kind==='boardgame'
+      ? `<div class="full murder-name-row"><div><label class="label">이름</label><input id="f_name" class="field" value="${esc(x.name||'')}"></div><label class="catalog-flag-check murder-online-check-name"><input id="f_boardgame_expansion" type="checkbox" ${boardgameExpansion?'checked':''}> 확장</label></div>`
+      : `<div class="full"><label class="label">이름</label><input id="f_name" class="field" value="${esc(x.name||'')}"></div>`;
   const commonTop=`<div class="form-grid">${nameField}<div><label class="label">최소 인원</label><input id="f_min" class="field" type="number" min="1" value="${x.min_players||2}"></div><div><label class="label">최대 인원</label><input id="f_max" class="field" type="number" min="1" value="${x.max_players||4}"></div><div><label class="label">플레이시간</label><input id="f_time" class="field" placeholder="60~90분" value="${esc(x.playtime||'')}"></div>`;
   let middle='';
   let bottom='';
@@ -472,6 +477,7 @@ function catalogModal(x={},kind){
     }else{
       row.difficulty=m.querySelector('#f_diff').value;
       row.genre=m.querySelector('#f_genre').value.trim();
+      if(kind==='boardgame')row.is_expansion=!!m.querySelector('#f_boardgame_expansion')?.checked;
     }
     if(!row.name)throw new Error('이름을 입력해 주세요.');
     x.id?await DOTT_DB.update('catalog_items',x.id,row):await DOTT_DB.insert('catalog_items',row);

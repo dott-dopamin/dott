@@ -50,7 +50,8 @@ function paint(){
 
 function listRow(x){
   const statusClass=x.status&&['대여중','분실'].includes(x.status)?'out':'';
-  return `<tr><td class="catalog-name">${esc(x.name)}</td><td>${x.min_players||'?'}~${x.max_players||'?'}인</td><td>${esc(x.playtime||'-')}</td><td>${esc(x.difficulty||'-')}</td><td>${esc(x.genre||'-')}</td><td><span class="status ${statusClass}">${esc(x.status||'-')}</span></td><td class="catalog-note" title="${esc(x.note||'')}">${esc(x.note||'-')}</td></tr>`;
+  const expansionBadge=kind==='boardgame'&&x.is_expansion?'<span class="boardgame-expansion-badge">확장</span>':'';
+  return `<tr><td class="catalog-name"><span class="catalog-name-text">${esc(x.name)}</span>${expansionBadge}</td><td>${x.min_players||'?'}~${x.max_players||'?'}인</td><td>${esc(x.playtime||'-')}</td><td>${esc(x.difficulty||'-')}</td><td>${esc(x.genre||'-')}</td><td><span class="status ${statusClass}">${esc(x.status||'-')}</span></td><td class="catalog-note" title="${esc(x.note||'')}">${esc(x.note||'-')}</td></tr>`;
 }
 function murderRow(x){
   const isOnline=x.genre===ONLINE_MURDER_MARKER;

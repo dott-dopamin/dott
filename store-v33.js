@@ -100,8 +100,8 @@ function sanitizeWriteRow(table,row){
   if(row===null||typeof row!=='object')return row;
   if(table==='catalog_items'){
     // v33: catalog_items는 실제 운영 중인 기존 컬럼만 명시적으로 허용합니다.
-    // participation_condition / online_murder 같은 실험용 키는 어떤 경로로도 전송되지 않습니다.
-    const allowed=['kind','name','min_players','max_players','playtime','difficulty','genre','status','location','note','image_url'];
+    // 운영에 사용하는 컬럼만 명시적으로 허용합니다. is_expansion은 보드게임 확장 여부에 사용합니다.
+    const allowed=['kind','name','min_players','max_players','playtime','difficulty','genre','status','location','note','image_url','is_expansion'];
     const clean={};
     for(const key of allowed){if(Object.prototype.hasOwnProperty.call(row,key))clean[key]=row[key]}
     return clean;
