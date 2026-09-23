@@ -25,12 +25,19 @@ function todayEventHtml(e){
 }
 
 function calendarHtml(){
-  const first=new Date(cursor.getFullYear(),cursor.getMonth(),1),start=first.getDay();
+  const y=cursor.getFullYear(),m=cursor.getMonth();
+  const first=new Date(y,m,1),start=first.getDay(),daysInMonth=new Date(y,m+1,0).getDate();
+  const cellCount=Math.ceil((start+daysInMonth)/7)*7;
   let out=['일','월','화','수','목','금','토'].map(d=>`<div class="dow">${d}</div>`).join('');
-  for(let i=0;i<42;i++){
-    const date=new Date(cursor.getFullYear(),cursor.getMonth(),1-start+i),inMonth=date.getMonth()===cursor.getMonth(),ds=ymd(date),ev=schedules.filter(x=>x.event_date===ds);
+  for(let i=0;i<cellCount;i++){
+    const dayNum=i-start+1;
+    if(dayNum<1||dayNum>daysInMonth){
+      out+='<div class="day empty-day" aria-hidden="true"></div>';
+      continue;
+    }
+    const date=new Date(y,m,dayNum),ds=ymd(date),ev=schedules.filter(x=>x.event_date===ds);
     const weekendClass=date.getDay()===0?'sunday':date.getDay()===6?'saturday':'';
-    out+=`<div class="day ${inMonth?'':'muted'} ${ds===todayYmd()?'today':''} ${weekendClass}" data-date="${ds}"><div class="day-num">${date.getDate()}</div><div class="day-events">${ev.slice(0,3).map(calendarEventHtml).join('')}${ev.length>3?`<div class="day-more">+${ev.length-3}개 일정</div>`:''}</div></div>`;
+    out+=`<div class="day ${ds===todayYmd()?'today':''} ${weekendClass}" data-date="${ds}"><div class="day-num">${dayNum}</div><div class="day-events">${ev.slice(0,3).map(calendarEventHtml).join('')}${ev.length>3?`<div class="day-more">+${ev.length-3}개 일정</div>`:''}</div></div>`;
   }
   return out;
 }
@@ -43,7 +50,6 @@ function calendarEventHtml(e){
 function wireMobileCalendarEvents(){
   document.querySelectorAll('.day-event[data-event-id]').forEach(card=>{
     const open=()=>{
-      if(!window.matchMedia('(max-width:700px)').matches)return;
       const event=schedules.find(x=>String(x.id)===String(card.dataset.eventId));
       if(event)openCalendarDetail(event);
     };

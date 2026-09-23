@@ -407,7 +407,8 @@ function catalogPanel(p,kind){
     }
     return `<tr><td><b>${esc(x.name)}</b></td><td>${x.min_players||'?'}~${x.max_players||'?'}인</td><td>${esc(x.playtime||'')}</td><td>${esc(x.difficulty||'')}</td><td>${esc(x.genre||'')}</td><td>${esc(x.status||'-')}</td><td>${esc(x.note||'-')}</td><td><div class="actions"><button class="icon-btn" data-edit="${x.id}">✎</button><button class="icon-btn" data-del="${x.id}">♲</button></div></td></tr>`;
   }).join('')||`<tr><td colspan="8">등록된 ${title}이 없습니다.</td></tr>`;
-  p.innerHTML=`<div class="catalog-admin-desc"><label class="label">${title} 리스트 제목 아래 설명 문구</label><div class="catalog-admin-desc-row"><textarea id="catalogDesc" class="field" rows="2">${esc(currentDesc)}</textarea><button class="btn" id="saveCatalogDesc">설명 저장</button></div><div class="error" id="catalogDescErr"></div></div><div class="admin-tools"><div>${rows.length}개 등록됨</div><button class="btn primary" id="add">+ ${title} 추가</button></div><div class="table-wrap"><table class="table"><thead><tr>${head}</tr></thead><tbody>${body}</tbody></table></div>`;
+  const murderNoticeEditor=kind==='murder'?`<div class="catalog-admin-desc"><label class="label">머더미스터리 이용수칙 · 공지 팝업</label><p style="font-size:11px;color:var(--muted);line-height:1.55;margin:0 0 9px">공개 머더미스터리 페이지의 ‘이용수칙 · 공지 보기’ 버튼을 눌렀을 때 뜨는 별도 팝업 내용입니다. 위 설명 문구와는 별개로 저장됩니다.</p><div class="catalog-admin-desc-row"><textarea id="murderNotice" class="field" rows="7" placeholder="이용수칙, 플레이 안내, 주의사항 등을 입력하세요.">${esc((data.settings&&data.settings.murder_notice)||'')}</textarea><button class="btn" id="saveMurderNotice">공지 저장</button></div><div class="error" id="murderNoticeErr"></div></div>`:'';
+  p.innerHTML=`<div class="catalog-admin-desc"><label class="label">${title} 리스트 제목 아래 설명 문구</label><div class="catalog-admin-desc-row"><textarea id="catalogDesc" class="field" rows="2">${esc(currentDesc)}</textarea><button class="btn" id="saveCatalogDesc">설명 저장</button></div><div class="error" id="catalogDescErr"></div></div>${murderNoticeEditor}<div class="admin-tools"><div>${rows.length}개 등록됨</div><button class="btn primary" id="add">+ ${title} 추가</button></div><div class="table-wrap"><table class="table"><thead><tr>${head}</tr></thead><tbody>${body}</tbody></table></div>`;
   document.getElementById('saveCatalogDesc').onclick=async()=>{
     const btn=document.getElementById('saveCatalogDesc'),err=document.getElementById('catalogDescErr');
     btn.disabled=true;err.textContent='';
@@ -415,6 +416,15 @@ function catalogPanel(p,kind){
       data.settings=await DOTT_DB.saveSettings({[descKey]:document.getElementById('catalogDesc').value.trim()});
       toast(`${title} 설명을 저장했습니다.`);
     }catch(e){err.textContent=(e.message||e)+' — add-catalog-descriptions.sql을 먼저 실행해 주세요.'}
+    finally{btn.disabled=false}
+  };
+  if(kind==='murder')document.getElementById('saveMurderNotice').onclick=async()=>{
+    const btn=document.getElementById('saveMurderNotice'),err=document.getElementById('murderNoticeErr');
+    btn.disabled=true;err.textContent='';
+    try{
+      data.settings=await DOTT_DB.saveSettings({murder_notice:document.getElementById('murderNotice').value.trim()});
+      toast('머더미스터리 공지를 저장했습니다.');
+    }catch(e){err.textContent=(e.message||e)+' — add-murder-notice.sql을 Supabase에서 한 번 실행해 주세요.'}
     finally{btn.disabled=false}
   };
   document.getElementById('add').onclick=()=>catalogModal({},kind);
@@ -487,6 +497,7 @@ function settingsPanel(p){
     hero_description:'월별 캘린더에서 예약 일정을 확인하고, 보드게임·머더미스터리·추리게임 보유 목록도 함께 살펴볼 수 있습니다.',
     boardgame_description:'도트에 있는 보드게임을 검색하고 인원·난이도·장르별로 골라보세요.',
     murder_description:'보유 중인 머더미스터리 시나리오를 한눈에 확인하세요.',
+    murder_notice:'',
     deduction_description:'추리·사건 해결형 게임 보유 목록을 확인하세요.',
     ...(data.settings||{})
   };

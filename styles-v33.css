@@ -980,3 +980,15 @@ body.calendar-detail-open{overflow:hidden}
   .catalog-table.murder-table th:nth-child(7),.catalog-table.murder-table td:nth-child(7){width:18%!important;padding-right:3px!important}
   .catalog-table.murder-table .online-murder-badge{font-size:6.4px!important;padding:2px 3px!important;margin-left:2px!important}
 }
+
+/* ===== DOTT v36 월별 단독 캘린더 + PC 일정 상세 팝업 ===== */
+.day.empty-day{
+  background:#fbf8f2;
+  min-height:142px;
+}
+.day.empty-day::after{content:none}
+.day-event[role="button"]{cursor:pointer}
+.day-event[role="button"]:focus-visible{outline:2px solid #d98a61;outline-offset:2px}
+@media(max-width:900px){.day.empty-day{min-height:132px}}
+@media(max-width:700px){.day.empty-day{min-height:122px}}
+@media(max-width:390px){.day.empty-day{min-height:116px}}
