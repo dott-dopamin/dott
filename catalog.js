@@ -7,6 +7,7 @@ const labels={
 };
 const descriptionKeys={boardgame:'boardgame_description',murder:'murder_description',deduction:'deduction_description'};
 const BOARDGAME_GENRES=['전략','파티/패밀리','협력'];
+const ONLINE_MURDER_MARKER='__DOTT_ONLINE_MURDER__';
 let items=[];
 let settings=null;
 
@@ -41,7 +42,7 @@ function paint(){
   const root=document.getElementById('catalogContent');
   if(!list.length){root.innerHTML='<div class="empty">조건에 맞는 게임이 없습니다.</div>';return}
   if(kind==='murder'){
-    root.innerHTML=`<div class="catalog-table-wrap"><table class="catalog-table murder-table"><thead><tr><th>게임명</th><th>인원</th><th>시간</th><th>난이도</th><th>상태 및 위치</th><th>비고</th></tr></thead><tbody>${list.map(murderRow).join('')}</tbody></table></div>`;
+    root.innerHTML=`<div class="catalog-table-wrap"><table class="catalog-table murder-table"><thead><tr><th>게임명</th><th>인원</th><th>시간</th><th>난이도</th><th>상태 및 위치</th><th>소유주</th><th>비고</th></tr></thead><tbody>${list.map(murderRow).join('')}</tbody></table></div>`;
     return;
   }
   root.innerHTML=`<div class="catalog-table-wrap"><table class="catalog-table"><thead><tr><th>게임명</th><th>인원</th><th>시간</th><th>난이도</th><th>장르</th><th>상태</th><th>소유주</th></tr></thead><tbody>${list.map(listRow).join('')}</tbody></table></div>`;
@@ -51,13 +52,14 @@ function listRow(x){
   return `<tr><td class="catalog-name">${esc(x.name)}</td><td>${x.min_players||'?'}~${x.max_players||'?'}인</td><td>${esc(x.playtime||'-')}</td><td>${esc(x.difficulty||'-')}</td><td>${esc(x.genre||'-')}</td><td><span class="status ${x.status&&x.status!=='보유'?'out':''}">${esc(x.status||'보유')}</span></td><td class="catalog-note" title="${esc(x.note||'')}">${esc(x.note||'-')}</td></tr>`;
 }
 function murderRow(x){
-  const onlineBadge=x.online_murder?'<span class="online-murder-badge">온라인머미</span>':'';
+  const isOnline=x.genre===ONLINE_MURDER_MARKER||x.online_murder===true;
+  const onlineBadge=isOnline?'<span class="online-murder-badge">온라인머미</span>':'';
   const statusClass=x.status&&x.status!=='보유'&&!['도트','공방'].includes(x.status)?'out':'';
-  return `<tr><td class="catalog-name"><span class="catalog-name-text">${esc(x.name)}</span>${onlineBadge}</td><td>${x.min_players||'?'}~${x.max_players||'?'}인</td><td>${esc(x.playtime||'-')}</td><td>${esc(x.difficulty||'-')}</td><td><span class="status ${statusClass}">${esc(x.status||'보유')}</span></td><td class="catalog-note" title="${esc(x.note||'')}">${esc(x.note||'-')}</td></tr>`;
+  return `<tr><td class="catalog-name"><span class="catalog-name-text">${esc(x.name)}</span>${onlineBadge}</td><td>${x.min_players||'?'}~${x.max_players||'?'}인</td><td>${esc(x.playtime||'-')}</td><td>${esc(x.difficulty||'-')}</td><td><span class="status ${statusClass}">${esc(x.status||'보유')}</span></td><td class="catalog-owner" title="${esc(x.location||'')}">${esc(x.location||'-')}</td><td class="catalog-note" title="${esc(x.note||'')}">${esc(x.note||'-')}</td></tr>`;
 }
 
 (async()=>{
-  const cacheKey=`dott_catalog_${kind}_v30final`;
+  const cacheKey=`dott_catalog_${kind}_v31`;
   let cached=null;
   try{cached=JSON.parse(localStorage.getItem(cacheKey)||'null')}catch(_e){}
   if(cached?.items){items=cached.items;settings=cached.settings||null;render()}

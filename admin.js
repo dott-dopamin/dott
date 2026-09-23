@@ -388,6 +388,8 @@ function noticeModal(x={}){
   modal.querySelector('#fmtClear').addEventListener('mousedown',e=>{e.preventDefault();restore();document.execCommand('removeFormat',false,null);editor.focus()});
 }
 
+const ONLINE_MURDER_MARKER='__DOTT_ONLINE_MURDER__';
+
 function catalogPanel(p,kind){
   const title={boardgame:'보드게임',murder:'머더미스터리',deduction:'추리게임'}[kind];
   const descKey={boardgame:'boardgame_description',murder:'murder_description',deduction:'deduction_description'}[kind];
@@ -395,15 +397,16 @@ function catalogPanel(p,kind){
   const currentDesc=(data.settings&&data.settings[descKey])||defaultDesc;
   const rows=data[kind];
   const head=kind==='murder'
-    ? '<th>게임명</th><th>인원</th><th>시간</th><th>난이도</th><th>상태 및 위치</th><th>비고</th><th>관리</th>'
+    ? '<th>게임명</th><th>인원</th><th>시간</th><th>난이도</th><th>상태 및 위치</th><th>소유주</th><th>비고</th><th>관리</th>'
     : '<th>이름</th><th>인원</th><th>시간</th><th>난이도</th><th>장르</th><th>상태</th><th>관리</th>';
   const body=rows.map(x=>{
     if(kind==='murder'){
-      const onlineBadge=x.online_murder?'<span class="online-murder-badge">온라인머미</span>':'';
-      return `<tr><td><b>${esc(x.name)}</b>${onlineBadge}</td><td>${x.min_players||'?'}~${x.max_players||'?'}인</td><td>${esc(x.playtime||'')}</td><td>${esc(x.difficulty||'-')}</td><td>${esc(x.status||'보유')}</td><td>${esc(x.note||'-')}</td><td><div class="actions"><button class="icon-btn" data-edit="${x.id}">✎</button><button class="icon-btn" data-del="${x.id}">♲</button></div></td></tr>`;
+      const isOnline=x.genre===ONLINE_MURDER_MARKER||x.online_murder===true;
+      const onlineBadge=isOnline?'<span class="online-murder-badge">온라인머미</span>':'';
+      return `<tr><td><b>${esc(x.name)}</b>${onlineBadge}</td><td>${x.min_players||'?'}~${x.max_players||'?'}인</td><td>${esc(x.playtime||'')}</td><td>${esc(x.difficulty||'-')}</td><td>${esc(x.status||'보유')}</td><td>${esc(x.location||'-')}</td><td>${esc(x.note||'-')}</td><td><div class="actions"><button class="icon-btn" data-edit="${x.id}">✎</button><button class="icon-btn" data-del="${x.id}">♲</button></div></td></tr>`;
     }
     return `<tr><td><b>${esc(x.name)}</b></td><td>${x.min_players||'?'}~${x.max_players||'?'}인</td><td>${esc(x.playtime||'')}</td><td>${esc(x.difficulty||'')}</td><td>${esc(x.genre||'')}</td><td>${esc(x.status||'보유')}</td><td><div class="actions"><button class="icon-btn" data-edit="${x.id}">✎</button><button class="icon-btn" data-del="${x.id}">♲</button></div></td></tr>`;
-  }).join('')||`<tr><td colspan="${kind==='murder'?7:7}">등록된 ${title}이 없습니다.</td></tr>`;
+  }).join('')||`<tr><td colspan="${kind==='murder'?8:7}">등록된 ${title}이 없습니다.</td></tr>`;
   p.innerHTML=`<div class="catalog-admin-desc"><label class="label">${title} 리스트 제목 아래 설명 문구</label><div class="catalog-admin-desc-row"><textarea id="catalogDesc" class="field" rows="2">${esc(currentDesc)}</textarea><button class="btn" id="saveCatalogDesc">설명 저장</button></div><div class="error" id="catalogDescErr"></div></div><div class="admin-tools"><div>${rows.length}개 등록됨</div><button class="btn primary" id="add">+ ${title} 추가</button></div><div class="table-wrap"><table class="table"><thead><tr>${head}</tr></thead><tbody>${body}</tbody></table></div>`;
   document.getElementById('saveCatalogDesc').onclick=async()=>{
     const btn=document.getElementById('saveCatalogDesc'),err=document.getElementById('catalogDescErr');
@@ -422,15 +425,16 @@ function catalogModal(x={},kind){
   const boardgameGenres=['전략','파티/패밀리','협력'];
   const murderDifficulties=['입문','쉬움','중간','어려움','매우어려움'];
   const murderStatuses=['보유','대여중','분실','도트','공방'];
+  const murderOnline=x.genre===ONLINE_MURDER_MARKER||x.online_murder===true;
   const nameField=kind==='murder'
-    ? `<div class="full murder-name-row"><div><label class="label">게임명</label><input id="f_name" class="field" value="${esc(x.name||'')}"></div><label class="murder-online-check murder-online-check-name"><input id="f_online_murder" type="checkbox" ${x.online_murder?'checked':''}> 온라인머미</label></div>`
+    ? `<div class="full murder-name-row"><div><label class="label">게임명</label><input id="f_name" class="field" value="${esc(x.name||'')}"></div><label class="murder-online-check murder-online-check-name"><input id="f_online_murder" type="checkbox" ${murderOnline?'checked':''}> 온라인머미</label></div>`
     : `<div class="full"><label class="label">이름</label><input id="f_name" class="field" value="${esc(x.name||'')}"></div>`;
   const commonTop=`<div class="form-grid">${nameField}<div><label class="label">최소 인원</label><input id="f_min" class="field" type="number" min="1" value="${x.min_players||2}"></div><div><label class="label">최대 인원</label><input id="f_max" class="field" type="number" min="1" value="${x.max_players||4}"></div><div><label class="label">플레이시간</label><input id="f_time" class="field" placeholder="60~90분" value="${esc(x.playtime||'')}"></div>`;
   let middle='';
   let bottom='';
   if(kind==='murder'){
     middle=`<div><label class="label">난이도</label><select id="f_diff" class="field"><option value="">선택 안함</option>${murderDifficulties.map(v=>`<option value="${v}" ${x.difficulty===v?'selected':''}>${v}</option>`).join('')}</select></div>`;
-    bottom=`<div><label class="label">상태 및 위치</label><select id="f_status" class="field">${murderStatuses.map(v=>`<option value="${v}" ${x.status===v?'selected':''}>${v}</option>`).join('')}</select></div><div class="full"><label class="label">비고</label><textarea id="f_note" class="field" rows="3" placeholder="자유롭게 입력">${esc(x.note||'')}</textarea></div></div>`;
+    bottom=`<div><label class="label">상태 및 위치</label><select id="f_status" class="field">${murderStatuses.map(v=>`<option value="${v}" ${x.status===v?'selected':''}>${v}</option>`).join('')}</select></div><div><label class="label">소유주</label><input id="f_owner" class="field" placeholder="소유주 입력" value="${esc(x.location||'')}"></div><div class="full"><label class="label">비고</label><textarea id="f_note" class="field" rows="3" placeholder="자유롭게 입력">${esc(x.note||'')}</textarea></div></div>`;
   }else{
     const genreField=kind==='boardgame'
       ? `<select id="f_genre" class="field"><option value="">선택 안함</option>${boardgameGenres.map(v=>`<option value="${esc(v)}" ${x.genre===v?'selected':''}>${esc(v)}</option>`).join('')}</select>`
@@ -450,14 +454,15 @@ function catalogModal(x={},kind){
     };
     if(kind==='murder'){
       row.difficulty=m.querySelector('#f_diff').value;
-      row.genre=null;
+      // online_murder 컬럼은 PostgREST 스키마 캐시 문제를 피하기 위해 사용하지 않습니다.
+      // 머더미스터리에서는 사용하지 않는 genre 필드에 온라인머미 여부를 저장합니다.
+      row.genre=m.querySelector('#f_online_murder')?.checked?ONLINE_MURDER_MARKER:null;
+      row.location=m.querySelector('#f_owner').value.trim();
       row.participation_condition=null;
-      row.online_murder=!!m.querySelector('#f_online_murder')?.checked;
     }else{
       row.difficulty=m.querySelector('#f_diff').value;
       row.genre=m.querySelector('#f_genre').value.trim();
       row.participation_condition=null;
-      row.online_murder=false;
     }
     if(!row.name)throw new Error('이름을 입력해 주세요.');
     x.id?await DOTT_DB.update('catalog_items',x.id,row):await DOTT_DB.insert('catalog_items',row);
