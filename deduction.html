@@ -1,4 +1,11 @@
 <!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>DOTT 추리게임</title><link rel="stylesheet" href="styles-v33.css?v=68"><style>
+/* DOTT v69: 추리게임 공개 페이지 - 데이터가 적어도 페이지 영역 폭/크기 고정 */
+html{overflow-y:scroll;scrollbar-gutter:stable}
+.catalog-page{width:100%;min-width:0}
+.catalog-page>.section,.catalog-page .filters,.catalog-page .catalog-meta,#catalogContent,.catalog-table-wrap{width:100%;max-width:none;min-width:0}
+.catalog-kind-table.deduction-table{width:100%!important}
+@media(max-width:900px){html{scrollbar-gutter:auto}}
+
 /* 보유 리스트 설명문 폰트 - 머더미스터리와 동일 */
 .catalog-page .hero p{font-size:14px!important;line-height:1.7!important}
 
