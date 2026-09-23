@@ -398,15 +398,15 @@ function catalogPanel(p,kind){
   const rows=data[kind];
   const head=kind==='murder'
     ? '<th>게임명</th><th>인원</th><th>시간</th><th>난이도</th><th>상태 및 위치</th><th>소유주</th><th>비고</th><th>관리</th>'
-    : '<th>이름</th><th>인원</th><th>시간</th><th>난이도</th><th>장르</th><th>상태</th><th>관리</th>';
+    : '<th>이름</th><th>인원</th><th>시간</th><th>난이도</th><th>장르</th><th>상태 및 위치</th><th>소유주</th><th>관리</th>';
   const body=rows.map(x=>{
     if(kind==='murder'){
       const isOnline=x.genre===ONLINE_MURDER_MARKER;
       const onlineBadge=isOnline?'<span class="online-murder-badge">온라인머미</span>':'';
       return `<tr><td><b>${esc(x.name)}</b>${onlineBadge}</td><td>${x.min_players||'?'}~${x.max_players||'?'}인</td><td>${esc(x.playtime||'')}</td><td>${esc(x.difficulty||'-')}</td><td>${esc(x.status||'보유')}</td><td>${esc(x.location||'-')}</td><td>${esc(x.note||'-')}</td><td><div class="actions"><button class="icon-btn" data-edit="${x.id}">✎</button><button class="icon-btn" data-del="${x.id}">♲</button></div></td></tr>`;
     }
-    return `<tr><td><b>${esc(x.name)}</b></td><td>${x.min_players||'?'}~${x.max_players||'?'}인</td><td>${esc(x.playtime||'')}</td><td>${esc(x.difficulty||'')}</td><td>${esc(x.genre||'')}</td><td>${esc(x.status||'보유')}</td><td><div class="actions"><button class="icon-btn" data-edit="${x.id}">✎</button><button class="icon-btn" data-del="${x.id}">♲</button></div></td></tr>`;
-  }).join('')||`<tr><td colspan="${kind==='murder'?8:7}">등록된 ${title}이 없습니다.</td></tr>`;
+    return `<tr><td><b>${esc(x.name)}</b></td><td>${x.min_players||'?'}~${x.max_players||'?'}인</td><td>${esc(x.playtime||'')}</td><td>${esc(x.difficulty||'')}</td><td>${esc(x.genre||'')}</td><td>${esc(x.status||'-')}</td><td>${esc(x.note||'-')}</td><td><div class="actions"><button class="icon-btn" data-edit="${x.id}">✎</button><button class="icon-btn" data-del="${x.id}">♲</button></div></td></tr>`;
+  }).join('')||`<tr><td colspan="8">등록된 ${title}이 없습니다.</td></tr>`;
   p.innerHTML=`<div class="catalog-admin-desc"><label class="label">${title} 리스트 제목 아래 설명 문구</label><div class="catalog-admin-desc-row"><textarea id="catalogDesc" class="field" rows="2">${esc(currentDesc)}</textarea><button class="btn" id="saveCatalogDesc">설명 저장</button></div><div class="error" id="catalogDescErr"></div></div><div class="admin-tools"><div>${rows.length}개 등록됨</div><button class="btn primary" id="add">+ ${title} 추가</button></div><div class="table-wrap"><table class="table"><thead><tr>${head}</tr></thead><tbody>${body}</tbody></table></div>`;
   document.getElementById('saveCatalogDesc').onclick=async()=>{
     const btn=document.getElementById('saveCatalogDesc'),err=document.getElementById('catalogDescErr');
@@ -440,7 +440,7 @@ function catalogModal(x={},kind){
       ? `<select id="f_genre" class="field"><option value="">선택 안함</option>${boardgameGenres.map(v=>`<option value="${esc(v)}" ${x.genre===v?'selected':''}>${esc(v)}</option>`).join('')}</select>`
       : `<input id="f_genre" class="field" placeholder="장르 입력" value="${esc(x.genre||'')}">`;
     middle=`<div><label class="label">난이도</label><select id="f_diff" class="field"><option value="">선택 안함</option>${['쉬움','보통','어려움'].map(v=>`<option value="${v}" ${x.difficulty===v?'selected':''}>${v}</option>`).join('')}</select></div><div><label class="label">장르</label>${genreField}</div>`;
-    bottom=`<div><label class="label">상태</label><select id="f_status" class="field">${['보유','대여중','수리중','분실'].map(v=>`<option value="${v}" ${x.status===v?'selected':''}>${v}</option>`).join('')}</select></div><div class="full"><label class="label">소유주</label><textarea id="f_note" class="field" rows="3">${esc(x.note||'')}</textarea></div></div>`;
+    bottom=`<div><label class="label">상태 및 위치</label><select id="f_status" class="field">${['도트','공방','대여중','분실'].map(v=>`<option value="${v}" ${x.status===v?'selected':''}>${v}</option>`).join('')}</select></div><div><label class="label">소유주</label><input id="f_note" class="field" placeholder="소유주 입력" value="${esc(x.note||'')}"></div></div>`;
   }
   showModal(x.id?'항목 수정':'항목 추가',commonTop+middle+bottom,async m=>{
     const row={
