@@ -964,6 +964,7 @@ body.calendar-detail-open{overflow:hidden}
 .catalog-table.murder-table th:nth-child(6),.catalog-table.murder-table td:nth-child(6){width:12%!important}
 .catalog-table.murder-table th:nth-child(7),.catalog-table.murder-table td:nth-child(7){width:17%!important;padding-right:14px}
 .catalog-table.murder-table .catalog-owner,.catalog-table.murder-table .catalog-note{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.catalog-table.murder-table .catalog-owner{color:var(--muted)}
 .catalog-table.murder-table .catalog-name{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .catalog-table.murder-table .catalog-name-text{display:inline;max-width:100%;overflow:hidden;text-overflow:ellipsis;vertical-align:middle}
 @media(max-width:700px){
