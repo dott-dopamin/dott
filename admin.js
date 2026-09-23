@@ -6,12 +6,18 @@ let scheduleView='month';
 let scheduleCursor=new Date(); scheduleCursor.setDate(1);
 let selectedScheduleIds=new Set();
 let data={schedules:[],notices:[],attendance:[],boardgame:[],murder:[],deduction:[],settings:null};
+let adminLoadWarnings=[];
 
 (async()=>{
-  const s=await DOTT_DB.session();
-  if(!s)return renderLogin();
-  await loadAll();
-  renderAdmin();
+  try{
+    const s=await DOTT_DB.session();
+    if(!s)return renderLogin();
+    await loadAll();
+    renderAdmin();
+  }catch(e){
+    console.warn('관리자 세션 확인 실패',e);
+    renderLogin();
+  }
 })();
 
 function renderLogin(){
@@ -29,15 +35,29 @@ function renderLogin(){
 }
 
 async function loadAll(){
-  const [s,n,a,b,m,d,settings]=await Promise.all([
-    DOTT_DB.schedules(),DOTT_DB.notices(),DOTT_DB.attendance(),DOTT_DB.catalog('boardgame'),DOTT_DB.catalog('murder'),DOTT_DB.catalog('deduction'),DOTT_DB.settings()
-  ]);
-  data={schedules:s,notices:n,attendance:a,boardgame:b,murder:m,deduction:d,settings};
+  const jobs=[
+    ['schedules','일정',DOTT_DB.schedules()],
+    ['notices','공지',DOTT_DB.notices()],
+    ['attendance','출석',DOTT_DB.attendance()],
+    ['boardgame','보드게임',DOTT_DB.catalog('boardgame')],
+    ['murder','머더미스터리',DOTT_DB.catalog('murder')],
+    ['deduction','추리게임',DOTT_DB.catalog('deduction')],
+    ['settings','사이트 설정',DOTT_DB.settings()]
+  ];
+  const results=await Promise.allSettled(jobs.map(x=>x[2]));
+  adminLoadWarnings=[];
+  results.forEach((r,i)=>{
+    const [key,label]=jobs[i];
+    if(r.status==='fulfilled')data[key]=r.value;
+    else{adminLoadWarnings.push(label);console.warn(`${label} 불러오기 실패`,r.reason)}
+  });
+  if(window.DOTT_ATTENDANCE_ERROR&&!adminLoadWarnings.includes('출석'))adminLoadWarnings.push('출석');
 }
 
 function renderAdmin(){
   const tabs=[['schedules','일정 관리'],['attendance','출석 관리'],['notices','공지 관리'],['boardgame','보드게임'],['murder','머더미스터리'],['deduction','추리게임'],['settings','관리자 설정']];
-  app.innerHTML=`${nav('admin')}<main class="admin-wrap"><section class="admin-hero"><div><span class="eyebrow">⚙ 관리자 화면</span><h1>일정 · 공지 · 보유목록 관리</h1><p>여기서 등록한 내용은 공개 페이지에 바로 반영됩니다.</p></div><div class="toolbar"><a class="btn" href="index.html">공개 화면 보기</a><button class="btn" id="logout">로그아웃</button></div></section><div class="info-box">현재 데이터는 Supabase에 저장됩니다. 일반 방문자는 조회만 가능하고, 로그인한 관리자만 추가·수정·삭제할 수 있습니다.</div><div class="tabs">${tabs.map(([v,l])=>`<button class="tab ${tab===v?'active':''}" data-tab="${v}">${l}</button>`).join('')}</div><div id="panel"></div></main>${footer()}`;
+  const loadWarning=adminLoadWarnings.length?`<div class="info-box admin-load-warning">⚠ ${adminLoadWarnings.join(' · ')} 데이터를 최신 상태로 불러오지 못했습니다. 네트워크가 안정되면 새로고침해 주세요.</div>`:'';
+  app.innerHTML=`${nav('admin')}<main class="admin-wrap"><section class="admin-hero"><div><span class="eyebrow">⚙ 관리자 화면</span><h1>일정 · 공지 · 보유목록 관리</h1><p>여기서 등록한 내용은 공개 페이지에 바로 반영됩니다.</p></div><div class="toolbar"><a class="btn" href="index.html">공개 화면 보기</a><button class="btn" id="logout">로그아웃</button></div></section><div class="info-box">현재 데이터는 Supabase에 저장됩니다. 일반 방문자는 조회만 가능하고, 로그인한 관리자만 추가·수정·삭제할 수 있습니다.</div>${loadWarning}<div class="tabs">${tabs.map(([v,l])=>`<button class="tab ${tab===v?'active':''}" data-tab="${v}">${l}</button>`).join('')}</div><div id="panel"></div></main>${footer()}`;
   document.getElementById('logout').onclick=async()=>{await DOTT_DB.signOut();renderLogin()};
   document.querySelectorAll('[data-tab]').forEach(b=>b.onclick=()=>{tab=b.dataset.tab;renderAdmin()});
   renderPanel();
@@ -373,7 +393,18 @@ function catalogPanel(p,kind){
   const descKey={boardgame:'boardgame_description',murder:'murder_description',deduction:'deduction_description'}[kind];
   const defaultDesc={boardgame:'도트에 있는 보드게임을 검색하고 인원·난이도·장르별로 골라보세요.',murder:'보유 중인 머더미스터리 시나리오를 한눈에 확인하세요.',deduction:'추리·사건 해결형 게임 보유 목록을 확인하세요.'}[kind];
   const currentDesc=(data.settings&&data.settings[descKey])||defaultDesc;
-  p.innerHTML=`<div class="catalog-admin-desc"><label class="label">${title} 리스트 제목 아래 설명 문구</label><div class="catalog-admin-desc-row"><textarea id="catalogDesc" class="field" rows="2">${esc(currentDesc)}</textarea><button class="btn" id="saveCatalogDesc">설명 저장</button></div><div class="error" id="catalogDescErr"></div></div><div class="admin-tools"><div>${data[kind].length}개 등록됨</div><button class="btn primary" id="add">+ ${title} 추가</button></div><div class="table-wrap"><table class="table"><thead><tr><th>이름</th><th>인원</th><th>시간</th><th>난이도</th><th>장르</th><th>상태</th><th>관리</th></tr></thead><tbody>${data[kind].map(x=>`<tr><td><b>${esc(x.name)}</b></td><td>${x.min_players||'?'}~${x.max_players||'?'}인</td><td>${esc(x.playtime||'')}</td><td>${esc(x.difficulty||'')}</td><td>${esc(x.genre||'')}</td><td>${esc(x.status||'보유')}</td><td><div class="actions"><button class="icon-btn" data-edit="${x.id}">✎</button><button class="icon-btn" data-del="${x.id}">♲</button></div></td></tr>`).join('')||`<tr><td colspan="7">등록된 ${title}이 없습니다.</td></tr>`}</tbody></table></div>`;
+  const rows=data[kind];
+  const head=kind==='murder'
+    ? '<th>게임명</th><th>인원</th><th>시간</th><th>난이도</th><th>상태 및 위치</th><th>비고</th><th>관리</th>'
+    : '<th>이름</th><th>인원</th><th>시간</th><th>난이도</th><th>장르</th><th>상태</th><th>관리</th>';
+  const body=rows.map(x=>{
+    if(kind==='murder'){
+      const onlineBadge=x.online_murder?'<span class="online-murder-badge">온라인머미</span>':'';
+      return `<tr><td><b>${esc(x.name)}</b>${onlineBadge}</td><td>${x.min_players||'?'}~${x.max_players||'?'}인</td><td>${esc(x.playtime||'')}</td><td>${esc(x.difficulty||'-')}</td><td>${esc(x.status||'보유')}</td><td>${esc(x.note||'-')}</td><td><div class="actions"><button class="icon-btn" data-edit="${x.id}">✎</button><button class="icon-btn" data-del="${x.id}">♲</button></div></td></tr>`;
+    }
+    return `<tr><td><b>${esc(x.name)}</b></td><td>${x.min_players||'?'}~${x.max_players||'?'}인</td><td>${esc(x.playtime||'')}</td><td>${esc(x.difficulty||'')}</td><td>${esc(x.genre||'')}</td><td>${esc(x.status||'보유')}</td><td><div class="actions"><button class="icon-btn" data-edit="${x.id}">✎</button><button class="icon-btn" data-del="${x.id}">♲</button></div></td></tr>`;
+  }).join('')||`<tr><td colspan="${kind==='murder'?7:7}">등록된 ${title}이 없습니다.</td></tr>`;
+  p.innerHTML=`<div class="catalog-admin-desc"><label class="label">${title} 리스트 제목 아래 설명 문구</label><div class="catalog-admin-desc-row"><textarea id="catalogDesc" class="field" rows="2">${esc(currentDesc)}</textarea><button class="btn" id="saveCatalogDesc">설명 저장</button></div><div class="error" id="catalogDescErr"></div></div><div class="admin-tools"><div>${rows.length}개 등록됨</div><button class="btn primary" id="add">+ ${title} 추가</button></div><div class="table-wrap"><table class="table"><thead><tr>${head}</tr></thead><tbody>${body}</tbody></table></div>`;
   document.getElementById('saveCatalogDesc').onclick=async()=>{
     const btn=document.getElementById('saveCatalogDesc'),err=document.getElementById('catalogDescErr');
     btn.disabled=true;err.textContent='';
@@ -388,8 +419,46 @@ function catalogPanel(p,kind){
 }
 
 function catalogModal(x={},kind){
-  showModal(x.id?'항목 수정':'항목 추가',`<div class="form-grid"><div class="full"><label class="label">이름</label><input id="f_name" class="field" value="${esc(x.name||'')}"></div><div><label class="label">최소 인원</label><input id="f_min" class="field" type="number" min="1" value="${x.min_players||2}"></div><div><label class="label">최대 인원</label><input id="f_max" class="field" type="number" min="1" value="${x.max_players||4}"></div><div><label class="label">플레이시간</label><input id="f_time" class="field" placeholder="60~90분" value="${esc(x.playtime||'')}"></div><div><label class="label">난이도</label><select id="f_diff" class="field"><option value="">선택 안함</option>${['쉬움','보통','어려움'].map(v=>`<option ${x.difficulty===v?'selected':''}>${v}</option>`).join('')}</select></div><div><label class="label">장르</label><input id="f_genre" class="field" placeholder="전략 / 파티 / 추리" value="${esc(x.genre||'')}"></div><div><label class="label">상태</label><select id="f_status" class="field">${['보유','대여중','수리중','분실'].map(v=>`<option ${x.status===v?'selected':''}>${v}</option>`).join('')}</select></div><div class="full"><label class="label">소유주</label><textarea id="f_note" class="field" rows="3">${esc(x.note||'')}</textarea></div></div>`,async m=>{
-    const row={kind,name:m.querySelector('#f_name').value.trim(),min_players:+m.querySelector('#f_min').value||null,max_players:+m.querySelector('#f_max').value||null,playtime:m.querySelector('#f_time').value.trim(),difficulty:m.querySelector('#f_diff').value,genre:m.querySelector('#f_genre').value.trim(),status:m.querySelector('#f_status').value,note:m.querySelector('#f_note').value.trim()};
+  const boardgameGenres=['전략','파티/패밀리','협력'];
+  const murderDifficulties=['입문','쉬움','중간','어려움','매우어려움'];
+  const murderStatuses=['보유','대여중','분실','도트','공방'];
+  const nameField=kind==='murder'
+    ? `<div class="full murder-name-row"><div><label class="label">게임명</label><input id="f_name" class="field" value="${esc(x.name||'')}"></div><label class="murder-online-check murder-online-check-name"><input id="f_online_murder" type="checkbox" ${x.online_murder?'checked':''}> 온라인머미</label></div>`
+    : `<div class="full"><label class="label">이름</label><input id="f_name" class="field" value="${esc(x.name||'')}"></div>`;
+  const commonTop=`<div class="form-grid">${nameField}<div><label class="label">최소 인원</label><input id="f_min" class="field" type="number" min="1" value="${x.min_players||2}"></div><div><label class="label">최대 인원</label><input id="f_max" class="field" type="number" min="1" value="${x.max_players||4}"></div><div><label class="label">플레이시간</label><input id="f_time" class="field" placeholder="60~90분" value="${esc(x.playtime||'')}"></div>`;
+  let middle='';
+  let bottom='';
+  if(kind==='murder'){
+    middle=`<div><label class="label">난이도</label><select id="f_diff" class="field"><option value="">선택 안함</option>${murderDifficulties.map(v=>`<option value="${v}" ${x.difficulty===v?'selected':''}>${v}</option>`).join('')}</select></div>`;
+    bottom=`<div><label class="label">상태 및 위치</label><select id="f_status" class="field">${murderStatuses.map(v=>`<option value="${v}" ${x.status===v?'selected':''}>${v}</option>`).join('')}</select></div><div class="full"><label class="label">비고</label><textarea id="f_note" class="field" rows="3" placeholder="자유롭게 입력">${esc(x.note||'')}</textarea></div></div>`;
+  }else{
+    const genreField=kind==='boardgame'
+      ? `<select id="f_genre" class="field"><option value="">선택 안함</option>${boardgameGenres.map(v=>`<option value="${esc(v)}" ${x.genre===v?'selected':''}>${esc(v)}</option>`).join('')}</select>`
+      : `<input id="f_genre" class="field" placeholder="장르 입력" value="${esc(x.genre||'')}">`;
+    middle=`<div><label class="label">난이도</label><select id="f_diff" class="field"><option value="">선택 안함</option>${['쉬움','보통','어려움'].map(v=>`<option value="${v}" ${x.difficulty===v?'selected':''}>${v}</option>`).join('')}</select></div><div><label class="label">장르</label>${genreField}</div>`;
+    bottom=`<div><label class="label">상태</label><select id="f_status" class="field">${['보유','대여중','수리중','분실'].map(v=>`<option value="${v}" ${x.status===v?'selected':''}>${v}</option>`).join('')}</select></div><div class="full"><label class="label">소유주</label><textarea id="f_note" class="field" rows="3">${esc(x.note||'')}</textarea></div></div>`;
+  }
+  showModal(x.id?'항목 수정':'항목 추가',commonTop+middle+bottom,async m=>{
+    const row={
+      kind,
+      name:m.querySelector('#f_name').value.trim(),
+      min_players:+m.querySelector('#f_min').value||null,
+      max_players:+m.querySelector('#f_max').value||null,
+      playtime:m.querySelector('#f_time').value.trim(),
+      status:m.querySelector('#f_status').value,
+      note:m.querySelector('#f_note').value.trim()
+    };
+    if(kind==='murder'){
+      row.difficulty=m.querySelector('#f_diff').value;
+      row.genre=null;
+      row.participation_condition=null;
+      row.online_murder=!!m.querySelector('#f_online_murder')?.checked;
+    }else{
+      row.difficulty=m.querySelector('#f_diff').value;
+      row.genre=m.querySelector('#f_genre').value.trim();
+      row.participation_condition=null;
+      row.online_murder=false;
+    }
     if(!row.name)throw new Error('이름을 입력해 주세요.');
     x.id?await DOTT_DB.update('catalog_items',x.id,row):await DOTT_DB.insert('catalog_items',row);
     await loadAll();renderAdmin();toast('저장했습니다.');
