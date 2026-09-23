@@ -3,10 +3,11 @@
 .catalog-page .hero p{font-size:14px!important;line-height:1.7!important}
 
 
-/* DOTT v55: 보드게임/추리게임 모바일 칸 비율 재정리 */
+/* DOTT v56: 보드게임/추리게임 PC·모바일 헤더 중앙정렬 + 칸 비율 재정리 */
 .catalog-kind-table{table-layout:fixed!important}
 .catalog-kind-table th,.catalog-kind-table td{text-align:center!important;vertical-align:middle}
-.catalog-kind-table th:first-child,.catalog-kind-table td:first-child{text-align:left!important}
+.catalog-kind-table th{text-align:center!important}
+.catalog-kind-table td:first-child{text-align:left!important}
 .catalog-kind-table .catalog-name{min-width:0}
 .catalog-name-inner{display:flex;align-items:center;gap:6px;min-width:0}
 .catalog-kind-table .catalog-name-text{display:block;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
@@ -20,26 +21,26 @@
 .catalog-status.status-workshop{background:#f1ebfb;color:#6c53a3;border-color:#ddd1f0}
 
 /* PC 비율 */
-.catalog-kind-table.boardgame-table th:nth-child(1),.catalog-kind-table.boardgame-table td:nth-child(1){width:29%!important}
-.catalog-kind-table.boardgame-table th:nth-child(2),.catalog-kind-table.boardgame-table td:nth-child(2){width:10%!important}
-.catalog-kind-table.boardgame-table th:nth-child(3),.catalog-kind-table.boardgame-table td:nth-child(3){width:11%!important}
-.catalog-kind-table.boardgame-table th:nth-child(4),.catalog-kind-table.boardgame-table td:nth-child(4){width:11%!important}
-.catalog-kind-table.boardgame-table th:nth-child(5),.catalog-kind-table.boardgame-table td:nth-child(5){width:14%!important}
-.catalog-kind-table.boardgame-table th:nth-child(6),.catalog-kind-table.boardgame-table td:nth-child(6){width:13%!important}
-.catalog-kind-table.boardgame-table th:nth-child(7),.catalog-kind-table.boardgame-table td:nth-child(7){width:12%!important}
+.catalog-kind-table.boardgame-table th:nth-child(1),.catalog-kind-table.boardgame-table td:nth-child(1){width:33%!important}
+.catalog-kind-table.boardgame-table th:nth-child(2),.catalog-kind-table.boardgame-table td:nth-child(2){width:9%!important}
+.catalog-kind-table.boardgame-table th:nth-child(3),.catalog-kind-table.boardgame-table td:nth-child(3){width:10%!important}
+.catalog-kind-table.boardgame-table th:nth-child(4),.catalog-kind-table.boardgame-table td:nth-child(4){width:10%!important}
+.catalog-kind-table.boardgame-table th:nth-child(5),.catalog-kind-table.boardgame-table td:nth-child(5){width:15%!important}
+.catalog-kind-table.boardgame-table th:nth-child(6),.catalog-kind-table.boardgame-table td:nth-child(6){width:12%!important}
+.catalog-kind-table.boardgame-table th:nth-child(7),.catalog-kind-table.boardgame-table td:nth-child(7){width:11%!important}
 
-.catalog-kind-table.deduction-table th:nth-child(1),.catalog-kind-table.deduction-table td:nth-child(1){width:27%!important}
-.catalog-kind-table.deduction-table th:nth-child(2),.catalog-kind-table.deduction-table td:nth-child(2){width:10%!important}
-.catalog-kind-table.deduction-table th:nth-child(3),.catalog-kind-table.deduction-table td:nth-child(3){width:11%!important}
-.catalog-kind-table.deduction-table th:nth-child(4),.catalog-kind-table.deduction-table td:nth-child(4){width:11%!important}
-.catalog-kind-table.deduction-table th:nth-child(5),.catalog-kind-table.deduction-table td:nth-child(5){width:16%!important}
-.catalog-kind-table.deduction-table th:nth-child(6),.catalog-kind-table.deduction-table td:nth-child(6){width:13%!important}
-.catalog-kind-table.deduction-table th:nth-child(7),.catalog-kind-table.deduction-table td:nth-child(7){width:12%!important}
+.catalog-kind-table.deduction-table th:nth-child(1),.catalog-kind-table.deduction-table td:nth-child(1){width:31%!important}
+.catalog-kind-table.deduction-table th:nth-child(2),.catalog-kind-table.deduction-table td:nth-child(2){width:9%!important}
+.catalog-kind-table.deduction-table th:nth-child(3),.catalog-kind-table.deduction-table td:nth-child(3){width:10%!important}
+.catalog-kind-table.deduction-table th:nth-child(4),.catalog-kind-table.deduction-table td:nth-child(4){width:10%!important}
+.catalog-kind-table.deduction-table th:nth-child(5),.catalog-kind-table.deduction-table td:nth-child(5){width:17%!important}
+.catalog-kind-table.deduction-table th:nth-child(6),.catalog-kind-table.deduction-table td:nth-child(6){width:12%!important}
+.catalog-kind-table.deduction-table th:nth-child(7),.catalog-kind-table.deduction-table td:nth-child(7){width:11%!important}
 
 @media(max-width:700px){
   .catalog-kind-table{width:100%!important;min-width:0!important;table-layout:fixed!important}
   .catalog-kind-table th,.catalog-kind-table td{padding:6px 2px!important;font-size:8.4px!important;overflow:hidden}
-  .catalog-kind-table th{font-size:8.1px!important}
+  .catalog-kind-table th{font-size:8px!important;letter-spacing:-.22px;text-align:center!important}
   .catalog-kind-table .catalog-name{padding-left:5px!important}
   .catalog-name-inner{gap:3px}
   .catalog-kind-table .catalog-name-text{font-size:8.5px}
@@ -47,21 +48,21 @@
   .catalog-kind-table .boardgame-expansion-badge{margin-left:0;padding:2px 4px;font-size:7px}
   .catalog-kind-table .catalog-status{font-size:7.6px;padding:2px 3px}
 
-  .catalog-kind-table.boardgame-table th:nth-child(1),.catalog-kind-table.boardgame-table td:nth-child(1){width:27%!important}
+  .catalog-kind-table.boardgame-table th:nth-child(1),.catalog-kind-table.boardgame-table td:nth-child(1){width:32%!important}
   .catalog-kind-table.boardgame-table th:nth-child(2),.catalog-kind-table.boardgame-table td:nth-child(2){width:8%!important}
   .catalog-kind-table.boardgame-table th:nth-child(3),.catalog-kind-table.boardgame-table td:nth-child(3){width:9%!important}
   .catalog-kind-table.boardgame-table th:nth-child(4),.catalog-kind-table.boardgame-table td:nth-child(4){width:10%!important}
   .catalog-kind-table.boardgame-table th:nth-child(5),.catalog-kind-table.boardgame-table td:nth-child(5){width:15%!important}
-  .catalog-kind-table.boardgame-table th:nth-child(6),.catalog-kind-table.boardgame-table td:nth-child(6){width:14%!important}
-  .catalog-kind-table.boardgame-table th:nth-child(7),.catalog-kind-table.boardgame-table td:nth-child(7){width:17%!important}
+  .catalog-kind-table.boardgame-table th:nth-child(6),.catalog-kind-table.boardgame-table td:nth-child(6){width:13%!important}
+  .catalog-kind-table.boardgame-table th:nth-child(7),.catalog-kind-table.boardgame-table td:nth-child(7){width:13%!important}
 
-  .catalog-kind-table.deduction-table th:nth-child(1),.catalog-kind-table.deduction-table td:nth-child(1){width:29%!important}
+  .catalog-kind-table.deduction-table th:nth-child(1),.catalog-kind-table.deduction-table td:nth-child(1){width:30%!important}
   .catalog-kind-table.deduction-table th:nth-child(2),.catalog-kind-table.deduction-table td:nth-child(2){width:8%!important}
   .catalog-kind-table.deduction-table th:nth-child(3),.catalog-kind-table.deduction-table td:nth-child(3){width:9%!important}
   .catalog-kind-table.deduction-table th:nth-child(4),.catalog-kind-table.deduction-table td:nth-child(4){width:10%!important}
-  .catalog-kind-table.deduction-table th:nth-child(5),.catalog-kind-table.deduction-table td:nth-child(5){width:16%!important}
-  .catalog-kind-table.deduction-table th:nth-child(6),.catalog-kind-table.deduction-table td:nth-child(6){width:14%!important}
-  .catalog-kind-table.deduction-table th:nth-child(7),.catalog-kind-table.deduction-table td:nth-child(7){width:14%!important}
+  .catalog-kind-table.deduction-table th:nth-child(5),.catalog-kind-table.deduction-table td:nth-child(5){width:18%!important}
+  .catalog-kind-table.deduction-table th:nth-child(6),.catalog-kind-table.deduction-table td:nth-child(6){width:13%!important}
+  .catalog-kind-table.deduction-table th:nth-child(7),.catalog-kind-table.deduction-table td:nth-child(7){width:12%!important}
 }
 
-</style></head><body data-kind="deduction"><div class="shell" id="app"></div><script src="bootstrap-v33.js?v=dott-v55-catalog" data-entry="catalog-v54.js"></script></body></html>
+</style></head><body data-kind="deduction"><div class="shell" id="app"></div><script src="bootstrap-v33.js?v=dott-v56-catalog" data-entry="catalog-v54.js"></script></body></html>
