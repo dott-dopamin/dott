@@ -1,4 +1,4 @@
-<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>DOTT 보드게임</title><link rel="stylesheet" href="styles-v33.css?v=68"><style>
+<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>DOTT 보드게임</title><link rel="stylesheet" href="styles-v33.css?v=72"><style>
 /* 보유 리스트 설명문 폰트 - 머더미스터리와 동일 */
 .catalog-page .hero p{font-size:14px!important;line-height:1.7!important}
 
@@ -6,7 +6,7 @@
 .boardgame-expansion-badge{display:inline-flex;align-items:center;padding:3px 7px;border-radius:999px;background:#fde8e8;border:1px solid #f3b9b9;color:#b83232;font-size:9.5px;font-weight:800;line-height:1;white-space:nowrap}
 
 
-/* DOTT v57: 보드게임/추리게임 PC·모바일 칸 균형 재배치 */
+/* DOTT v72: 모바일 표 폰트/비율을 머더미스터리 기준에 맞춰 재정리 */
 .catalog-kind-table{table-layout:fixed!important}
 .catalog-kind-table th,.catalog-kind-table td{text-align:center!important;vertical-align:middle}
 .catalog-kind-table th{text-align:center!important}
@@ -42,31 +42,32 @@
 
 @media(max-width:700px){
   .catalog-kind-table{width:100%!important;min-width:0!important;table-layout:fixed!important}
-  .catalog-kind-table th,.catalog-kind-table td{padding:6px 2px!important;font-size:8.4px!important;overflow:hidden}
-  .catalog-kind-table th{font-size:8px!important;letter-spacing:-.22px;text-align:center!important}
-  .catalog-kind-table .catalog-name{padding-left:5px!important}
-  .catalog-name-inner{gap:3px}
-  .catalog-kind-table .catalog-name-text{font-size:8.5px}
+  .catalog-kind-table th,.catalog-kind-table td{padding:7px 2px!important;font-size:7.2px!important;overflow:hidden;vertical-align:middle!important}
+  .catalog-kind-table th{font-size:6.7px!important;letter-spacing:-.28px;text-align:center!important;white-space:nowrap!important}
+  .catalog-kind-table .catalog-name{padding-left:4px!important}
+  .catalog-name-inner{display:flex!important;align-items:flex-start!important;gap:2px!important;min-width:0!important;width:100%!important;max-width:100%!important}
+  .catalog-kind-table .catalog-name-text{display:-webkit-box!important;min-width:0!important;overflow:hidden!important;text-overflow:clip!important;white-space:normal!important;-webkit-box-orient:vertical!important;-webkit-line-clamp:2!important;line-height:1.22!important;overflow-wrap:anywhere!important;font-size:7.2px!important}
   .catalog-kind-table td:nth-child(2),.catalog-kind-table td:nth-child(3),.catalog-kind-table td:nth-child(4),.catalog-kind-table td:nth-child(5),.catalog-kind-table td:nth-child(6),.catalog-kind-table td:nth-child(7){letter-spacing:-.18px}
-  .catalog-kind-table .boardgame-expansion-badge{margin-left:0;padding:2px 4px;font-size:7px}
-  .catalog-kind-table .catalog-status{font-size:7.6px;padding:2px 3px}
+  .catalog-kind-table .boardgame-expansion-badge{margin-left:0;padding:2px 4px;font-size:6.8px;line-height:1;flex:0 0 auto;align-self:flex-start}
+  .catalog-kind-table .catalog-status{font-size:6.9px;padding:2px 4px;white-space:nowrap!important}
+  .catalog-kind-table .catalog-owner{font-size:7px!important}
 
-  /* DOTT v61 mobile: 60~90분 한 줄 + 난이도 5칸 전체 노출 기준 재배분 */
-  .catalog-kind-table.boardgame-table th:nth-child(1),.catalog-kind-table.boardgame-table td:nth-child(1){width:24%!important}
+  /* v72 mobile columns: game-name font size synced to murder list and widths rebalanced for 2-line titles + 5-box meter */
+  .catalog-kind-table.boardgame-table th:nth-child(1),.catalog-kind-table.boardgame-table td:nth-child(1){width:30%!important}
   .catalog-kind-table.boardgame-table th:nth-child(2),.catalog-kind-table.boardgame-table td:nth-child(2){width:9%!important}
-  .catalog-kind-table.boardgame-table th:nth-child(3),.catalog-kind-table.boardgame-table td:nth-child(3){width:14%!important}
-  .catalog-kind-table.boardgame-table th:nth-child(4),.catalog-kind-table.boardgame-table td:nth-child(4){width:17%!important}
-  .catalog-kind-table.boardgame-table th:nth-child(5),.catalog-kind-table.boardgame-table td:nth-child(5){width:11%!important}
-  .catalog-kind-table.boardgame-table th:nth-child(6),.catalog-kind-table.boardgame-table td:nth-child(6){width:13%!important}
-  .catalog-kind-table.boardgame-table th:nth-child(7),.catalog-kind-table.boardgame-table td:nth-child(7){width:12%!important}
+  .catalog-kind-table.boardgame-table th:nth-child(3),.catalog-kind-table.boardgame-table td:nth-child(3){width:13%!important}
+  .catalog-kind-table.boardgame-table th:nth-child(4),.catalog-kind-table.boardgame-table td:nth-child(4){width:16%!important}
+  .catalog-kind-table.boardgame-table th:nth-child(5),.catalog-kind-table.boardgame-table td:nth-child(5){width:12%!important}
+  .catalog-kind-table.boardgame-table th:nth-child(6),.catalog-kind-table.boardgame-table td:nth-child(6){width:11%!important}
+  .catalog-kind-table.boardgame-table th:nth-child(7),.catalog-kind-table.boardgame-table td:nth-child(7){width:9%!important}
 
-  .catalog-kind-table.deduction-table th:nth-child(1),.catalog-kind-table.deduction-table td:nth-child(1){width:24%!important}
+  .catalog-kind-table.deduction-table th:nth-child(1),.catalog-kind-table.deduction-table td:nth-child(1){width:32%!important}
   .catalog-kind-table.deduction-table th:nth-child(2),.catalog-kind-table.deduction-table td:nth-child(2){width:9%!important}
-  .catalog-kind-table.deduction-table th:nth-child(3),.catalog-kind-table.deduction-table td:nth-child(3){width:14%!important}
-  .catalog-kind-table.deduction-table th:nth-child(4),.catalog-kind-table.deduction-table td:nth-child(4){width:17%!important}
+  .catalog-kind-table.deduction-table th:nth-child(3),.catalog-kind-table.deduction-table td:nth-child(3){width:13%!important}
+  .catalog-kind-table.deduction-table th:nth-child(4),.catalog-kind-table.deduction-table td:nth-child(4){width:16%!important}
   .catalog-kind-table.deduction-table th:nth-child(5),.catalog-kind-table.deduction-table td:nth-child(5){width:11%!important}
-  .catalog-kind-table.deduction-table th:nth-child(6),.catalog-kind-table.deduction-table td:nth-child(6){width:13%!important}
-  .catalog-kind-table.deduction-table th:nth-child(7),.catalog-kind-table.deduction-table td:nth-child(7){width:12%!important}
+  .catalog-kind-table.deduction-table th:nth-child(6),.catalog-kind-table.deduction-table td:nth-child(6){width:10%!important}
+  .catalog-kind-table.deduction-table th:nth-child(7),.catalog-kind-table.deduction-table td:nth-child(7){width:9%!important}
 }
 
 
