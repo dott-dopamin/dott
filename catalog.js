@@ -23,7 +23,7 @@ function filterHtml(){
 function render(){
   const [title,defaultDesc]=labels[kind];
   const desc=(settings&&settings[descriptionKeys[kind]])||defaultDesc;
-  app.innerHTML=`${nav(kind)}<main class="page catalog-page"><section class="hero"><span class="eyebrow">🎲 보유 현황</span><h1>${title} 리스트</h1><p>${nl2br(desc)}</p><div class="stat-row"><span class="stat-pill">전체 <b>${items.length}개</b></span></div></section><section class="section"><div class="filters ${kind==='murder'?'filters-compact':''}">${filterHtml()}</div><div class="catalog-meta"><span id="count"></span></div><div id="catalogContent"></div></section></main>${footer()}`;
+  app.innerHTML=`${nav(kind)}<main class="page catalog-page"><section class="hero"><span class="eyebrow">🎲 보유 현황</span><h1>${title} 리스트</h1><p>${nl2br(desc)}</p><div class="stat-row"><span class="stat-pill"><span class="stat-label">전체</span><b>${items.length}개</b></span></div></section><section class="section"><div class="filters ${kind==='murder'?'filters-compact':''}">${filterHtml()}</div><div class="catalog-meta"><span id="count"></span></div><div id="catalogContent"></div></section></main>${footer()}`;
   ['q','players','difficulty','genre'].forEach(id=>{const el=document.getElementById(id);if(el)el.oninput=paint});
   paint();
 }
