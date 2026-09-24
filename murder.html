@@ -123,7 +123,7 @@ body.murder-notice-open{overflow:hidden}
     <section class="hero">
       <span class="eyebrow">🎲 보유 현황</span>
       <h1>머더미스터리 리스트</h1>
-      <p id="desc"></p>
+      <p id="desc">• 이용 시 소유주에게 참가비 확인 후 허락받고 사용해 주세요.\n• 기물 파손 및 분실 시 소유주에게 책임지고 배상하세요. (CCTV 작동중)</p>
       <div class="hero-actions">
         <div class="stat-row"><span class="stat-pill">전체 <b id="total">0개</b></span></div>
         <div class="notice-action-row"><button id="murderNoticeBtn" class="notice-open-btn is-loading" type="button" aria-label="머더미스터리 공지">📌 공지</button></div>
@@ -150,6 +150,8 @@ body.murder-notice-open{overflow:hidden}
   const KEY='sb_publishable_wp_40b8UIumyLkLhvflzTw_08EaA1wZ';
   const ONLINE='__DOTT_ONLINE_MURDER__';
   const CACHE='dott_murder_v41';
+  const DESC_CACHE='dott_murder_description_v1';
+  const DEFAULT_DESC='• 이용 시 소유주에게 참가비 확인 후 허락받고 사용해 주세요.\n• 기물 파손 및 분실 시 소유주에게 책임지고 배상하세요. (CCTV 작동중)';
   let items=[];
   let murderNotice='';
   let murderNoticeButtonLabel='이용수칙 · 공지 보기';
@@ -173,9 +175,20 @@ body.murder-notice-open{overflow:hidden}
     }
     throw last||new Error('연결 오류');
   }
+  try{
+    const cachedDesc=localStorage.getItem(DESC_CACHE);
+    if(cachedDesc&&cachedDesc.trim())$('desc').textContent=cachedDesc;
+  }catch(_e){}
+
   function applySettings(st){
     if(!st)return;
-    $('desc').textContent=st.murder_description||'';
+    const liveDesc=String(st.murder_description||'').trim();
+    if(liveDesc){
+      $('desc').textContent=liveDesc;
+      try{localStorage.setItem(DESC_CACHE,liveDesc)}catch(_e){}
+    }else if(!$('desc').textContent.trim()){
+      $('desc').textContent=DEFAULT_DESC;
+    }
     murderNotice=st.murder_notice||'';
     murderNoticeButtonLabel=(st.murder_notice_button_label||'이용수칙 · 공지 보기').trim()||'이용수칙 · 공지 보기';
     $('murderNoticeBtn').textContent='📌 '+murderNoticeButtonLabel;
@@ -250,8 +263,19 @@ body.murder-notice-open{overflow:hidden}
   function setItems(rows){items=Array.isArray(rows)?rows:[];$('total').textContent=`${items.length}개`;paint();}
   ['q','players','difficulty'].forEach(id=>$(id).addEventListener('input',paint));
   let cached=null;try{cached=JSON.parse(localStorage.getItem(CACHE)||'null')}catch(_e){}
-  // v65: do not paint cached settings/items first and then overwrite them with live data.
-  // That two-pass paint was the cause of the brief 'text underneath / covered over' flicker.
+  let renderedFromCache=false;
+
+  // Instant first paint:
+  // if we already have a previously fetched murder list/settings, paint them synchronously
+  // before the browser's first visible frame. Live data is fetched afterward and only repainted
+  // when something actually changed, so there is no 'title first -> rest later' double-step.
+  if(cached&&Array.isArray(cached.items)){
+    if(cached.settings)applySettings(cached.settings);
+    setItems(cached.items);
+    $('notice').innerHTML='';
+    renderedFromCache=true;
+  }
+
   Promise.allSettled([
     get('/rest/v1/catalog_items?select=kind,name,min_players,max_players,playtime,difficulty,genre,status,location,note&kind=eq.murder&order=name.asc'),
     get('/rest/v1/site_settings?select=*&id=eq.main&limit=1')
@@ -259,19 +283,22 @@ body.murder-notice-open{overflow:hidden}
     let latestSettings=null;
     if(settings.status==='fulfilled'&&Array.isArray(settings.value)&&settings.value[0]){
       latestSettings=settings.value[0];
-      applySettings(latestSettings);
+      const prevSettings=cached&&cached.settings?cached.settings:null;
+      const settingsChanged=!renderedFromCache||JSON.stringify(prevSettings)!==JSON.stringify(latestSettings);
+      if(settingsChanged)applySettings(latestSettings);
     }else if(cached&&cached.settings){
       latestSettings=cached.settings;
-      applySettings(latestSettings);
+      if(!renderedFromCache)applySettings(latestSettings);
     }else{
       // No settings were available. Reveal the fallback only now, after the fetch attempt,
       // so an old hard-coded label never flashes during page transition.
-      applySettings({murder_description:'',murder_notice:'',murder_notice_button_label:'이용수칙 · 공지 보기'});
+      applySettings({murder_description:$('desc').textContent||DEFAULT_DESC,murder_notice:'',murder_notice_button_label:'이용수칙 · 공지 보기'});
     }
 
     if(games.status==='fulfilled'){
       const liveItems=games.value||[];
-      setItems(liveItems);
+      const itemsChanged=!renderedFromCache||JSON.stringify(cached&&cached.items||[])!==JSON.stringify(liveItems);
+      if(itemsChanged)setItems(liveItems);
       try{localStorage.setItem(CACHE,JSON.stringify({items:liveItems,settings:latestSettings,ts:Date.now()}))}catch(_e){}
       $('notice').innerHTML='';
     }else if(cached&&Array.isArray(cached.items)){
