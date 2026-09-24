@@ -9,7 +9,7 @@
 <title>DOTT 머더미스터리</title>
 <!-- v71: public UI baseline shared with boardgame/deduction; no duplicated topbar/hero CSS -->
 <link rel="stylesheet" href="styles.css?v=20260924-final">
-<!-- DOTT murder v71: shared public UI baseline + murder-only overrides -->
+<!-- DOTT murder standardized layout: shared public catalog spacing + murder-only features -->
 <style>
 /*
   v71 구조 정리 원칙
@@ -17,16 +17,11 @@
   - 이 파일에서는 머더미스터리 전용 기능과 표/공지 팝업만 정의한다.
   - 상단 공통 UI를 이 파일에서 다시 정의하지 않아 다른 공개 페이지와 크기가 어긋나는 일을 막는다.
 */
-html{overflow-y:scroll;scrollbar-gutter:stable}
-.murder-page .hero p{white-space:pre-wrap;font-size:14px;line-height:1.7;min-height:48px}
-.murder-page .hero-actions{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-top:18px;min-height:38px}
-.murder-page .hero-actions .stat-row{margin-top:0}
-.murder-page .section{margin-top:20px}
+ .murder-page .hero p{white-space:pre-wrap;font-size:14px;line-height:1.7}
 #content{min-height:120px}
 
 /* 필터: 공통 field 디자인을 사용하고 배치만 머더용 3개로 고정 */
-.murder-page .filters.filters-compact{display:grid;grid-template-columns:minmax(180px,1.4fr) minmax(120px,.7fr) minmax(140px,.7fr);gap:10px;margin:20px 0 16px}
-.murder-page .catalog-meta{margin:0 0 14px;font-size:16px}
+.murder-page .filters.filters-compact{display:grid;grid-template-columns:minmax(180px,1.4fr) minmax(120px,.7fr) minmax(140px,.7fr);gap:10px;margin:20px 0}
 
 /* 머더 리스트 전용 표 */
 .murder-page .catalog-table-wrap{overflow:hidden}
@@ -62,10 +57,9 @@ html{overflow-y:scroll;scrollbar-gutter:stable}
 .retry{margin-left:8px;border:1px solid #ddc6b0;background:#fff;border-radius:8px;padding:5px 8px;color:#765c43;cursor:pointer}
 
 /* 머더 공지 버튼/팝업 전용 */
-.notice-action-row{display:flex;align-items:center;gap:10px;margin:0}
-.notice-open-btn{border:1px solid #e8a27f;border-radius:10px;background:var(--accent-soft);padding:10px 14px;color:#9a3f18;font-size:12px;font-weight:800;cursor:pointer;box-shadow:0 2px 7px rgba(233,93,32,.10);transition:background .16s ease,border-color .16s ease,box-shadow .16s ease,transform .16s ease;min-width:156px;text-align:center;white-space:nowrap}
+.notice-open-btn{border:1px solid #e8a27f;border-radius:10px;background:var(--accent-soft);padding:7px 10px;color:#9a3f18;font-size:12px;font-weight:800;cursor:pointer;box-shadow:none;transition:background .16s ease,border-color .16s ease,transform .16s ease;text-align:center;white-space:nowrap}
 .notice-open-btn.is-loading{visibility:hidden}
-.notice-open-btn:hover{background:#ffdccc;border-color:#df8458;box-shadow:0 5px 13px rgba(233,93,32,.16);transform:translateY(-1px)}
+.notice-open-btn:hover{background:#ffdccc;border-color:#df8458;transform:translateY(-1px)}
 .notice-open-btn:focus-visible{outline:3px solid rgba(233,93,32,.20);outline-offset:2px}
 .murder-notice-backdrop{position:fixed;inset:0;z-index:400;display:none;align-items:center;justify-content:center;padding:18px;background:rgba(35,29,24,.46)}
 .murder-notice-backdrop.open{display:flex}
@@ -79,10 +73,7 @@ body.murder-notice-open{overflow:hidden}
 
 @media(max-width:700px){
   /* 상단/메뉴/페이지/제목은 공통 CSS에 맡기고 머더 고유 영역만 조정 */
-  .murder-page .hero p{min-height:72px}
-  .murder-page .hero-actions{gap:8px;margin-top:16px;min-height:36px}
-  .notice-open-btn{padding:9px 11px;font-size:11px}
-  .murder-page .section{margin-top:16px}
+  .notice-open-btn{padding:7px 9px;font-size:11px}
   .murder-page .filters.filters-compact{grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:7px;margin:16px 0}
   .murder-page .filters .search-field{grid-column:1/-1}
   .murder-page .filters .field{padding:9px 8px;min-height:36px;font-size:11px;line-height:1.2}
@@ -124,9 +115,9 @@ body.murder-notice-open{overflow:hidden}
       <span class="eyebrow">🎲 보유 현황</span>
       <h1>머더미스터리 리스트</h1>
       <p id="desc">• 이용 시 소유주에게 참가비 확인 후 허락받고 사용해 주세요.\n• 기물 파손 및 분실 시 소유주에게 책임지고 배상하세요. (CCTV 작동중)</p>
-      <div class="hero-actions">
-        <div class="stat-row"><span class="stat-pill">전체 <b id="total">0개</b></span></div>
-        <div class="notice-action-row"><button id="murderNoticeBtn" class="notice-open-btn is-loading" type="button" aria-label="머더미스터리 공지">📌 공지</button></div>
+      <div class="stat-row">
+        <span class="stat-pill">전체 <b id="total">0개</b></span>
+        <button id="murderNoticeBtn" class="notice-open-btn is-loading" type="button" aria-label="머더미스터리 공지">📌 공지</button>
       </div>
     </section>
     <section class="section">
