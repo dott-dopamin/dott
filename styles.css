@@ -750,6 +750,31 @@ body.modal-open{overflow:hidden;touch-action:none}
   .calendar-grid > .day .event-sub{font-size:8.2px}
 }
 
+
+/* ===== DOTT v41 PC 일정 클릭 인터랙션: 심플 hover ===== */
+@media(min-width:701px){
+  .calendar-grid > .day .day-event[role="button"]{
+    cursor:pointer !important;
+    position:relative;
+    z-index:1;
+    transition:transform .14s ease,filter .14s ease;
+    will-change:transform,filter;
+  }
+  .calendar-grid > .day .day-event[role="button"]:hover{
+    transform:translateY(-1px);
+    filter:brightness(.96);
+    z-index:2;
+  }
+  .calendar-grid > .day .day-event[role="button"]:active{
+    transform:translateY(0);
+    filter:brightness(.92);
+  }
+  .calendar-grid > .day .day-event[role="button"]:focus-visible{
+    outline:2px solid rgba(233,93,32,.72);
+    outline-offset:2px;
+  }
+}
+
 /* ===== DOTT v25 모바일 캘린더/일정관리 최적화 ===== */
 .schedule-date-mobile{display:none}
 
@@ -980,3 +1005,41 @@ body.calendar-detail-open{overflow:hidden}
   .catalog-table.murder-table th:nth-child(7),.catalog-table.murder-table td:nth-child(7){width:18%!important;padding-right:3px!important}
   .catalog-table.murder-table .online-murder-badge{font-size:6.4px!important;padding:2px 3px!important;margin-left:2px!important}
 }
+
+/* ===== DOTT v36 월별 단독 캘린더 + PC 일정 상세 팝업 ===== */
+.day.empty-day{
+  background:#fbf8f2;
+  min-height:142px;
+}
+.day.empty-day::after{content:none}
+.day-event[role="button"]{cursor:pointer}
+.day-event[role="button"]:focus-visible{outline:2px solid #d98a61;outline-offset:2px}
+@media(max-width:900px){.day.empty-day{min-height:132px}}
+@media(max-width:700px){.day.empty-day{min-height:122px}}
+@media(max-width:390px){.day.empty-day{min-height:116px}}
+
+/* v45: 보드게임 확장 배지 */
+.boardgame-expansion-badge{
+  display:inline-flex;
+  align-items:center;
+  margin-left:7px;
+  padding:3px 7px;
+  border-radius:999px;
+  background:#fde8e8;
+  color:#b33f45;
+  border:1px solid #f3c6c8;
+  font-size:9.5px;
+  font-weight:700;
+  line-height:1;
+  vertical-align:middle;
+  white-space:nowrap;
+}
+@media(max-width:700px){
+  .boardgame-expansion-badge{margin-left:3px;padding:2px 4px;font-size:7px}
+  .catalog-name{white-space:normal;line-height:1.15}
+}
+
+/* ===== DOTT FINAL CLEAN: admin-only catalog flag controls merged from legacy admin stylesheet ===== */
+.catalog-flag-check{display:inline-flex;align-items:center;gap:7px;font-size:12px;color:#5e554d;white-space:nowrap;cursor:pointer}
+.catalog-flag-check input{margin:0;accent-color:#c55358}
+@media(max-width:700px){.catalog-flag-check{font-size:10px}}

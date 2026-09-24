@@ -3,38 +3,30 @@
   const entry=bootScript?.dataset?.entry||'';
   const app=document.getElementById('app');
   const sleep=ms=>new Promise(r=>setTimeout(r,ms));
-  const BUILD='dott-v32';
+  const BUILD='dott-final-20260924';
 
   function loadScript(src,{timeout=9000,retries=2}={}){
     return (async()=>{
-      let lastErr;
+      let lastError;
       for(let attempt=0;attempt<=retries;attempt++){
         try{
           await new Promise((resolve,reject)=>{
             const s=document.createElement('script');
-            let done=false;
-            const finish=(ok,err)=>{
-              if(done)return;
-              done=true;
-              clearTimeout(timer);
-              if(!ok)s.remove();
-              ok?resolve():reject(err||new Error(`${src} 로드 실패`));
-            };
-            const timer=setTimeout(()=>finish(false,new Error(`${src} 로드 시간 초과`)),timeout);
+            const timer=setTimeout(()=>{s.remove();reject(new Error(`${src} 로딩 시간 초과`))},timeout);
             const join=src.includes('?')?'&':'?';
             s.src=`${src}${join}v=${BUILD}${attempt?`&retry=${Date.now()}_${attempt}`:''}`;
             s.async=false;
-            s.onload=()=>finish(true);
-            s.onerror=()=>finish(false,new Error(`${src} 로드 실패`));
+            s.onload=()=>{clearTimeout(timer);resolve()};
+            s.onerror=()=>{clearTimeout(timer);s.remove();reject(new Error(`${src} 로딩 실패`))};
             document.head.appendChild(s);
           });
           return;
         }catch(e){
-          lastErr=e;
-          if(attempt<retries)await sleep(350*(attempt+1));
+          lastError=e;
+          if(attempt<retries)await sleep(300*(attempt+1));
         }
       }
-      throw lastErr||new Error(`${src} 로드 실패`);
+      throw lastError||new Error(`${src} 로딩 실패`);
     })();
   }
 
@@ -48,8 +40,6 @@
 
   (async()=>{
     try{
-      // v30부터 Supabase 외부 CDN에 의존하지 않습니다.
-      // 브라우저 기본 fetch로 Data API/Auth에 직접 연결해 모바일 첫 접속 실패 지점을 줄였습니다.
       await loadScript('config.js',{timeout:6000,retries:2});
       await loadScript('store.js',{timeout:6000,retries:2});
       await loadScript('common.js',{timeout:6000,retries:2});

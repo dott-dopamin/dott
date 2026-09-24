@@ -14,7 +14,7 @@ let settings=null;
 function filterHtml(){
   const base=`<input class="field search-field" id="q" placeholder="게임명 검색"><select class="field" id="players"><option value="">인원 전체</option><option>2</option><option>3</option><option>4</option><option>5</option><option>6</option><option>7</option><option>8</option></select>`;
   if(kind==='murder')return base+`<select class="field" id="difficulty"><option value="">난이도 전체</option>${['입문','쉬움','중간','어려움','매우어려움'].map(v=>`<option value="${v}">${v}</option>`).join('')}</select>`;
-  const diff=`<select class="field" id="difficulty"><option value="">난이도 전체</option><option value="쉬움">쉬움</option><option value="보통">보통</option><option value="어려움">어려움</option></select>`;
+  const diff=`<select class="field" id="difficulty"><option value="">난이도 전체</option>${[1,2,3,4,5].map(v=>`<option value="${v}">${v}점대</option>`).join('')}</select>`;
   const genres=kind==='boardgame'?BOARDGAME_GENRES:[...new Set(items.map(x=>x.genre).filter(Boolean))];
   const genre=`<select class="field" id="genre"><option value="">장르 전체</option>${genres.map(x=>`<option>${esc(x)}</option>`).join('')}</select>`;
   return base+diff+genre;
@@ -33,7 +33,47 @@ function filteredItems(){
   const p=+document.getElementById('players').value||0;
   const d=document.getElementById('difficulty')?.value||'';
   const g=document.getElementById('genre')?.value||'';
-  return items.filter(x=>(!q||(x.name||'').toLowerCase().includes(q))&&(!p||((x.min_players||0)<=p&&(x.max_players||99)>=p))&&(!d||x.difficulty===d)&&(!g||x.genre===g));
+  return items.filter(x=>{
+    const difficultyOk=kind==='murder'
+      ? (!d||x.difficulty===d)
+      : (!d||(()=>{const n=parseFloat(String(x.difficulty??'').trim());return Number.isFinite(n)&&Math.min(5,Math.max(1,Math.floor(n)))===+d})());
+    return (!q||(x.name||'').toLowerCase().includes(q))&&(!p||((x.min_players||0)<=p&&(x.max_players||99)>=p))&&difficultyOk&&(!g||x.genre===g);
+  });
+}
+
+
+function playtimeLabel(v){
+  const s=String(v??'').trim();
+  if(!s)return '-';
+  let m=s.match(/^(\d+)\s*(?:분)?$/);
+  if(m)return `${m[1]}분`;
+  m=s.match(/^(\d+)\s*[~-]\s*(\d+)\s*(?:분)?$/);
+  if(m)return `${m[1]}~${m[2]}분`;
+  return s;
+}
+
+function statusClassName(status){
+  const map={
+    '보유':'status-owned',
+    '대여중':'status-rented',
+    '분실':'status-lost',
+    '도트':'status-dott',
+    '공방':'status-workshop'
+  };
+  return map[status]||'';
+}
+
+function difficultyMeterHtml(value){
+  const raw=String(value??'').trim();
+  const score=parseFloat(raw);
+  if(!Number.isFinite(score)||score<1||score>5)return esc(raw||'-');
+  const safe=Math.max(1,Math.min(5,score));
+  const boxes=Array.from({length:5},(_,i)=>{
+    const fill=Math.max(0,Math.min(100,(safe-i)*100));
+    return `<span class="difficulty-box" style="--fill:${fill}%"></span>`;
+  }).join('');
+  const label=(Math.round(safe*100)/100).toString();
+  return `<span class="difficulty-meter" title="난이도 ${esc(label)} / 5" aria-label="난이도 ${esc(label)}점">${boxes}</span>`;
 }
 
 function paint(){
@@ -45,11 +85,22 @@ function paint(){
     root.innerHTML=`<div class="catalog-table-wrap"><table class="catalog-table murder-table"><thead><tr><th>게임명</th><th>인원</th><th>시간</th><th>난이도</th><th>상태 및 위치</th><th>소유주</th><th>비고</th></tr></thead><tbody>${list.map(murderRow).join('')}</tbody></table></div>`;
     return;
   }
-  root.innerHTML=`<div class="catalog-table-wrap"><table class="catalog-table"><thead><tr><th>게임명</th><th>인원</th><th>시간</th><th>난이도</th><th>장르</th><th>상태</th><th>소유주</th></tr></thead><tbody>${list.map(listRow).join('')}</tbody></table></div>`;
+  const tableClass=kind==='boardgame'?'boardgame-table':'deduction-table';
+  root.innerHTML=`<div class="catalog-table-wrap"><table class="catalog-table catalog-kind-table ${tableClass}"><thead><tr><th>게임명</th><th>인원</th><th>시간</th><th>난이도</th><th>장르</th><th>상태 및 위치</th><th>소유주</th></tr></thead><tbody>${list.map(listRow).join('')}</tbody></table></div>`;
 }
 
 function listRow(x){
-  return `<tr><td class="catalog-name">${esc(x.name)}</td><td>${x.min_players||'?'}~${x.max_players||'?'}인</td><td>${esc(x.playtime||'-')}</td><td>${esc(x.difficulty||'-')}</td><td>${esc(x.genre||'-')}</td><td><span class="status ${x.status&&x.status!=='보유'?'out':''}">${esc(x.status||'보유')}</span></td><td class="catalog-note" title="${esc(x.note||'')}">${esc(x.note||'-')}</td></tr>`;
+  const expansionBadge=kind==='boardgame'&&x.is_expansion?'<span class="boardgame-expansion-badge">확장</span>':'';
+  const statusClass=statusClassName(x.status);
+  return `<tr>
+    <td class="catalog-name"><span class="catalog-name-inner"><span class="catalog-name-text">${esc(x.name)}</span>${expansionBadge}</span></td>
+    <td>${x.min_players||'?'}~${x.max_players||'?'}인</td>
+    <td>${esc(playtimeLabel(x.playtime))}</td>
+    <td class="catalog-difficulty">${difficultyMeterHtml(x.difficulty)}</td>
+    <td>${esc(x.genre||'-')}</td>
+    <td><span class="status catalog-status ${statusClass}">${esc(x.status||'-')}</span></td>
+    <td class="catalog-note" title="${esc(x.note||'')}">${esc(x.note||'-')}</td>
+  </tr>`;
 }
 function murderRow(x){
   const isOnline=x.genre===ONLINE_MURDER_MARKER;
@@ -59,7 +110,7 @@ function murderRow(x){
 }
 
 (async()=>{
-  const cacheKey=`dott_catalog_${kind}_v31`;
+  const cacheKey=`dott_catalog_${kind}_v61`;
   let cached=null;
   try{cached=JSON.parse(localStorage.getItem(cacheKey)||'null')}catch(_e){}
   if(cached?.items){items=cached.items;settings=cached.settings||null;render()}

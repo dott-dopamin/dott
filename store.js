@@ -98,14 +98,15 @@ async function restSelect(table,query='',label='데이터',requireAuth=false){
 }
 function sanitizeWriteRow(table,row){
   if(row===null||typeof row!=='object')return row;
-  const clean={...row};
-  // DOTT v32: catalog_items의 예전 실험용 컬럼은 절대 API 요청에 싣지 않습니다.
-  // Supabase PostgREST 스키마 캐시가 오래된 프로젝트에서도 저장이 깨지지 않게 하는 안전장치입니다.
   if(table==='catalog_items'){
-    delete clean.participation_condition;
-    delete clean.online_murder;
+    // v33: catalog_items는 실제 운영 중인 기존 컬럼만 명시적으로 허용합니다.
+    // 운영에 사용하는 컬럼만 명시적으로 허용합니다. is_expansion은 보드게임 확장 여부에 사용합니다.
+    const allowed=['kind','name','min_players','max_players','playtime','difficulty','genre','status','location','note','image_url','is_expansion'];
+    const clean={};
+    for(const key of allowed){if(Object.prototype.hasOwnProperty.call(row,key))clean[key]=row[key]}
+    return clean;
   }
-  return clean;
+  return {...row};
 }
 async function restWrite(method,table,{id=null,row=null,ids=null,query='',prefer='return=representation'}={}){
   row=sanitizeWriteRow(table,row);
