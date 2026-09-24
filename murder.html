@@ -34,7 +34,9 @@ html{overflow-y:scroll;scrollbar-gutter:stable}
 .murder-page .catalog-table th,.murder-page .catalog-table td{padding:12px;border-bottom:1px solid var(--line);font-size:12px;vertical-align:middle;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .murder-page .catalog-table th{background:#fbf7f0;color:#756a60;font-size:11px;font-weight:600;text-align:center}
 .murder-page .catalog-table tbody tr:last-child td{border-bottom:0}
-.murder-page .catalog-table tbody tr:hover{background:#fffaf4}
+@media (hover:hover) and (pointer:fine){
+  .murder-page .catalog-table tbody tr:hover{background:#fffaf4}
+}
 .murder-page .catalog-table td:nth-child(1),.murder-page .catalog-table td:nth-child(7){text-align:left}
 .murder-page .catalog-table td:nth-child(n+2):nth-child(-n+6){text-align:center}
 .murder-page .catalog-table th:nth-child(1),.murder-page .catalog-table td:nth-child(1){width:29%}
