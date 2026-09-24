@@ -1043,3 +1043,10 @@ body.calendar-detail-open{overflow:hidden}
 .catalog-flag-check{display:inline-flex;align-items:center;gap:7px;font-size:12px;color:#5e554d;white-space:nowrap;cursor:pointer}
 .catalog-flag-check input{margin:0;accent-color:#c55358}
 @media(max-width:700px){.catalog-flag-check{font-size:10px}}
+
+
+/* DOTT catalog layout exact-sync 2026-09-25 */
+.catalog-page .stat-pill{display:inline-flex;align-items:center;justify-content:center;width:80px;height:30px;padding:0 8px;line-height:1;white-space:nowrap}
+.catalog-page>.section{margin-top:28px}
+.catalog-page .filters{margin-top:20px;margin-bottom:20px}
+.catalog-page .catalog-meta{margin-top:18px;margin-bottom:18px}

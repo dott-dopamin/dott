@@ -8,8 +8,8 @@
 <meta http-equiv="Expires" content="0">
 <title>DOTT 머더미스터리</title>
 <!-- v71: public UI baseline shared with boardgame/deduction; no duplicated topbar/hero CSS -->
-<link rel="stylesheet" href="styles.css?v=20260924-final">
-<!-- DOTT murder standardized layout: shared public catalog spacing + murder-only features -->
+<link rel="stylesheet" href="styles.css?v=20260925-catalog-layout-sync">
+<!-- DOTT murder layout exact-sync: boardgame/deduction spacing baseline + murder-only features -->
 <style>
 /*
   v71 구조 정리 원칙
@@ -17,11 +17,13 @@
   - 이 파일에서는 머더미스터리 전용 기능과 표/공지 팝업만 정의한다.
   - 상단 공통 UI를 이 파일에서 다시 정의하지 않아 다른 공개 페이지와 크기가 어긋나는 일을 막는다.
 */
- .murder-page .hero p{white-space:pre-wrap;font-size:14px;line-height:1.7}
-#content{min-height:120px}
+/* 보드게임/추리게임 공개 리스트와 같은 공통 레이아웃 값 사용 */
+.catalog-page .hero p{font-size:14px!important;line-height:1.7!important}
+.murder-page #desc{white-space:pre-line}
+.murder-page .stat-row{align-items:center}
 
-/* 필터: 공통 field 디자인을 사용하고 배치만 머더용 3개로 고정 */
-.murder-page .filters.filters-compact{display:grid;grid-template-columns:minmax(180px,1.4fr) minmax(120px,.7fr) minmax(140px,.7fr);gap:10px;margin:20px 0}
+/* 필터는 공통 .filters의 간격/마진을 그대로 사용하고, 3개 열 비율만 지정 */
+.murder-page .filters.filters-compact{grid-template-columns:1.5fr repeat(2,minmax(130px,.65fr))}
 
 /* 머더 리스트 전용 표 */
 .murder-page .catalog-table-wrap{overflow:hidden}
@@ -57,7 +59,7 @@
 .retry{margin-left:8px;border:1px solid #ddc6b0;background:#fff;border-radius:8px;padding:5px 8px;color:#765c43;cursor:pointer}
 
 /* 머더 공지 버튼/팝업 전용 */
-.notice-open-btn{border:1px solid #e8a27f;border-radius:10px;background:var(--accent-soft);padding:7px 10px;color:#9a3f18;font-size:12px;font-weight:800;cursor:pointer;box-shadow:none;transition:background .16s ease,border-color .16s ease,transform .16s ease;text-align:center;white-space:nowrap}
+.notice-open-btn{appearance:none;border:1px solid #e8a27f;border-radius:10px;background:var(--accent-soft);padding:5px 10px;line-height:1.2;color:#9a3f18;font-size:12px;font-weight:800;cursor:pointer;box-shadow:none;transition:background .16s ease,border-color .16s ease,transform .16s ease;text-align:center;white-space:nowrap;align-self:center}
 .notice-open-btn.is-loading{visibility:hidden}
 .notice-open-btn:hover{background:#ffdccc;border-color:#df8458;transform:translateY(-1px)}
 .notice-open-btn:focus-visible{outline:3px solid rgba(233,93,32,.20);outline-offset:2px}
@@ -73,8 +75,8 @@ body.murder-notice-open{overflow:hidden}
 
 @media(max-width:700px){
   /* 상단/메뉴/페이지/제목은 공통 CSS에 맡기고 머더 고유 영역만 조정 */
-  .notice-open-btn{padding:7px 9px;font-size:11px}
-  .murder-page .filters.filters-compact{grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:7px;margin:16px 0}
+  .notice-open-btn{padding:5px 9px;font-size:11px;line-height:1.2}
+  .murder-page .filters.filters-compact{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}
   .murder-page .filters .search-field{grid-column:1/-1}
   .murder-page .filters .field{padding:9px 8px;min-height:36px;font-size:11px;line-height:1.2}
 
