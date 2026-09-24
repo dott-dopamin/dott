@@ -586,13 +586,6 @@ function settingsPanel(p){
       <button class="btn primary" id="saveHero" style="margin-top:14px">메인 문구 저장</button><div class="error" id="settingsErr"></div>
     </div></div>
 
-    <div class="card"><div class="card-head"><h2>보유 리스트 설명 문구</h2></div><div style="padding:20px">
-      <p style="font-size:12px;color:var(--muted);line-height:1.6;margin-top:0">보드게임·머더미스터리·추리게임 페이지 상단의 설명 문구를 각각 수정할 수 있습니다. 줄바꿈도 그대로 반영됩니다.</p>
-      <label class="label">보드게임 설명</label><textarea id="boardgameDescription" class="field" rows="3">${esc(s.boardgame_description)}</textarea>
-      <label class="label" style="margin-top:12px">머더미스터리 설명</label><textarea id="murderDescription" class="field" rows="3">${esc(s.murder_description)}</textarea>
-      <label class="label" style="margin-top:12px">추리게임 설명</label><textarea id="deductionDescription" class="field" rows="3">${esc(s.deduction_description)}</textarea>
-      <button class="btn primary" id="saveCatalogDescriptions" style="margin-top:14px">리스트 설명 저장</button><div class="error" id="catalogSettingsErr"></div>
-    </div></div>
 
     <div class="card"><div class="card-head"><h2>관리자 비밀번호 변경</h2></div><div style="padding:20px">
       <p style="font-size:12px;color:var(--muted);line-height:1.6;margin-top:0">현재 로그인한 관리자 자신의 Supabase Auth 비밀번호를 변경합니다. 8자 이상을 권장합니다.</p>
@@ -611,20 +604,6 @@ function settingsPanel(p){
     }catch(e){err.textContent=(e.message||e)+' — add-site-settings.sql을 아직 실행하지 않았다면 먼저 실행해 주세요.'}
     finally{btn.disabled=false}
   };
-
-  document.getElementById('saveCatalogDescriptions').onclick=async()=>{
-    const btn=document.getElementById('saveCatalogDescriptions'),err=document.getElementById('catalogSettingsErr');btn.disabled=true;err.textContent='';
-    try{
-      const row={
-        boardgame_description:document.getElementById('boardgameDescription').value.trim(),
-        murder_description:document.getElementById('murderDescription').value.trim(),
-        deduction_description:document.getElementById('deductionDescription').value.trim()
-      };
-      data.settings=await DOTT_DB.saveSettings(row);toast('리스트 설명을 저장했습니다.');
-    }catch(e){err.textContent=(e.message||e)+' — add-catalog-descriptions.sql을 먼저 실행해 주세요.'}
-    finally{btn.disabled=false}
-  };
-
   document.getElementById('changePw').onclick=async()=>{
     const a=document.getElementById('pw1').value,b=document.getElementById('pw2').value;
     if(a.length<6)return alert('6자 이상 입력해 주세요.');
