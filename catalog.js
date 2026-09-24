@@ -6,7 +6,7 @@ const labels={
   deduction:['추리게임','추리·사건 해결형 게임 보유 목록을 확인하세요.']
 };
 const descriptionKeys={boardgame:'boardgame_description',murder:'murder_description',deduction:'deduction_description'};
-const BOARDGAME_GENRES=['전략','파티/패밀리','협력'];
+const BOARDGAME_GENRES=['전략','파티/패밀리','협력','디덕션','마피아','레거시'];
 const ONLINE_MURDER_MARKER='__DOTT_ONLINE_MURDER__';
 let items=[];
 let settings=null;

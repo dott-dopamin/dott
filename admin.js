@@ -488,7 +488,7 @@ function catalogPanel(p,kind){
 }
 
 function catalogModal(x={},kind){
-  const boardgameGenres=['전략','파티/패밀리','협력'];
+  const boardgameGenres=['전략','파티/패밀리','협력','디덕션','마피아','레거시'];
   const murderDifficulties=['입문','쉬움','중간','어려움','매우어려움'];
   const murderStatuses=['보유','대여중','분실','도트','공방'];
   const murderOnline=x.genre===ONLINE_MURDER_MARKER;
