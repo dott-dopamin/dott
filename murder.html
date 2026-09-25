@@ -441,6 +441,34 @@ body.murder-notice-open{overflow:hidden}
     padding-right:2px!important;
   }
 }
+
+/* 머더미스터리 모바일 최종 열 비율 — 비고 약 8글자 기준 */
+@media(max-width:700px){
+  .murder-page .murder-table th:nth-child(1),
+  .murder-page .murder-table td:nth-child(1){width:30%!important}
+  .murder-page .murder-table th:nth-child(2),
+  .murder-page .murder-table td:nth-child(2){width:10%!important}
+  .murder-page .murder-table th:nth-child(3),
+  .murder-page .murder-table td:nth-child(3){width:10%!important}
+  .murder-page .murder-table th:nth-child(4),
+  .murder-page .murder-table td:nth-child(4){width:10%!important}
+  .murder-page .murder-table th:nth-child(5),
+  .murder-page .murder-table td:nth-child(5){width:12%!important}
+  .murder-page .murder-table th:nth-child(6),
+  .murder-page .murder-table td:nth-child(6){width:11%!important}
+  .murder-page .murder-table th:nth-child(7),
+  .murder-page .murder-table td:nth-child(7){width:17%!important}
+  .murder-page .murder-table td.catalog-note{
+    max-width:none!important;
+    overflow:hidden!important;
+    text-overflow:ellipsis!important;
+    white-space:nowrap!important;
+    font-size:7px!important;
+    letter-spacing:-.12px!important;
+    padding-left:2px!important;
+    padding-right:2px!important;
+  }
+}
 </style>
 
 </head><body data-kind="murder"><div class="shell" id="app"></div><script src="bootstrap.js?v=20260925-layout-sync-final" data-entry="catalog.js"></script></body></html>
