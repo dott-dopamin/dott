@@ -282,6 +282,9 @@ body.murder-notice-open{overflow:hidden}
   }
 }
 
+
+/* DOTT owner display */
+.owner-mobile{display:none}.owner-desktop{white-space:normal;word-break:keep-all}.owner-count{border:1px solid #dfd2c5;background:#fff8f1;border-radius:999px;padding:4px 7px;font:inherit;font-weight:800;color:#6d6258;cursor:pointer}.owner-popup-overlay{position:fixed;inset:0;z-index:9999;background:rgba(38,32,27,.28);display:flex;align-items:center;justify-content:center;padding:20px}.owner-popup{position:relative;width:min(280px,calc(100vw - 40px));background:#fffdf9;border:1px solid #e4d7c8;border-radius:16px;padding:22px 18px 16px;box-shadow:0 14px 40px #0002;text-align:center}.owner-popup b{display:block;font-size:15px;margin-bottom:13px}.owner-popup-names{font-size:14px;font-weight:700;line-height:1.7;word-break:keep-all}.owner-popup-x{position:absolute;right:10px;top:8px;border:0;background:transparent;font-size:22px;color:#81766c;cursor:pointer}.owner-popup-ok{margin-top:16px;border:0;border-radius:9px;background:#ef632d;color:#fff;font-weight:800;padding:8px 22px;cursor:pointer}@media(max-width:700px){.catalog-owner .owner-desktop{display:none!important}.catalog-owner .owner-mobile{display:inline-block!important}}
 </style>
 
 </head>
@@ -420,12 +423,16 @@ body.murder-notice-open{overflow:hidden}
     const d=$('difficulty').value||'';
     return items.filter(x=>(!q||String(x.name||'').toLowerCase().includes(q))&&(!p||((Number(x.min_players)||0)<=p&&(Number(x.max_players)||99)>=p))&&(!d||x.difficulty===d));
   }
-  function row(x){
+  function ownerNames(raw){const v=String(raw||'').trim();if(!v)return [];return v.split(/[.·,\\/]+/).map(x=>x.trim()).filter(Boolean)}
+  function ownerCell(raw){const names=ownerNames(raw);if(!names.length)return '<span class="owner-desktop">-</span><span class="owner-mobile">-</span>';const pretty=names.map(esc).join(' · ');const mobile=names.length===1?`<span class="owner-mobile">${esc(names[0])}</span>`:`<button type="button" class="owner-mobile owner-count" data-owners="${encodeURIComponent(names.join('|'))}">${names.length}명</button>`;return `<span class="owner-desktop">${pretty}</span>${mobile}`}
+  function showOwners(names){const old=document.getElementById('ownerPopup');if(old)old.remove();const box=document.createElement('div');box.id='ownerPopup';box.className='owner-popup-overlay';box.innerHTML=`<div class="owner-popup"><button type="button" class="owner-popup-x">×</button><b>소유주</b><div class="owner-popup-names">${names.map(esc).join(' · ')}</div><button type="button" class="owner-popup-ok">확인</button></div>`;document.body.appendChild(box);const close=()=>box.remove();box.querySelector('.owner-popup-x').onclick=close;box.querySelector('.owner-popup-ok').onclick=close;box.onclick=e=>{if(e.target===box)close()}}
+  document.addEventListener('click',e=>{const b=e.target.closest('.owner-count');if(!b)return;showOwners(decodeURIComponent(b.dataset.owners||'').split('|').filter(Boolean))});
+    function row(x){
     const badge=x.genre===ONLINE?'<span class="online-badge">온라인</span>':'';
     const name=String(x.name||'-');
     const note=String(x.note||'-');
     const noteShort=Array.from(note).length>10?Array.from(note).slice(0,10).join('')+'…':note;
-    return `<tr><td class="catalog-name"><div class="catalog-name-inner"><span class="catalog-name-text" title="${esc(name)}">${esc(name)}</span>${badge}</div></td><td>${x.min_players||'?'}~${x.max_players||'?'}인</td><td>${esc(playtimeLabel(x.playtime))}</td><td>${esc(x.difficulty||'-')}</td><td><span class="status ${statusClass(x.status)}">${esc(x.status||'-')}</span></td><td class="catalog-owner">${esc(x.location||'-')}</td><td class="catalog-note" title="${esc(note)}"><span class="note-desktop">${esc(note)}</span><span class="note-mobile">${esc(noteShort)}</span></td></tr>`;
+    return `<tr><td class="catalog-name"><div class="catalog-name-inner"><span class="catalog-name-text" title="${esc(name)}">${esc(name)}</span>${badge}</div></td><td>${x.min_players||'?'}~${x.max_players||'?'}인</td><td>${esc(playtimeLabel(x.playtime))}</td><td>${esc(x.difficulty||'-')}</td><td><span class="status ${statusClass(x.status)}">${esc(x.status||'-')}</span></td><td class="catalog-owner" title="${esc(x.location||'')}">${ownerCell(x.location)}</td><td class="catalog-note" title="${esc(note)}"><span class="note-desktop">${esc(note)}</span><span class="note-mobile">${esc(noteShort)}</span></td></tr>`;
   }
   function paint(){
     const list=filtered();
