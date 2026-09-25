@@ -178,3 +178,28 @@ window.DOTT_DB={
     return `${API_BASE}/storage/v1/object/public/catalog-images/${path}`;
   }
 };
+
+// DOTT 회비 · 회계
+Object.assign(window.DOTT_DB,{
+  async feeRecords(){try{return await restSelect('fee_records','select=*&order=fee_month.desc,paid_at.asc','회비',true)}catch(e){console.warn('fee_records',e);return []}},
+  async accountingEntries(){try{return await restSelect('accounting_entries','select=*&order=entry_date.asc,created_at.asc','회계장부',true)}catch(e){console.warn('accounting_entries',e);return []}},
+  async accountingClosures(){try{return await restSelect('accounting_month_closures','select=*&order=month.desc','월 마감',true)}catch(e){console.warn('accounting_month_closures',e);return []}},
+  async upsertFee(row){const body=await restWrite('POST','fee_records',{row,query:'on_conflict=member_id,fee_month',prefer:'resolution=merge-duplicates,return=representation'});return Array.isArray(body)?body[0]:body},
+  async closeAccountingMonth(month){return this.insert('accounting_month_closures',{month,closed_at:new Date().toISOString()})},
+  async reopenAccountingMonth(id){return this.remove('accounting_month_closures',id)},
+  async uploadReceipt(file){
+    const s=await currentSession(); if(!s?.access_token)throw apiError('관리자 로그인이 필요합니다.',401);
+    const ext=(file.name.split('.').pop()||'bin').toLowerCase(); const path=`${new Date().toISOString().slice(0,7)}/${crypto.randomUUID()}.${ext}`;
+    const res=await fetchWithTimeout(`${API_BASE}/storage/v1/object/accounting-receipts/${path}`,{method:'POST',headers:{apikey:API_KEY,Authorization:`Bearer ${s.access_token}`,'Content-Type':file.type||'application/octet-stream','x-upsert':'false'},body:file},20000);
+    await parseResponse(res); return {path,name:file.name,type:file.type||'application/octet-stream'};
+  },
+  async receiptBlob(path){
+    const s=await currentSession(); if(!s?.access_token)throw apiError('관리자 로그인이 필요합니다.',401);
+    const res=await fetchWithTimeout(`${API_BASE}/storage/v1/object/authenticated/accounting-receipts/${path}`,{headers:{apikey:API_KEY,Authorization:`Bearer ${s.access_token}`}},20000);
+    if(!res.ok)throw apiError('영수증을 불러오지 못했습니다.',res.status); return res.blob();
+  },
+  async deleteReceipt(path){
+    const s=await currentSession(); if(!s?.access_token||!path)return;
+    const res=await fetchWithTimeout(`${API_BASE}/storage/v1/object/accounting-receipts/${path}`,{method:'DELETE',headers:{apikey:API_KEY,Authorization:`Bearer ${s.access_token}`}},12000); if(!res.ok)throw apiError('영수증 삭제 실패',res.status);
+  }
+});
