@@ -154,8 +154,8 @@ function listRow(x){
 function murderRow(x){
   const isOnline=x.genre===ONLINE_MURDER_MARKER;
   const onlineBadge=isOnline?'<span class="online-murder-badge">온라인머미</span>':'';
-  const statusClass=x.status&&x.status!=='보유'&&!['도트','공방'].includes(x.status)?'out':'';
-  return `<tr><td class="catalog-name"><span class="catalog-name-text">${esc(x.name)}</span>${onlineBadge}</td><td>${x.min_players||'?'}~${x.max_players||'?'}인</td><td>${esc(x.playtime||'-')}</td><td>${esc(x.difficulty||'-')}</td><td><span class="status ${statusClass}">${esc(x.status||'보유')}</span></td><td class="catalog-owner" title="${esc(x.location||'')}">${ownerCell(x.location)}</td><td class="catalog-note" title="${esc(x.note||'')}">${esc(x.note||'-')}</td></tr>`;
+  const statusClass=statusClassName(x.status||'보유');
+  return `<tr><td class="catalog-name"><span class="catalog-name-text">${esc(x.name)}</span>${onlineBadge}</td><td>${x.min_players||'?'}~${x.max_players||'?'}인</td><td>${esc(x.playtime||'-')}</td><td>${esc(x.difficulty||'-')}</td><td><span class="status catalog-status ${statusClass}">${esc(x.status||'보유')}</span></td><td class="catalog-owner" title="${esc(x.location||'')}">${ownerCell(x.location)}</td><td class="catalog-note" title="${esc(x.note||'')}">${esc(x.note||'-')}</td></tr>`;
 }
 
 (async()=>{
