@@ -23,9 +23,10 @@ function filterHtml(){
 function render(){
   const [title,defaultDesc]=labels[kind];
   const desc=(settings&&settings[descriptionKeys[kind]])||defaultDesc;
-  app.innerHTML=`${nav(kind)}<main class="page catalog-page"><section class="hero"><span class="eyebrow">🎲 보유 현황</span><h1>${title} 리스트</h1><p>${nl2br(desc)}</p><div class="stat-row"><span class="stat-pill"><span class="stat-label">전체</span><b>${items.length}개</b></span></div></section><section class="section"><div class="filters ${kind==='murder'?'filters-compact':''}">${filterHtml()}</div><div class="catalog-meta"><span id="count"></span></div><div id="catalogContent"></div></section></main>${footer()}`;
+  app.innerHTML=`${nav(kind)}<main class="page catalog-page"><section class="hero"><span class="eyebrow">🎲 보유 현황</span><h1>${title} 리스트</h1>${murderNoticeHtml()}<p>${nl2br(desc)}</p><div class="stat-row"><span class="stat-pill"><span class="stat-label">전체</span><b>${items.length}개</b></span></div></section><section class="section"><div class="filters ${kind==='murder'?'filters-compact':''}">${filterHtml()}</div><div class="catalog-meta"><span id="count"></span></div><div id="catalogContent"></div></section></main>${footer()}`;
   ['q','players','difficulty','genre'].forEach(id=>{const el=document.getElementById(id);if(el)el.oninput=paint});
   paint();
+  wireMurderNotice();
 }
 
 function filteredItems(){
@@ -76,6 +77,54 @@ function difficultyMeterHtml(value){
   return `<span class="difficulty-meter" title="난이도 ${esc(label)} / 5" aria-label="난이도 ${esc(label)}점">${boxes}</span>`;
 }
 
+function ownerNames(raw){
+  const v=String(raw||'').trim();
+  if(!v)return [];
+  return v.split(/[.·,\\/,]+/).map(x=>x.trim()).filter(Boolean);
+}
+function ownerCell(raw){
+  const names=ownerNames(raw);
+  if(!names.length)return '<span class="owner-desktop">-</span><span class="owner-mobile">-</span>';
+  const pretty=names.map(esc).join(' · ');
+  const mobile=names.length===1
+    ? `<span class="owner-mobile">${esc(names[0])}</span>`
+    : `<button type="button" class="owner-mobile owner-count" data-owners="${encodeURIComponent(names.join('|'))}">${names.length}명</button>`;
+  return `<span class="owner-desktop">${pretty}</span>${mobile}`;
+}
+function showOwners(names){
+  document.getElementById('ownerPopup')?.remove();
+  const box=document.createElement('div');
+  box.id='ownerPopup';box.className='owner-popup-overlay';
+  box.innerHTML=`<div class="owner-popup"><button type="button" class="owner-popup-x" aria-label="닫기">×</button><b>소유주</b><div class="owner-popup-names">${names.map(esc).join(' · ')}</div><button type="button" class="owner-popup-ok">확인</button></div>`;
+  document.body.appendChild(box);
+  const close=()=>box.remove();
+  box.querySelector('.owner-popup-x').onclick=close;box.querySelector('.owner-popup-ok').onclick=close;
+  box.onclick=e=>{if(e.target===box)close()};
+}
+document.addEventListener('click',e=>{
+  const b=e.target.closest('.owner-count');if(!b)return;
+  showOwners(decodeURIComponent(b.dataset.owners||'').split('|').filter(Boolean));
+});
+
+function murderNoticeHtml(){
+  if(kind!=='murder')return '';
+  const label=(settings?.murder_notice_button_label||'이용수칙 · 공지 보기').trim()||'이용수칙 · 공지 보기';
+  return `<button id="murderNoticeBtn" class="notice-open-btn" type="button">📌 ${esc(label)}</button>`;
+}
+function wireMurderNotice(){
+  if(kind!=='murder')return;
+  const btn=document.getElementById('murderNoticeBtn');if(!btn)return;
+  btn.onclick=()=>{
+    const label=(settings?.murder_notice_button_label||'이용수칙 · 공지 보기').trim()||'이용수칙 · 공지 보기';
+    const text=settings?.murder_notice||'등록된 공지가 없습니다.';
+    const box=document.createElement('div');box.className='murder-notice-backdrop open';box.id='murderNoticeModal';
+    box.innerHTML=`<div class="murder-notice-modal"><div class="murder-notice-head"><h3>📌 ${esc(label)}</h3><button class="murder-notice-close" type="button">✕</button></div><div class="murder-notice-content">${nl2br(text)}</div></div>`;
+    document.body.appendChild(box);document.body.classList.add('murder-notice-open');
+    const close=()=>{box.remove();document.body.classList.remove('murder-notice-open')};
+    box.querySelector('.murder-notice-close').onclick=close;box.onclick=e=>{if(e.target===box)close()};
+  };
+}
+
 function paint(){
   const list=filteredItems();
   document.getElementById('count').textContent=`${list.length}개 표시 중`;
@@ -99,7 +148,7 @@ function listRow(x){
     <td class="catalog-difficulty">${difficultyMeterHtml(x.difficulty)}</td>
     <td>${esc(x.genre||'-')}</td>
     <td><span class="status catalog-status ${statusClass}">${esc(x.status||'-')}</span></td>
-    <td class="catalog-note" title="${esc(x.note||'')}">${esc(x.note||'-')}</td>
+    <td class="catalog-owner" title="${esc(x.note||'')}">${ownerCell(x.note)}</td>
   </tr>`;
 }
 function murderRow(x){
