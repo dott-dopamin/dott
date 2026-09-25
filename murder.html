@@ -339,6 +339,15 @@ body.murder-notice-open{overflow:hidden}
 .catalog-status.status-rented{background:#fff7d9!important;color:#9a7415!important;border-color:#eedf9f!important}
 .catalog-status.status-owned{background:#f1e9fb!important;color:#7350a5!important;border-color:#ddd1f0!important}
 .catalog-status.status-lost{background:#fde9e9!important;color:#b13b3b!important;border-color:#f1c8c8!important}
+
+/* 머더미스터리 배지: 보드게임과 동일하게 게임명 바로 뒤에 인라인 표시 */
+.catalog-title-inline{display:inline-flex!important;align-items:center!important;gap:6px!important;max-width:100%;vertical-align:middle}
+.catalog-title-inline .catalog-name-text{min-width:0}
+.catalog-title-inline .online-murder-badge{display:inline-flex!important;flex:0 0 auto!important;margin:0!important;vertical-align:middle!important}
+@media(max-width:700px){
+  .catalog-title-inline{gap:4px!important}
+  .catalog-title-inline .online-murder-badge{margin:0!important}
+}
 </style>
 
 </head><body data-kind="murder"><div class="shell" id="app"></div><script src="bootstrap.js?v=20260925-layout-sync-final" data-entry="catalog.js"></script></body></html>
