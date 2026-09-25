@@ -670,6 +670,24 @@ function ledgerModal(x={}){
     const cat=m.querySelector('#leCat').value;let et=m.querySelector('#leType').value;if(cat==='미지급금'&&!['발생','지급'].includes(et))et='발생';if(cat!=='미지급금'&&!['수입','지출'].includes(et))et='지출';let receipt={path:x.receipt_path||null,name:x.receipt_name||null,type:x.receipt_type||null};const file=m.querySelector('#leReceipt').files[0];if(file){if(receipt.path)await DOTT_DB.deleteReceipt(receipt.path);receipt=await DOTT_DB.uploadReceipt(file)}const row={entry_date:m.querySelector('#leDate').value,entry_type:et,category:cat,description:m.querySelector('#leDesc').value.trim(),party_name:m.querySelector('#leParty').value.trim(),amount:Number(m.querySelector('#leAmount').value),note:m.querySelector('#leNote').value.trim(),receipt_path:receipt.path,receipt_name:receipt.name,receipt_type:receipt.type,updated_at:new Date().toISOString()};if(!row.entry_date||!row.amount)throw new Error('날짜와 금액을 입력해 주세요.');if(cat==='미지급금'&&!row.party_name)throw new Error('미지급금은 관련 회원/지급 대상을 입력해 주세요.');x.id?await DOTT_DB.update('accounting_entries',x.id,row):await DOTT_DB.insert('accounting_entries',row);await loadAll();accountingPanel(document.getElementById('panel'));toast('회계 내역을 저장했습니다.');
   });
   document.querySelector('#modal .modal')?.classList.add('accounting-modal','accounting-modal-ledger');
+  if(x.id && !x.source_fee_id){
+    const foot=document.querySelector('#modal .modal-foot');
+    if(foot){
+      const del=document.createElement('button');
+      del.type='button'; del.className='btn danger'; del.textContent='내역 삭제'; del.style.marginRight='auto';
+      foot.prepend(del);
+      del.onclick=async()=>{
+        if(!confirm('이 회계 내역을 삭제할까요?\n삭제 후에는 복구할 수 없습니다.'))return;
+        del.disabled=true;
+        try{
+          await DOTT_DB.remove('accounting_entries',x.id);
+          if(x.receipt_path){try{await DOTT_DB.deleteReceipt(x.receipt_path)}catch(e){console.warn(e)}}
+          document.querySelector('#modal [data-close]')?.click();
+          await loadAll(); accountingPanel(document.getElementById('panel')); toast('회계 내역을 삭제했습니다.');
+        }catch(e){alert(e.message||e);del.disabled=false}
+      };
+    }
+  }
 }
 async function receiptModal(x){
   const blob=await DOTT_DB.receiptBlob(x.receipt_path),url=URL.createObjectURL(blob),isPdf=(x.receipt_type||'').includes('pdf');showModal('영수증 / 증빙자료',`${isPdf?`<iframe src="${url}" style="width:100%;height:55vh;border:0"></iframe>`:`<img class="receipt-preview" src="${url}" alt="영수증">`}<div style="margin-top:12px;text-align:center"><a class="btn primary" href="${url}" download="${esc(x.receipt_name||'receipt')}">다운로드</a></div>`,async()=>{});const save=document.getElementById('modalSave');if(save)save.style.display='none';
