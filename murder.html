@@ -348,6 +348,62 @@ body.murder-notice-open{overflow:hidden}
   .catalog-title-inline{gap:4px!important}
   .catalog-title-inline .online-murder-badge{margin:0!important}
 }
+
+/* FIX: 머더 게임명/온라인 배지를 보드게임과 동일한 구조로 표시 */
+.murder-page .catalog-name-inner{
+  display:flex!important;
+  align-items:center!important;
+  gap:6px!important;
+  min-width:0!important;
+  width:100%!important;
+  max-width:100%!important;
+}
+.murder-page .catalog-name-inner .catalog-name-text{
+  display:block!important;
+  flex:0 1 auto!important;
+  min-width:0!important;
+  max-width:none!important;
+  overflow:hidden!important;
+  text-overflow:ellipsis!important;
+  white-space:nowrap!important;
+}
+.murder-page .online-murder-badge{
+  display:inline-flex!important;
+  align-items:center!important;
+  flex:0 0 auto!important;
+  margin:0!important;
+  padding:3px 7px!important;
+  border-radius:999px!important;
+  background:#f1e9fb!important;
+  border:1px solid #ddd1f0!important;
+  color:#7350a5!important;
+  font-size:9.5px!important;
+  font-weight:800!important;
+  line-height:1!important;
+  white-space:nowrap!important;
+}
+@media(max-width:700px){
+  .murder-page .catalog-name-inner{gap:2px!important}
+  .murder-page .catalog-name-inner .catalog-name-text{
+    display:-webkit-box!important;
+    flex:0 1 auto!important;
+    min-width:0!important;
+    max-width:calc(100% - 30px)!important;
+    overflow:hidden!important;
+    text-overflow:clip!important;
+    white-space:normal!important;
+    -webkit-box-orient:vertical!important;
+    -webkit-line-clamp:2!important;
+    overflow-wrap:anywhere!important;
+    font-size:7.2px!important;
+    line-height:1.22!important;
+  }
+  .murder-page .online-murder-badge{
+    padding:2px 4px!important;
+    font-size:6.8px!important;
+    line-height:1!important;
+  }
+}
 </style>
 
 </head><body data-kind="murder"><div class="shell" id="app"></div><script src="bootstrap.js?v=20260925-layout-sync-final" data-entry="catalog.js"></script></body></html>
