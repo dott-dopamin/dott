@@ -102,6 +102,186 @@ body.murder-notice-open{overflow:hidden}
   .note-desktop{display:none}.note-mobile{display:block;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
   .murder-page .status{padding:2px 4px;font-size:6.9px}
 }
+
+/* ===== DOTT 2026-09-25: 머더 표를 보드게임/추리게임 표 규격과 완전 동기화 =====
+   공통 기준: 헤더/본문 폰트, 셀 패딩, 행 높이, 게임명 시작점, 컬럼 위치, 모바일 행 규격 */
+.murder-page .catalog-table-wrap{
+  width:100%!important;
+  border:1px solid var(--line)!important;
+  border-radius:14px!important;
+  background:#fff!important;
+  overflow-x:auto!important;
+  overflow-y:hidden!important;
+}
+.murder-page .catalog-table{
+  width:100%!important;
+  min-width:0!important;
+  border-collapse:collapse!important;
+  table-layout:fixed!important;
+}
+.murder-page .catalog-table th,
+.murder-page .catalog-table td{
+  padding:12px 14px!important;
+  border-bottom:1px solid var(--line)!important;
+  font-size:12px!important;
+  line-height:normal!important;
+  vertical-align:middle!important;
+  white-space:nowrap!important;
+  overflow:hidden!important;
+  text-overflow:ellipsis!important;
+  box-sizing:border-box!important;
+}
+.murder-page .catalog-table th{
+  background:#fbf7f0!important;
+  color:#756a60!important;
+  font-size:11px!important;
+  font-weight:600!important;
+  text-align:center!important;
+  letter-spacing:normal!important;
+}
+.murder-page .catalog-table tbody tr:last-child td{border-bottom:0!important}
+
+/* PC 컬럼 위치도 보드게임/추리게임 7열 기준과 동일 */
+.murder-page .catalog-table th:nth-child(1),
+.murder-page .catalog-table td:nth-child(1){width:27%!important}
+.murder-page .catalog-table th:nth-child(2),
+.murder-page .catalog-table td:nth-child(2){width:9%!important}
+.murder-page .catalog-table th:nth-child(3),
+.murder-page .catalog-table td:nth-child(3){width:12%!important}
+.murder-page .catalog-table th:nth-child(4),
+.murder-page .catalog-table td:nth-child(4){width:14%!important}
+.murder-page .catalog-table th:nth-child(5),
+.murder-page .catalog-table td:nth-child(5){width:12%!important}
+.murder-page .catalog-table th:nth-child(6),
+.murder-page .catalog-table td:nth-child(6){width:13%!important}
+.murder-page .catalog-table th:nth-child(7),
+.murder-page .catalog-table td:nth-child(7){width:13%!important}
+
+/* 게임명/마지막 열 시작·끝 패딩도 공통 표와 동일 */
+.murder-page .catalog-table th:nth-child(1),
+.murder-page .catalog-table td:nth-child(1){padding-left:16px!important}
+.murder-page .catalog-table th:nth-child(7),
+.murder-page .catalog-table td:nth-child(7){padding-right:16px!important}
+.murder-page .catalog-table td:nth-child(1),
+.murder-page .catalog-table td:nth-child(7){text-align:left!important}
+.murder-page .catalog-table td:nth-child(n+2):nth-child(-n+6){text-align:center!important}
+
+.murder-page .catalog-name-inner{
+  display:flex!important;
+  align-items:center!important;
+  gap:6px!important;
+  min-width:0!important;
+  width:100%!important;
+  max-width:100%!important;
+}
+.murder-page .catalog-name-text{
+  display:block!important;
+  flex:1 1 auto!important;
+  min-width:0!important;
+  max-width:none!important;
+  overflow:hidden!important;
+  text-overflow:ellipsis!important;
+  white-space:nowrap!important;
+  line-height:normal!important;
+}
+.murder-page .online-badge{
+  flex:0 0 auto!important;
+  align-self:center!important;
+}
+
+@media (hover:hover) and (pointer:fine){
+  .murder-page .catalog-table tbody tr:hover{background:#fffaf4!important}
+}
+
+@media(max-width:700px){
+  .murder-page .catalog-table-wrap{
+    border-radius:10px!important;
+    overflow-x:hidden!important;
+  }
+  .murder-page .catalog-table{
+    width:100%!important;
+    min-width:0!important;
+    table-layout:fixed!important;
+  }
+  .murder-page .catalog-table th,
+  .murder-page .catalog-table td{
+    padding:7px 2px!important;
+    font-size:7.2px!important;
+    line-height:normal!important;
+    vertical-align:middle!important;
+    white-space:nowrap!important;
+    overflow:hidden!important;
+    text-overflow:ellipsis!important;
+  }
+  .murder-page .catalog-table th{
+    font-size:6.7px!important;
+    letter-spacing:-.28px!important;
+    text-align:center!important;
+  }
+
+  /* 모바일 컬럼도 보드게임 7열 표 기준과 동일 */
+  .murder-page .catalog-table th:nth-child(1),
+  .murder-page .catalog-table td:nth-child(1){width:30%!important}
+  .murder-page .catalog-table th:nth-child(2),
+  .murder-page .catalog-table td:nth-child(2){width:9%!important}
+  .murder-page .catalog-table th:nth-child(3),
+  .murder-page .catalog-table td:nth-child(3){width:13%!important}
+  .murder-page .catalog-table th:nth-child(4),
+  .murder-page .catalog-table td:nth-child(4){width:16%!important}
+  .murder-page .catalog-table th:nth-child(5),
+  .murder-page .catalog-table td:nth-child(5){width:12%!important}
+  .murder-page .catalog-table th:nth-child(6),
+  .murder-page .catalog-table td:nth-child(6){width:11%!important}
+  .murder-page .catalog-table th:nth-child(7),
+  .murder-page .catalog-table td:nth-child(7){width:9%!important}
+
+  /* 헤더는 공통 2px, 실제 게임명 데이터 시작점은 보드게임과 동일 4px */
+  .murder-page .catalog-table th:nth-child(1){padding-left:2px!important}
+  .murder-page .catalog-table td:nth-child(1){padding-left:4px!important}
+  .murder-page .catalog-table th:nth-child(7),
+  .murder-page .catalog-table td:nth-child(7){padding-right:2px!important}
+
+  .murder-page .catalog-table td:nth-child(1){text-align:left!important}
+  .murder-page .catalog-table td:nth-child(n+2):nth-child(-n+7){text-align:center!important}
+
+  .murder-page .catalog-name-inner{
+    align-items:center!important;
+    gap:2px!important;
+  }
+  .murder-page .catalog-name-text{
+    display:-webkit-box!important;
+    flex:1 1 auto!important;
+    min-width:0!important;
+    max-width:none!important;
+    overflow:hidden!important;
+    text-overflow:clip!important;
+    white-space:normal!important;
+    -webkit-box-orient:vertical!important;
+    -webkit-line-clamp:2!important;
+    overflow-wrap:anywhere!important;
+    font-size:7.2px!important;
+    line-height:1.22!important;
+  }
+  .murder-page .online-badge{
+    margin-left:0!important;
+    padding:2px 4px!important;
+    font-size:6.8px!important;
+    line-height:1!important;
+    align-self:center!important;
+    white-space:nowrap!important;
+  }
+  .murder-page .status{
+    padding:2px 4px!important;
+    font-size:6.9px!important;
+    white-space:nowrap!important;
+  }
+  .murder-page .catalog-owner,
+  .murder-page .catalog-note{
+    font-size:7px!important;
+    letter-spacing:-.18px!important;
+  }
+}
+
 </style>
 
 </head>
