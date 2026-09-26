@@ -1124,3 +1124,33 @@ body.calendar-detail-open{overflow:hidden}
  .notice-open-btn{padding:5px 9px;font-size:11px}
 }
 @media(hover:none),(pointer:coarse){.catalog-table tbody tr:hover{background:transparent!important}.owner-count:hover{filter:none!important;transform:none!important;background:#fff8f1!important}}
+
+/* 관리자 > 머더미스터리 상단 편집영역: PC 2열 / 모바일 1열 */
+.murder-admin-editors{
+  display:grid;
+  grid-template-columns:minmax(0,1fr) minmax(0,1fr);
+  gap:16px;
+  align-items:stretch;
+}
+.murder-admin-editors>.catalog-admin-desc{
+  margin:0;
+  min-width:0;
+  display:flex;
+  flex-direction:column;
+}
+.murder-admin-editors>.catalog-admin-desc .catalog-admin-desc-row{
+  margin-top:auto;
+}
+.murder-admin-editors #catalogDesc{
+  min-height:156px;
+  height:156px;
+}
+.murder-admin-editors #murderNotice{
+  min-height:96px;
+  height:96px;
+}
+@media(max-width:700px){
+  .murder-admin-editors{grid-template-columns:1fr;gap:14px}
+  .murder-admin-editors #catalogDesc{min-height:80px;height:auto}
+  .murder-admin-editors #murderNotice{min-height:150px;height:auto}
+}
