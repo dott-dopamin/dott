@@ -340,7 +340,7 @@ function attendanceModal(x={}){
 }
 
 function noticePanel(p){
-  p.innerHTML=`<div class="admin-tools"><div></div><button class="btn primary" id="add">+ 공지 추가</button></div><div class="table-wrap"><table class="table"><thead><tr><th>구분</th><th>제목</th><th>내용</th><th>작성일</th><th>관리</th></tr></thead><tbody>${data.notices.map(x=>`<tr><td>${x.pinned?'📌 필독':'안내'}</td><td><b>${esc(x.title)}</b></td><td><span class="admin-notice-preview">${esc(noticePlainText(x.content))}</span></td><td>${new Date(x.created_at).toLocaleDateString('ko-KR')}</td><td><div class="actions"><button class="icon-btn" data-edit="${x.id}">✎</button><button class="icon-btn" data-del="${x.id}">♲</button></div></td></tr>`).join('')||'<tr><td colspan="5">등록된 공지가 없습니다.</td></tr>'}</tbody></table></div>`;
+  p.innerHTML=`<div class="admin-tools"><div></div><button class="btn primary" id="add">+ 공지 추가</button></div><div class="table-wrap"><table class="table admin-notice-table"><thead><tr><th>구분</th><th>제목</th><th>내용</th><th>작성일</th><th>관리</th></tr></thead><tbody>${data.notices.map(x=>`<tr><td>${x.pinned?'📌 필독':'안내'}</td><td><b>${esc(x.title)}</b></td><td><span class="admin-notice-preview">${esc(noticePlainText(x.content))}</span></td><td>${new Date(x.created_at).toLocaleDateString('ko-KR')}</td><td><div class="actions"><button class="icon-btn" data-edit="${x.id}">✎</button><button class="icon-btn" data-del="${x.id}">♲</button></div></td></tr>`).join('')||'<tr><td colspan="5">등록된 공지가 없습니다.</td></tr>'}</tbody></table></div>`;
   document.getElementById('add').onclick=()=>noticeModal();
   wireRows('notices',noticeModal);
 }

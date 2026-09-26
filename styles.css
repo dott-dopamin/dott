@@ -46,7 +46,35 @@
 
 /* 공지는 textarea에서 입력한 줄바꿈/공백을 그대로 표시 */
 .notice p{white-space:pre-wrap;overflow-wrap:anywhere}
-.admin-notice-preview{white-space:pre-wrap;display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:3;overflow:hidden}
+.admin-notice-preview{
+  display:block;
+  max-width:100%;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  color:var(--muted);
+}
+/* 관리자 공지 목록만 게시판형으로 압축 */
+.admin-notice-table{table-layout:fixed;width:100%}
+.admin-notice-table th:nth-child(1),.admin-notice-table td:nth-child(1){width:7%}
+.admin-notice-table th:nth-child(2),.admin-notice-table td:nth-child(2){width:24%}
+.admin-notice-table th:nth-child(3),.admin-notice-table td:nth-child(3){width:auto}
+.admin-notice-table th:nth-child(4),.admin-notice-table td:nth-child(4){width:10%}
+.admin-notice-table th:nth-child(5),.admin-notice-table td:nth-child(5){width:9%}
+.admin-notice-table tbody tr{height:52px}
+.admin-notice-table tbody td{vertical-align:middle}
+.admin-notice-table td:nth-child(1){text-align:center}
+.admin-notice-table td:nth-child(2){
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+}
+.admin-notice-table td:nth-child(4){white-space:nowrap}
+@media(max-width:700px){
+  .admin-notice-table th:nth-child(3),.admin-notice-table td:nth-child(3){display:none}
+  .admin-notice-table th:nth-child(1),.admin-notice-table td:nth-child(1){width:16%}
+  .admin-notice-table th:nth-child(2),.admin-notice-table td:nth-child(2){width:auto}
+  .admin-notice-table th:nth-child(4),.admin-notice-table td:nth-child(4){width:22%}
+  .admin-notice-table th:nth-child(5),.admin-notice-table td:nth-child(5){width:20%}
+}
 
 /* 보유목록 보기 방식 전환 */
 .view-toggle{display:inline-flex;gap:4px;padding:4px;border:1px solid var(--line);background:#fff;border-radius:10px}
