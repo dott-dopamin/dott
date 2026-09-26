@@ -1359,9 +1359,7 @@ body.murder-notice-open{overflow:hidden}
 
 /* ===== DOTT 공개 보유목록 최종 공통 규격 =====
    보드게임 / 머더미스터리 / 추리게임 PC 구조는 이 규칙 하나만 사용 */
-.catalog-page .stat-row{
-  justify-content:center;
-}
+
 @media(min-width:701px){
   .catalog-page .catalog-table-wrap{
     width:100%;
