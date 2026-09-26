@@ -40,95 +40,11 @@
 .murder-notice-empty{color:var(--muted)}
 body.murder-notice-open{overflow:hidden}
 
-/* ===== DOTT 2026-09-25: 머더 표를 보드게임/추리게임 표 규격과 완전 동기화 =====
-   공통 기준: 헤더/본문 폰트, 셀 패딩, 행 높이, 게임명 시작점, 컬럼 위치, 모바일 행 규격 */
-.murder-page .catalog-table-wrap{
-  width:100%!important;
-  border:1px solid var(--line)!important;
-  border-radius:14px!important;
-  background:#fff!important;
-  overflow-x:auto!important;
-  overflow-y:hidden!important;
-}
-.murder-page .catalog-table{
-  width:100%!important;
-  min-width:0!important;
-  border-collapse:collapse!important;
-  table-layout:fixed!important;
-}
-.murder-page .catalog-table th,
-.murder-page .catalog-table td{
-  padding:12px 14px!important;
-  border-bottom:1px solid var(--line)!important;
-  font-size:12px!important;
-  line-height:normal!important;
-  vertical-align:middle!important;
-  white-space:nowrap!important;
-  overflow:hidden!important;
-  text-overflow:ellipsis!important;
-  box-sizing:border-box!important;
-}
-.murder-page .catalog-table th{
-  background:#fbf7f0!important;
-  color:#756a60!important;
-  font-size:11px!important;
-  font-weight:600!important;
-  text-align:center!important;
-  letter-spacing:normal!important;
-}
-.murder-page .catalog-table tbody tr:last-child td{border-bottom:0!important}
-
-/* PC 컬럼 위치도 보드게임/추리게임 7열 기준과 동일 */
-.murder-page .catalog-table th:nth-child(1),
-.murder-page .catalog-table td:nth-child(1){width:27%!important}
-.murder-page .catalog-table th:nth-child(2),
-.murder-page .catalog-table td:nth-child(2){width:9%!important}
-.murder-page .catalog-table th:nth-child(3),
-.murder-page .catalog-table td:nth-child(3){width:12%!important}
-.murder-page .catalog-table th:nth-child(4),
-.murder-page .catalog-table td:nth-child(4){width:14%!important}
-.murder-page .catalog-table th:nth-child(5),
-.murder-page .catalog-table td:nth-child(5){width:12%!important}
-.murder-page .catalog-table th:nth-child(6),
-.murder-page .catalog-table td:nth-child(6){width:13%!important}
-.murder-page .catalog-table th:nth-child(7),
-.murder-page .catalog-table td:nth-child(7){width:13%!important}
-
-/* 게임명/마지막 열 시작·끝 패딩도 공통 표와 동일 */
-.murder-page .catalog-table th:nth-child(1),
-.murder-page .catalog-table td:nth-child(1){padding-left:16px!important}
-.murder-page .catalog-table th:nth-child(7),
-.murder-page .catalog-table td:nth-child(7){padding-right:16px!important}
-.murder-page .catalog-table td:nth-child(1),
-.murder-page .catalog-table td:nth-child(7){text-align:left!important}
-.murder-page .catalog-table td:nth-child(n+2):nth-child(-n+6){text-align:center!important}
-
-.murder-page .catalog-name-inner{
-  display:flex!important;
-  align-items:center!important;
-  gap:6px!important;
-  min-width:0!important;
-  width:100%!important;
-  max-width:100%!important;
-}
-.murder-page .catalog-name-text{
-  display:block!important;
-  flex:0 1 auto!important;
-  min-width:0!important;
-  max-width:calc(100% - 54px)!important;
-  overflow:hidden!important;
-  text-overflow:ellipsis!important;
-  white-space:nowrap!important;
-  line-height:normal!important;
-}
-.murder-page .online-badge{
-  flex:0 0 auto!important;
-  align-self:center!important;
-}
-
-@media (hover:hover) and (pointer:fine){
-  .murder-page .catalog-table tbody tr:hover{background:#fffaf4!important}
-}
+/* 머더미스터리 PC 표는 별도 크기값 없이 styles.css의 공용 catalog-table 규격을 그대로 사용 */
+.murder-page .catalog-name-inner{display:flex;align-items:center;gap:6px;min-width:0;width:100%;max-width:100%}
+.murder-page .catalog-name-text{display:block;flex:0 1 auto;min-width:0;max-width:calc(100% - 54px);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.murder-page .online-badge,.murder-page .online-murder-badge{flex:0 0 auto;align-self:center}
+@media (hover:hover) and (pointer:fine){.murder-page .catalog-table tbody tr:hover{background:#fffaf4}}
 
 @media(max-width:700px){
   .murder-page .catalog-table-wrap{
