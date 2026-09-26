@@ -177,8 +177,40 @@ function murderRow(x){
   return `<tr><td class="catalog-name"><span class="catalog-name-inner"><span class="catalog-name-text">${esc(x.name)}</span>${onlineBadge}</span></td><td>${x.min_players||'?'}~${x.max_players||'?'}인</td><td>${esc(x.playtime||'-')}</td><td>${esc(x.difficulty||'-')}</td><td><span class="status catalog-status ${statusClass}"${rentalStatusAttrs(x)}>${esc(x.status||'보유')}</span></td><td class="catalog-owner" title="${esc(x.location||'')}">${ownerCell(x.location)}</td><td class="catalog-note" title="${esc(x.note||'')}">${murderNoteHtml(x.note)}</td></tr>`;
 }
 
+
+function wireRentalTooltip(){
+  if(window.matchMedia('(hover:hover) and (pointer:fine) and (min-width:769px)').matches===false)return;
+  let tip=null,current=null;
+  const hide=()=>{if(tip){tip.remove();tip=null}current=null};
+  const show=(el)=>{
+    const text=el?.dataset?.rentalTooltip;if(!text)return;
+    hide();current=el;
+    tip=document.createElement('div');tip.className='rental-hover-tooltip';tip.textContent=text;
+    document.body.appendChild(tip);
+    const r=el.getBoundingClientRect(),t=tip.getBoundingClientRect();
+    let left=r.left+r.width/2-t.width/2;
+    left=Math.max(8,Math.min(left,window.innerWidth-t.width-8));
+    let top=r.top-t.height-10;
+    if(top<8)top=r.bottom+10;
+    tip.style.left=`${Math.round(left)}px`;tip.style.top=`${Math.round(top)}px`;
+  };
+  document.addEventListener('mouseover',e=>{
+    const el=e.target.closest?.('.catalog-status.status-rented[data-rental-tooltip]');
+    if(!el||el===current)return;show(el);
+  });
+  document.addEventListener('mouseout',e=>{
+    const el=e.target.closest?.('.catalog-status.status-rented[data-rental-tooltip]');
+    if(!el)return;
+    if(e.relatedTarget&&el.contains(e.relatedTarget))return;
+    hide();
+  });
+  window.addEventListener('scroll',hide,{passive:true});
+  window.addEventListener('resize',hide);
+}
+wireRentalTooltip();
+
 (async()=>{
-  const cacheKey=`dott_catalog_${kind}_v61`;
+  const cacheKey=`dott_catalog_${kind}_v64`;
   let cached=null;
   try{cached=JSON.parse(localStorage.getItem(cacheKey)||'null')}catch(_e){}
   if(cached?.items){items=cached.items;settings=cached.settings||null;render()}
