@@ -475,7 +475,7 @@ function rentalPanel(p){
     btn.disabled=true;
     try{
       await DOTT_DB.update('rental_loans',loan.id,{returned_at:todayYmd()});
-      if(game)await DOTT_DB.update('catalog_items',game.id,{status:loan.previous_status||'도트'});
+      if(game)await DOTT_DB.update('catalog_items',game.id,{status:loan.previous_status||'도트',current_borrower:null,current_rented_at:null});
       await loadAll();renderAdmin();toast('반납완료 처리했습니다.');
     }catch(e){alert(e.message||e);btn.disabled=false}
   });
@@ -593,6 +593,13 @@ function catalogModal(x={},kind){
     const borrower=m.querySelector('#f_borrower')?.value.trim()||'';
     const rentedAt=m.querySelector('#f_rented_at')?.value||'';
     if(wantsRental&&!activeLoan&&(!borrower||!rentedAt))throw new Error('대여중으로 변경할 때는 대여자와 대여일을 입력해 주세요.');
+    if(wantsRental){
+      row.current_borrower=borrower||(activeLoan?.borrower||'');
+      row.current_rented_at=rentedAt||(activeLoan?.rented_at||'');
+    }else{
+      row.current_borrower=null;
+      row.current_rented_at=null;
+    }
     const saved=x.id?await DOTT_DB.update('catalog_items',x.id,row):await DOTT_DB.insert('catalog_items',row);
     const itemId=x.id||saved?.id;
     if(wantsRental&&!activeLoan&&itemId){
