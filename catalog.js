@@ -68,7 +68,7 @@ function statusClassName(status){
 function rentalStatusAttrs(x){
   if(String(x?.status||'')!=='대여중')return '';
   const borrower=String(x?.current_borrower||'').trim();
-  return borrower?` data-rental-tooltip="대여자 · ${esc(borrower)}" tabindex="0"`:'';
+  return borrower?` data-rental-tooltip="대여자:${esc(borrower)}" tabindex="0"`:'';
 }
 
 function difficultyMeterHtml(value){

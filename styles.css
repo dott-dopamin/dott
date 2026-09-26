@@ -1414,6 +1414,11 @@ body.murder-notice-open{overflow:hidden}
 @media(max-width:700px){.rental-fields{grid-template-columns:1fr}.rental-table th,.rental-table td{font-size:10px;padding:8px 5px}.rental-return-btn{padding:5px 7px;font-size:9px}}
 
 
+/* v65: PC 대여중 배지는 상세 확인 가능함을 포인터로 표시 */
+@media (hover:hover) and (pointer:fine) and (min-width:769px){
+  .catalog-status.status-rented[data-rental-tooltip]{cursor:pointer}
+}
+
 /* v64: PC 대여중 대여자 말풍선 - body 레벨이라 테이블 overflow에 잘리지 않음 */
 .rental-hover-tooltip{
   position:fixed;z-index:99999;pointer-events:none;white-space:nowrap;
