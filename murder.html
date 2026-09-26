@@ -38,14 +38,13 @@
 .murder-notice-close{width:34px;height:34px;border:1px solid var(--line);border-radius:10px;background:#fff;color:#5d544d;cursor:pointer}
 .murder-notice-content{padding:20px;font-size:13px;line-height:1.8;white-space:pre-wrap;overflow-wrap:anywhere;color:#3b342e}
 .murder-notice-empty{color:var(--muted)}
-body.murder-notice-open{overflow:hidden}
+body.murder-notice-open{overflow:hidden}.murder-page .online-badge,.murder-page .online-murder-badge{flex:0 0 auto;align-self:center}
+@media (hover:hover) and (pointer:fine){}
 
-/* 머더미스터리 PC 표는 별도 크기값 없이 styles.css의 공용 catalog-table 규격을 그대로 사용 */
-.murder-page .catalog-name-inner{display:flex;align-items:center;gap:6px;min-width:0;width:100%;max-width:100%}
-.murder-page .catalog-name-text{display:block;flex:0 1 auto;min-width:0;max-width:calc(100% - 54px);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+
+/* 머더 전용 기능만 유지. 레이아웃/표/필터 크기는 공용 styles.css 사용 */
 .murder-page .online-badge,.murder-page .online-murder-badge{flex:0 0 auto;align-self:center}
 @media (hover:hover) and (pointer:fine){.murder-page .catalog-table tbody tr:hover{background:#fffaf4}}
-
 @media(max-width:700px){
   .murder-page .catalog-table-wrap{
     border-radius:10px!important;
