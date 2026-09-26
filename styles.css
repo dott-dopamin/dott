@@ -1397,3 +1397,18 @@ body.murder-notice-open{overflow:hidden}
     text-align:center!important;
   }
 }
+
+
+/* ===== DOTT 대여 관리대장 ===== */
+.rental-guide p{margin:7px 0 0;color:var(--muted);font-size:12px;line-height:1.6}
+.rental-section{margin-top:18px}
+.rental-section-head{display:flex;align-items:center;justify-content:space-between;margin:0 0 8px;font-size:13px}
+.rental-section-head span{color:var(--muted);font-size:12px}
+.rental-table th,.rental-table td{text-align:center}
+.rental-table td:first-child{text-align:left}
+.rental-status{display:inline-flex;padding:4px 8px;border-radius:999px;font-size:11px;font-weight:800}
+.rental-active{background:#fff3cd;color:#856404}
+.rental-done{background:#eef1f4;color:#59636e}
+.rental-return-btn{padding:6px 10px;font-size:11px}
+.rental-fields{grid-template-columns:1fr 1fr;gap:12px;margin-top:2px;padding:12px;border:1px solid var(--line);border-radius:12px;background:#fafafa}
+@media(max-width:700px){.rental-fields{grid-template-columns:1fr}.rental-table th,.rental-table td{font-size:10px;padding:8px 5px}.rental-return-btn{padding:5px 7px;font-size:9px}}

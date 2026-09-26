@@ -9,7 +9,7 @@ let accountingSubtab='fees';
 let accountingMonth=new Date(); accountingMonth.setDate(1);
 let accountingFilter='all';
 let accountingSearch='';
-let data={schedules:[],notices:[],attendance:[],boardgame:[],murder:[],deduction:[],settings:null,fees:[],ledger:[],closures:[]};
+let data={schedules:[],notices:[],attendance:[],boardgame:[],murder:[],deduction:[],settings:null,fees:[],ledger:[],closures:[],rentals:[]};
 let adminLoadWarnings=[];
 
 (async()=>{
@@ -49,7 +49,8 @@ async function loadAll(){
     ['settings','사이트 설정',DOTT_DB.settings()],
     ['fees','회비',DOTT_DB.feeRecords()],
     ['ledger','회계장부',DOTT_DB.accountingEntries()],
-    ['closures','월 마감',DOTT_DB.accountingClosures()]
+    ['closures','월 마감',DOTT_DB.accountingClosures()],
+    ['rentals','대여 관리대장',DOTT_DB.rentalLoans()]
   ];
   const results=await Promise.allSettled(jobs.map(x=>x[2]));
   adminLoadWarnings=[];
@@ -62,7 +63,7 @@ async function loadAll(){
 }
 
 function renderAdmin(){
-  const tabs=[['schedules','일정 관리'],['attendance','출석 관리'],['notices','공지 관리'],['boardgame','보드게임'],['murder','머더미스터리'],['deduction','추리게임'],['accounting','회비 · 회계'],['settings','관리자 설정']];
+  const tabs=[['schedules','일정 관리'],['attendance','출석 관리'],['notices','공지 관리'],['boardgame','보드게임'],['murder','머더미스터리'],['deduction','추리게임'],['rentals','대여 관리'],['accounting','회비 · 회계'],['settings','관리자 설정']];
   const loadWarning=adminLoadWarnings.length?`<div class="info-box admin-load-warning">⚠ ${adminLoadWarnings.join(' · ')} 데이터를 최신 상태로 불러오지 못했습니다. 네트워크가 안정되면 새로고침해 주세요.</div>`:'';
   app.innerHTML=`${nav('admin')}<main class="admin-wrap"><section class="admin-hero"><div><span class="eyebrow">⚙ 관리자 화면</span><h1>일정 · 공지 · 보유목록 관리</h1><p>여기서 등록한 내용은 공개 페이지에 바로 반영됩니다.</p></div><div class="toolbar"><a class="btn" href="index.html">공개 화면 보기</a><button class="btn" id="logout">로그아웃</button></div></section><div class="info-box">현재 데이터는 Supabase에 저장됩니다. 일반 방문자는 조회만 가능하고, 로그인한 관리자만 추가·수정·삭제할 수 있습니다.</div>${loadWarning}<div class="tabs">${tabs.map(([v,l])=>`<button class="tab ${tab===v?'active':''}" data-tab="${v}">${l}</button>`).join('')}</div><div id="panel"></div></main>${footer()}`;
   document.getElementById('logout').onclick=async()=>{await DOTT_DB.signOut();renderLogin()};
@@ -74,6 +75,7 @@ function renderPanel(){
   const p=document.getElementById('panel');
   if(tab==='settings')return settingsPanel(p);
   if(tab==='accounting')return accountingPanel(p);
+  if(tab==='rentals')return rentalPanel(p);
   if(tab==='schedules')return schedulePanel(p);
   if(tab==='attendance')return attendancePanel(p);
   if(tab==='notices')return noticePanel(p);
@@ -452,6 +454,33 @@ function catalogDifficultyMeterHtml(v){
   return `<span title="난이도 ${esc(label)} / 5" style="display:inline-flex;align-items:center;white-space:nowrap">${boxes}</span>`;
 }
 
+function rentalPanel(p){
+  const allGames=[...data.boardgame,...data.murder,...data.deduction];
+  const gameById=new Map(allGames.map(x=>[String(x.id),x]));
+  const active=data.rentals.filter(x=>!x.returned_at);
+  const history=data.rentals.filter(x=>!!x.returned_at);
+  const rowHtml=(x,activeRow)=>{
+    const game=gameById.get(String(x.catalog_item_id));
+    const gameName=x.game_name||game?.name||'삭제된 게임';
+    return `<tr><td><b>${esc(gameName)}</b></td><td>${esc(x.borrower||'-')}</td><td>${esc(x.rented_at||'-')}</td>${activeRow?`<td><span class="rental-status rental-active">대여중</span></td><td><button class="btn rental-return-btn" data-rental-return="${x.id}">반납완료</button></td>`:`<td>${esc(x.returned_at||'-')}</td><td><span class="rental-status rental-done">반납완료</span></td>`}</tr>`;
+  };
+  p.innerHTML=`<div class="catalog-admin-desc rental-guide"><b>🧳 게임 대여 관리대장</b><p>게임 수정 화면에서 상태를 <b>대여중</b>으로 변경하면 대여자와 대여일을 입력할 수 있습니다. 반납 시 아래 <b>반납완료</b> 버튼만 누르면 됩니다.</p></div>
+  <div class="rental-section"><div class="rental-section-head"><b>현재 대여중</b><span>${active.length}건</span></div><div class="table-wrap"><table class="table rental-table"><thead><tr><th>게임명</th><th>대여자</th><th>대여일</th><th>상태</th><th>관리</th></tr></thead><tbody>${active.map(x=>rowHtml(x,true)).join('')||'<tr><td colspan="5">현재 대여중인 게임이 없습니다.</td></tr>'}</tbody></table></div></div>
+  <div class="rental-section"><div class="rental-section-head"><b>대여 이력</b><span>${history.length}건</span></div><div class="table-wrap"><table class="table rental-table"><thead><tr><th>게임명</th><th>대여자</th><th>대여일</th><th>반납일</th><th>상태</th></tr></thead><tbody>${history.map(x=>rowHtml(x,false)).join('')||'<tr><td colspan="5">반납 완료된 대여 이력이 없습니다.</td></tr>'}</tbody></table></div></div>`;
+  p.querySelectorAll('[data-rental-return]').forEach(btn=>btn.onclick=async()=>{
+    const loan=data.rentals.find(x=>String(x.id)===String(btn.dataset.rentalReturn));
+    if(!loan||loan.returned_at)return;
+    const game=gameById.get(String(loan.catalog_item_id));
+    if(!confirm(`${loan.game_name||game?.name||'게임'}을(를) 반납완료 처리할까요?`))return;
+    btn.disabled=true;
+    try{
+      await DOTT_DB.update('rental_loans',loan.id,{returned_at:todayYmd()});
+      if(game)await DOTT_DB.update('catalog_items',game.id,{status:loan.previous_status||'도트'});
+      await loadAll();renderAdmin();toast('반납완료 처리했습니다.');
+    }catch(e){alert(e.message||e);btn.disabled=false}
+  });
+}
+
 function catalogPanel(p,kind){
   const title={boardgame:'보드게임',murder:'머더미스터리',deduction:'추리게임'}[kind];
   const descKey={boardgame:'boardgame_description',murder:'murder_description',deduction:'deduction_description'}[kind];
@@ -514,15 +543,17 @@ function catalogModal(x={},kind){
   let bottom='';
   if(kind==='murder'){
     middle=`<div><label class="label">난이도</label><select id="f_diff" class="field"><option value="">선택 안함</option>${murderDifficulties.map(v=>`<option value="${v}" ${x.difficulty===v?'selected':''}>${v}</option>`).join('')}</select></div>`;
-    bottom=`<div><label class="label">상태 및 위치</label><select id="f_status" class="field">${murderStatuses.map(v=>`<option value="${v}" ${x.status===v?'selected':''}>${v}</option>`).join('')}</select></div><div><label class="label">소유주</label><input id="f_owner" class="field" placeholder="소유주 입력" value="${esc(x.location||'')}"></div><div class="full"><label class="label">비고</label><textarea id="f_note" class="field" rows="3" placeholder="자유롭게 입력">${esc(x.note||'')}</textarea></div></div>`;
+    bottom=`<div><label class="label">상태 및 위치</label><select id="f_status" class="field" onchange="const r=document.getElementById('rentalFields');if(r)r.style.display=this.value==='대여중'?'grid':'none'">${murderStatuses.map(v=>`<option value="${v}" ${x.status===v?'selected':''}>${v}</option>`).join('')}</select></div><div><label class="label">소유주</label><input id="f_owner" class="field" placeholder="소유주 입력" value="${esc(x.location||'')}"></div><div class="full"><label class="label">비고</label><textarea id="f_note" class="field" rows="3" placeholder="자유롭게 입력">${esc(x.note||'')}</textarea></div></div>`;
   }else{
     const genreField=kind==='boardgame'
       ? `<select id="f_genre" class="field"><option value="">선택 안함</option>${boardgameGenres.map(v=>`<option value="${esc(v)}" ${x.genre===v?'selected':''}>${esc(v)}</option>`).join('')}</select>`
       : `<input id="f_genre" class="field" placeholder="장르 입력" value="${esc(x.genre||'')}">`;
     middle=`<div><label class="label">난이도</label><input id="f_diff" class="field" type="number" min="1" max="5" step="0.01" inputmode="decimal" placeholder="예: 1.78" value="${esc(catalogDifficultyInputValue(x.difficulty))}"><div style="margin-top:5px;font-size:11px;color:var(--muted)">1~5 사이 소수점 입력 · 예: 1.78</div></div><div><label class="label">장르</label>${genreField}</div>`;
-    bottom=`<div><label class="label">상태 및 위치</label><select id="f_status" class="field">${['보유','도트','공방','대여중','분실'].map(v=>`<option value="${v}" ${x.status===v?'selected':''}>${v}</option>`).join('')}</select></div><div><label class="label">소유주</label><input id="f_note" class="field" placeholder="소유주 입력" value="${esc(x.note||'')}"></div></div>`;
+    bottom=`<div><label class="label">상태 및 위치</label><select id="f_status" class="field" onchange="const r=document.getElementById('rentalFields');if(r)r.style.display=this.value==='대여중'?'grid':'none'">${['보유','도트','공방','대여중','분실'].map(v=>`<option value="${v}" ${x.status===v?'selected':''}>${v}</option>`).join('')}</select></div><div><label class="label">소유주</label><input id="f_note" class="field" placeholder="소유주 입력" value="${esc(x.note||'')}"></div></div>`;
   }
-  showModal(x.id?'항목 수정':'항목 추가',commonTop+middle+bottom,async m=>{
+  const activeLoan=x.id?data.rentals.find(r=>String(r.catalog_item_id)===String(x.id)&&!r.returned_at):null;
+  const rentalFields=`<div id="rentalFields" class="full rental-fields" style="display:${x.status==='대여중'?'grid':'none'}"><div><label class="label">대여자</label><input id="f_borrower" class="field" placeholder="대여자 이름" value="${esc(activeLoan?.borrower||'')}"></div><div><label class="label">대여일</label><input id="f_rented_at" class="field" type="date" value="${esc(activeLoan?.rented_at||todayYmd())}"></div></div>`;
+  showModal(x.id?'항목 수정':'항목 추가',commonTop+middle+bottom.replace(/<\/div>\s*$/,rentalFields+'</div>'),async m=>{
     const row={
       kind,
       name:m.querySelector('#f_name').value.trim(),
@@ -557,7 +588,18 @@ function catalogModal(x={},kind){
       if(kind==='boardgame')row.is_expansion=!!m.querySelector('#f_boardgame_expansion')?.checked;
     }
     if(!row.name)throw new Error('이름을 입력해 주세요.');
-    x.id?await DOTT_DB.update('catalog_items',x.id,row):await DOTT_DB.insert('catalog_items',row);
+    const wantsRental=row.status==='대여중';
+    if(activeLoan&&!wantsRental)throw new Error('대여중인 게임은 대여 관리 탭의 반납완료 버튼으로 처리해 주세요.');
+    const borrower=m.querySelector('#f_borrower')?.value.trim()||'';
+    const rentedAt=m.querySelector('#f_rented_at')?.value||'';
+    if(wantsRental&&!activeLoan&&(!borrower||!rentedAt))throw new Error('대여중으로 변경할 때는 대여자와 대여일을 입력해 주세요.');
+    const saved=x.id?await DOTT_DB.update('catalog_items',x.id,row):await DOTT_DB.insert('catalog_items',row);
+    const itemId=x.id||saved?.id;
+    if(wantsRental&&!activeLoan&&itemId){
+      await DOTT_DB.insert('rental_loans',{catalog_item_id:String(itemId),game_name:row.name,borrower,rented_at:rentedAt,previous_status:(x.status&&x.status!=='대여중')?x.status:'도트'});
+    }else if(wantsRental&&activeLoan){
+      await DOTT_DB.update('rental_loans',activeLoan.id,{game_name:row.name,borrower:borrower||activeLoan.borrower,rented_at:rentedAt||activeLoan.rented_at});
+    }
     await loadAll();renderAdmin();toast('저장했습니다.');
   });
 }
