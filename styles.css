@@ -950,27 +950,7 @@ body.calendar-detail-open{overflow:hidden}
 /* v30: 머더미스터리 전용 리스트 / 숫자+회 입력 */
 .number-suffix-field{position:relative;display:flex;align-items:center}
 .number-suffix-field .field{padding-right:34px}
-.number-suffix-field>span{position:absolute;right:12px;color:var(--muted);font-size:12px;pointer-events:none}
-.filters.filters-compact{grid-template-columns:minmax(180px,1.4fr) minmax(120px,.7fr)}
-.catalog-table.murder-table{min-width:680px;table-layout:fixed}
-.catalog-table.murder-table th:nth-child(1),.catalog-table.murder-table td:nth-child(1){width:31%}
-.catalog-table.murder-table th:nth-child(2),.catalog-table.murder-table td:nth-child(2){width:13%}
-.catalog-table.murder-table th:nth-child(3),.catalog-table.murder-table td:nth-child(3){width:14%}
-.catalog-table.murder-table th:nth-child(4),.catalog-table.murder-table td:nth-child(4){width:14%}
-.catalog-table.murder-table th:nth-child(5),.catalog-table.murder-table td:nth-child(5){width:11%}
-.catalog-table.murder-table th:nth-child(6),.catalog-table.murder-table td:nth-child(6){width:17%}
-@media(max-width:700px){
-  .filters.filters-compact{grid-template-columns:1fr 1fr}
-  .catalog-table.murder-table{min-width:0!important;width:100%;table-layout:fixed}
-  .catalog-table.murder-table th,.catalog-table.murder-table td{font-size:8.5px;padding:6px 1px;text-align:center;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-  .catalog-table.murder-table th{font-size:8.1px}
-  .catalog-table.murder-table th:nth-child(1),.catalog-table.murder-table td:nth-child(1){width:29%;text-align:left;padding-left:5px}
-  .catalog-table.murder-table th:nth-child(2),.catalog-table.murder-table td:nth-child(2){width:12%}
-  .catalog-table.murder-table th:nth-child(3),.catalog-table.murder-table td:nth-child(3){width:13%}
-  .catalog-table.murder-table th:nth-child(4),.catalog-table.murder-table td:nth-child(4){width:16%}
-  .catalog-table.murder-table th:nth-child(5),.catalog-table.murder-table td:nth-child(5){width:12%}
-  .catalog-table.murder-table th:nth-child(6),.catalog-table.murder-table td:nth-child(6){width:18%;padding-right:4px}
-}
+.number-suffix-field>span{position:absolute;right:12px;color:var(--muted);font-size:12px;pointer-events:none}}
 .admin-load-warning{margin-top:-6px;background:#fff8e8;border-color:#f1dca8;color:#725b24}
 
 
@@ -1234,22 +1214,6 @@ body.calendar-detail-open{overflow:hidden}
 .catalog-status.status-workshop{background:#f1ebfb;color:#6c53a3;border-color:#ddd1f0}
 
 /* DOTT v61 PC 비율 - 시간 범위와 5칸 난이도 게이지를 한 줄로 보여주도록 재배분 */
-.catalog-kind-table.boardgame-table th:nth-child(1),.catalog-kind-table.boardgame-table td:nth-child(1){width:27%!important}
-.catalog-kind-table.boardgame-table th:nth-child(2),.catalog-kind-table.boardgame-table td:nth-child(2){width:9%!important}
-.catalog-kind-table.boardgame-table th:nth-child(3),.catalog-kind-table.boardgame-table td:nth-child(3){width:12%!important}
-.catalog-kind-table.boardgame-table th:nth-child(4),.catalog-kind-table.boardgame-table td:nth-child(4){width:14%!important}
-.catalog-kind-table.boardgame-table th:nth-child(5),.catalog-kind-table.boardgame-table td:nth-child(5){width:12%!important}
-.catalog-kind-table.boardgame-table th:nth-child(6),.catalog-kind-table.boardgame-table td:nth-child(6){width:13%!important}
-.catalog-kind-table.boardgame-table th:nth-child(7),.catalog-kind-table.boardgame-table td:nth-child(7){width:13%!important}
-
-.catalog-kind-table.deduction-table th:nth-child(1),.catalog-kind-table.deduction-table td:nth-child(1){width:27%!important}
-.catalog-kind-table.deduction-table th:nth-child(2),.catalog-kind-table.deduction-table td:nth-child(2){width:9%!important}
-.catalog-kind-table.deduction-table th:nth-child(3),.catalog-kind-table.deduction-table td:nth-child(3){width:12%!important}
-.catalog-kind-table.deduction-table th:nth-child(4),.catalog-kind-table.deduction-table td:nth-child(4){width:14%!important}
-.catalog-kind-table.deduction-table th:nth-child(5),.catalog-kind-table.deduction-table td:nth-child(5){width:12%!important}
-.catalog-kind-table.deduction-table th:nth-child(6),.catalog-kind-table.deduction-table td:nth-child(6){width:13%!important}
-.catalog-kind-table.deduction-table th:nth-child(7),.catalog-kind-table.deduction-table td:nth-child(7){width:13%!important}
-
 @media(max-width:700px){
   .catalog-kind-table{width:100%!important;min-width:0!important;table-layout:fixed!important}
   .catalog-kind-table th,.catalog-kind-table td{padding:7px 2px!important;font-size:7.2px!important;overflow:hidden;vertical-align:middle!important}
@@ -1263,22 +1227,7 @@ body.calendar-detail-open{overflow:hidden}
   .catalog-kind-table .catalog-owner{font-size:7px!important}
 
   /* v72 mobile columns: game-name font size synced to murder list and widths rebalanced for 2-line titles + 5-box meter */
-  .catalog-kind-table.boardgame-table th:nth-child(1),.catalog-kind-table.boardgame-table td:nth-child(1){width:30%!important}
-  .catalog-kind-table.boardgame-table th:nth-child(2),.catalog-kind-table.boardgame-table td:nth-child(2){width:9%!important}
-  .catalog-kind-table.boardgame-table th:nth-child(3),.catalog-kind-table.boardgame-table td:nth-child(3){width:13%!important}
-  .catalog-kind-table.boardgame-table th:nth-child(4),.catalog-kind-table.boardgame-table td:nth-child(4){width:16%!important}
-  .catalog-kind-table.boardgame-table th:nth-child(5),.catalog-kind-table.boardgame-table td:nth-child(5){width:12%!important}
-  .catalog-kind-table.boardgame-table th:nth-child(6),.catalog-kind-table.boardgame-table td:nth-child(6){width:11%!important}
-  .catalog-kind-table.boardgame-table th:nth-child(7),.catalog-kind-table.boardgame-table td:nth-child(7){width:9%!important}
-
-  .catalog-kind-table.deduction-table th:nth-child(1),.catalog-kind-table.deduction-table td:nth-child(1){width:32%!important}
-  .catalog-kind-table.deduction-table th:nth-child(2),.catalog-kind-table.deduction-table td:nth-child(2){width:9%!important}
-  .catalog-kind-table.deduction-table th:nth-child(3),.catalog-kind-table.deduction-table td:nth-child(3){width:13%!important}
-  .catalog-kind-table.deduction-table th:nth-child(4),.catalog-kind-table.deduction-table td:nth-child(4){width:16%!important}
-  .catalog-kind-table.deduction-table th:nth-child(5),.catalog-kind-table.deduction-table td:nth-child(5){width:11%!important}
-  .catalog-kind-table.deduction-table th:nth-child(6),.catalog-kind-table.deduction-table td:nth-child(6){width:10%!important}
-  .catalog-kind-table.deduction-table th:nth-child(7),.catalog-kind-table.deduction-table td:nth-child(7){width:9%!important}
-}
+  }
 
 
 /* DOTT v61: 플레이시간은 60~90분 같은 범위도 한 줄 고정 */
@@ -1405,4 +1354,52 @@ body.murder-notice-open{overflow:hidden}
   .murder-page .catalog-table tbody tr:hover{background:transparent!important}
   .murder-page .owner-count:hover{filter:none!important;transform:none!important}
   .murder-page .notice-open-btn:hover{background:var(--accent-soft)!important;border-color:#e8a27f!important;transform:none!important}
+}
+
+
+/* ===== DOTT 공개 보유목록 최종 공통 규격 =====
+   보드게임 / 머더미스터리 / 추리게임 PC 구조는 이 규칙 하나만 사용 */
+.catalog-page .stat-row{
+  justify-content:center;
+}
+@media(min-width:701px){
+  .catalog-page .catalog-table-wrap{
+    width:100%;
+  }
+  .catalog-page .catalog-kind-table{
+    width:100%!important;
+    min-width:0!important;
+    table-layout:fixed!important;
+  }
+  .catalog-page .catalog-kind-table th,
+  .catalog-page .catalog-kind-table td{
+    padding:12px 14px!important;
+    font-size:12px!important;
+    line-height:1.2!important;
+    vertical-align:middle!important;
+  }
+  .catalog-page .catalog-kind-table th{
+    font-size:11px!important;
+    text-align:center!important;
+  }
+  .catalog-page .catalog-kind-table th:nth-child(1),
+  .catalog-page .catalog-kind-table td:nth-child(1){width:27%!important}
+  .catalog-page .catalog-kind-table th:nth-child(2),
+  .catalog-page .catalog-kind-table td:nth-child(2){width:9%!important}
+  .catalog-page .catalog-kind-table th:nth-child(3),
+  .catalog-page .catalog-kind-table td:nth-child(3){width:12%!important}
+  .catalog-page .catalog-kind-table th:nth-child(4),
+  .catalog-page .catalog-kind-table td:nth-child(4){width:14%!important}
+  .catalog-page .catalog-kind-table th:nth-child(5),
+  .catalog-page .catalog-kind-table td:nth-child(5){width:12%!important}
+  .catalog-page .catalog-kind-table th:nth-child(6),
+  .catalog-page .catalog-kind-table td:nth-child(6){width:13%!important}
+  .catalog-page .catalog-kind-table th:nth-child(7),
+  .catalog-page .catalog-kind-table td:nth-child(7){width:13%!important}
+  .catalog-page .catalog-kind-table td:first-child{
+    text-align:left!important;
+  }
+  .catalog-page .catalog-kind-table td:not(:first-child){
+    text-align:center!important;
+  }
 }
