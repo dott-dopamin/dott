@@ -595,6 +595,16 @@ function settingsPanel(p){
     </div></div>
 
 
+    <div class="card"><div class="card-head"><h2>데이터 백업 · 복원</h2></div><div style="padding:20px">
+      <p style="font-size:12px;color:var(--muted);line-height:1.7;margin-top:0">일정 · 공지 · 출석 · 보드게임 · 머더미스터리 · 추리게임 · 사이트 설정 · 회비 · 회계 데이터를 JSON 파일로 저장합니다.<br><b>복원은 현재 데이터를 백업 파일 내용으로 교체합니다.</b> 게임 이미지와 회계 영수증 원본 파일은 Storage에 그대로 유지되며 이 JSON 파일에는 포함되지 않습니다.</p>
+      <div style="display:flex;gap:8px;flex-wrap:wrap">
+        <button class="btn primary" id="downloadBackup">전체 데이터 백업</button>
+        <button class="btn" id="chooseRestore">백업 파일 복원</button>
+        <input id="restoreFile" type="file" accept=".json,application/json" hidden>
+      </div>
+      <div class="error" id="backupErr" style="margin-top:10px"></div>
+    </div></div>
+
     <div class="card"><div class="card-head"><h2>관리자 비밀번호 변경</h2></div><div style="padding:20px">
       <p style="font-size:12px;color:var(--muted);line-height:1.6;margin-top:0">현재 로그인한 관리자 자신의 Supabase Auth 비밀번호를 변경합니다. 8자 이상을 권장합니다.</p>
       <label class="label">새 비밀번호</label><input id="pw1" class="field" type="password">
@@ -612,6 +622,38 @@ function settingsPanel(p){
     }catch(e){err.textContent=(e.message||e)+' — add-site-settings.sql을 아직 실행하지 않았다면 먼저 실행해 주세요.'}
     finally{btn.disabled=false}
   };
+
+  document.getElementById('downloadBackup').onclick=async()=>{
+    const btn=document.getElementById('downloadBackup'),err=document.getElementById('backupErr');
+    btn.disabled=true;err.textContent='';
+    try{
+      const backup=await DOTT_DB.createFullBackup();
+      const blob=new Blob([JSON.stringify(backup,null,2)],{type:'application/json;charset=utf-8'});
+      const url=URL.createObjectURL(blob),link=document.createElement('a');
+      const stamp=new Date().toLocaleDateString('sv-SE');
+      link.href=url;link.download=`DOTT_backup_${stamp}.json`;document.body.appendChild(link);link.click();link.remove();
+      setTimeout(()=>URL.revokeObjectURL(url),1000);toast('전체 데이터 백업 파일을 저장했습니다.');
+    }catch(e){err.textContent=e.message||String(e)}
+    finally{btn.disabled=false}
+  };
+  document.getElementById('chooseRestore').onclick=()=>document.getElementById('restoreFile').click();
+  document.getElementById('restoreFile').onchange=async e=>{
+    const input=e.currentTarget,file=input.files?.[0],err=document.getElementById('backupErr');
+    if(!file)return;err.textContent='';
+    try{
+      const backup=JSON.parse(await file.text());
+      if(backup?.format!=='DOTT_FULL_BACKUP'||backup?.version!==1)throw new Error('DOTT 백업 파일이 아닙니다.');
+      const counts=Object.values(backup.tables||{}).reduce((n,v)=>n+(Array.isArray(v)?v.length:0),0);
+      const created=backup.created_at?new Date(backup.created_at).toLocaleString('ko-KR'):'날짜 정보 없음';
+      if(!confirm(`백업 파일을 복원할까요?\n\n백업 생성: ${created}\n총 데이터: ${counts}건\n\n현재 Supabase 데이터가 이 백업 내용으로 교체됩니다.`))return;
+      if(!confirm('정말 복원하시겠습니까?\n이 작업은 현재 데이터를 변경합니다.'))return;
+      document.getElementById('chooseRestore').disabled=true;
+      await DOTT_DB.restoreFullBackup(backup);
+      await loadAll();renderAdmin();toast('백업 데이터를 복원했습니다.');
+    }catch(ex){err.textContent=ex.message||String(ex)}
+    finally{input.value='';const b=document.getElementById('chooseRestore');if(b)b.disabled=false}
+  };
+
   document.getElementById('changePw').onclick=async()=>{
     const a=document.getElementById('pw1').value,b=document.getElementById('pw2').value;
     if(a.length<6)return alert('6자 이상 입력해 주세요.');
