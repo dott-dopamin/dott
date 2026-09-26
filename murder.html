@@ -25,39 +25,6 @@
 /* 필터는 공통 .filters의 간격/마진을 그대로 사용하고, 3개 열 비율만 지정 */
 .murder-page .filters.filters-compact{grid-template-columns:1.5fr repeat(2,minmax(130px,.65fr))}
 
-/* 머더 리스트 전용 표 */
-.murder-page .catalog-table-wrap{overflow:hidden}
-.murder-page .catalog-table{width:100%;min-width:0;border-collapse:collapse;table-layout:fixed}
-.murder-page .catalog-table th,.murder-page .catalog-table td{padding:12px 14px;border-bottom:1px solid var(--line);font-size:12px;line-height:1.35;vertical-align:middle;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.murder-page .catalog-table th{background:#fbf7f0;color:#756a60;font-size:11px;font-weight:600;text-align:center}
-.murder-page .catalog-table tbody tr:last-child td{border-bottom:0}
-@media (hover:hover) and (pointer:fine){
-  .murder-page .catalog-table tbody tr:hover{background:#fffaf4}
-}
-.murder-page .catalog-table td:nth-child(1),.murder-page .catalog-table td:nth-child(7){text-align:left}
-.murder-page .catalog-table td:nth-child(n+2):nth-child(-n+6){text-align:center}
-.murder-page .catalog-table th:nth-child(1),.murder-page .catalog-table td:nth-child(1){width:29%}
-.murder-page .catalog-table th:nth-child(2),.murder-page .catalog-table td:nth-child(2){width:8%}
-.murder-page .catalog-table th:nth-child(3),.murder-page .catalog-table td:nth-child(3){width:10%}
-.murder-page .catalog-table th:nth-child(4),.murder-page .catalog-table td:nth-child(4){width:11%}
-.murder-page .catalog-table th:nth-child(5),.murder-page .catalog-table td:nth-child(5){width:14%}
-.murder-page .catalog-table th:nth-child(6),.murder-page .catalog-table td:nth-child(6){width:13%}
-.murder-page .catalog-table th:nth-child(7),.murder-page .catalog-table td:nth-child(7){width:15%}
-.murder-page .catalog-name{font-weight:600}
-.murder-page .catalog-name-inner{display:flex;align-items:flex-start;gap:7px;min-width:0;width:100%;max-width:100%}
-.murder-page .catalog-name-text{display:-webkit-box;flex:0 1 auto;min-width:0;max-width:calc(100% - 48px);overflow:hidden;-webkit-box-orient:vertical;-webkit-line-clamp:2;white-space:normal;line-height:1.3;overflow-wrap:anywhere}
-.murder-page .catalog-owner,.murder-page .catalog-note{color:var(--muted)!important;font-weight:400!important}
-.note-mobile{display:none}
-.murder-page .status{display:inline-flex;padding:4px 7px;border:1px solid transparent;border-radius:999px;font-size:10.5px;font-weight:700}
-.murder-page .status.owned{background:#e8f5eb;color:#2f7a45}
-.murder-page .status.rented{background:#fff1dd;color:#b76513}
-.murder-page .status.lost{background:#fde7e7;color:#b63b3b}
-.murder-page .status.dott{background:#e8f1ff;color:#3567a8}
-.murder-page .status.workshop{background:#f1e9fb;color:#7350a5}
-.online-badge{display:inline-flex;flex:0 0 auto;padding:3px 6px;border-radius:999px;background:#eee7fb;color:#6d55a0;font-size:9px;font-weight:700;vertical-align:middle}
-.warn{margin-bottom:14px;padding:10px 12px;border:1px solid #ead7c4;border-radius:12px;background:#fff8ef;color:#765c43;font-size:12px;line-height:1.5}
-.retry{margin-left:8px;border:1px solid #ddc6b0;background:#fff;border-radius:8px;padding:5px 8px;color:#765c43;cursor:pointer}
-
 /* 머더 공지 버튼/팝업 전용 */
 .notice-open-btn{appearance:none;border:1px solid #e8a27f;border-radius:10px;background:var(--accent-soft);padding:5px 10px;line-height:1.2;color:#9a3f18;font-size:12px;font-weight:800;cursor:pointer;box-shadow:none;transition:background .16s ease,border-color .16s ease,transform .16s ease;text-align:center;white-space:nowrap;align-self:center}
 .notice-open-btn.is-loading{visibility:hidden}
@@ -72,36 +39,6 @@
 .murder-notice-content{padding:20px;font-size:13px;line-height:1.8;white-space:pre-wrap;overflow-wrap:anywhere;color:#3b342e}
 .murder-notice-empty{color:var(--muted)}
 body.murder-notice-open{overflow:hidden}
-
-@media(max-width:700px){
-  /* 상단/메뉴/페이지/제목은 공통 CSS에 맡기고 머더 고유 영역만 조정 */
-  .notice-open-btn{padding:5px 9px;font-size:11px;line-height:1.2}
-  .murder-page .filters.filters-compact{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}
-  .murder-page .filters .search-field{grid-column:1/-1}
-  .murder-page .filters .field{padding:9px 8px;min-height:36px;font-size:11px;line-height:1.2}
-
-  .murder-page .catalog-table-wrap{overflow:hidden}
-  .murder-page .catalog-table{min-width:0!important;width:100%!important;table-layout:fixed}
-  .murder-page .catalog-table th,.murder-page .catalog-table td{padding:7px 2px;font-size:7.2px;line-height:1.35;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-  .murder-page .catalog-table th{font-size:6.7px;letter-spacing:-.28px;text-align:center!important}
-  .murder-page .catalog-table th:nth-child(1),.murder-page .catalog-table td:nth-child(1){width:36%;padding-left:4px}
-  .murder-page .catalog-table th:nth-child(2),.murder-page .catalog-table td:nth-child(2){width:7%}
-  .murder-page .catalog-table th:nth-child(3),.murder-page .catalog-table td:nth-child(3){width:7%}
-  .murder-page .catalog-table th:nth-child(4),.murder-page .catalog-table td:nth-child(4){width:10%;overflow:visible;text-overflow:clip}
-  .murder-page .catalog-table th:nth-child(5),.murder-page .catalog-table td:nth-child(5){width:10%}
-  .murder-page .catalog-table th:nth-child(6),.murder-page .catalog-table td:nth-child(6){width:12%;overflow:visible;text-overflow:clip}
-  .murder-page .catalog-table th:nth-child(7),.murder-page .catalog-table td:nth-child(7){width:18%;padding-right:3px;padding-left:2px}
-  .murder-page .catalog-table td:nth-child(1),.murder-page .catalog-table td:nth-child(7){text-align:left}
-  .murder-page .catalog-table td:nth-child(n+2):nth-child(-n+6){text-align:center}
-  .murder-page .catalog-table td.catalog-name{overflow:hidden;text-overflow:clip;line-height:1.35}
-  .murder-page .catalog-name-inner{gap:2px;align-items:center;width:100%;max-width:100%}
-  .murder-page .catalog-name-text{display:-webkit-box;flex:0 1 auto;min-width:0;max-width:calc(100% - 22px);font-size:7.2px;letter-spacing:-.28px;line-height:1.22;white-space:normal;overflow:hidden;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow-wrap:anywhere}
-  .online-badge{padding:2px 2px;font-size:5.6px;white-space:nowrap;margin-top:0;align-self:center}
-  .murder-page .catalog-table td:nth-child(4),.murder-page .catalog-table td:nth-child(6){font-size:7px;letter-spacing:-.18px}
-  .murder-page .catalog-note{font-size:6.6px!important;letter-spacing:-.3px}
-  .note-desktop{display:none}.note-mobile{display:block;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
-  .murder-page .status{padding:2px 4px;font-size:6.9px}
-}
 
 /* ===== DOTT 2026-09-25: 머더 표를 보드게임/추리게임 표 규격과 완전 동기화 =====
    공통 기준: 헤더/본문 폰트, 셀 패딩, 행 높이, 게임명 시작점, 컬럼 위치, 모바일 행 규격 */
@@ -340,16 +277,7 @@ body.murder-notice-open{overflow:hidden}
 .catalog-status.status-owned{background:#f1e9fb!important;color:#7350a5!important;border-color:#ddd1f0!important}
 .catalog-status.status-lost{background:#fde9e9!important;color:#b13b3b!important;border-color:#f1c8c8!important}
 
-/* 머더미스터리 배지: 보드게임과 동일하게 게임명 바로 뒤에 인라인 표시 */
-.catalog-title-inline{display:inline-flex!important;align-items:center!important;gap:6px!important;max-width:100%;vertical-align:middle}
-.catalog-title-inline .catalog-name-text{min-width:0}
-.catalog-title-inline .online-murder-badge{display:inline-flex!important;flex:0 0 auto!important;margin:0!important;vertical-align:middle!important}
-@media(max-width:700px){
-  .catalog-title-inline{gap:4px!important}
-  .catalog-title-inline .online-murder-badge{margin:0!important}
-}
-
-/* FIX: 머더 게임명/온라인 배지를 보드게임과 동일한 구조로 표시 */
+/* 머더 게임명/온라인 배지 — 보드게임과 동일한 구조 */
 .murder-page .catalog-name-inner{
   display:flex!important;
   align-items:center!important;
@@ -405,72 +333,7 @@ body.murder-notice-open{overflow:hidden}
   }
 }
 
-/* 머더미스터리 모바일 열 비율 재조정
-   게임명 폭은 유지하고 나머지 6개 열만 재배분 */
-@media(max-width:700px){
-  .murder-page .murder-table{table-layout:fixed!important;width:100%!important}
-  .murder-page .murder-table th:nth-child(1),
-  .murder-page .murder-table td:nth-child(1){width:30%!important}
-  .murder-page .murder-table th:nth-child(2),
-  .murder-page .murder-table td:nth-child(2){width:9%!important}
-  .murder-page .murder-table th:nth-child(3),
-  .murder-page .murder-table td:nth-child(3){width:9%!important}
-  .murder-page .murder-table th:nth-child(4),
-  .murder-page .murder-table td:nth-child(4){width:9%!important}
-  .murder-page .murder-table th:nth-child(5),
-  .murder-page .murder-table td:nth-child(5){width:12%!important}
-  .murder-page .murder-table th:nth-child(6),
-  .murder-page .murder-table td:nth-child(6){width:10%!important}
-  .murder-page .murder-table th:nth-child(7),
-  .murder-page .murder-table td:nth-child(7){width:21%!important}
-
-  /* 비고는 최대 10글자 정도가 실제로 보이도록 1줄 유지 */
-  .murder-page .murder-table td.catalog-note{
-    max-width:none!important;
-    overflow:hidden!important;
-    text-overflow:ellipsis!important;
-    white-space:nowrap!important;
-    font-size:7px!important;
-    letter-spacing:-.12px!important;
-    padding-left:2px!important;
-    padding-right:2px!important;
-  }
-  .murder-page .murder-table th:nth-child(n+2),
-  .murder-page .murder-table td:nth-child(n+2){
-    padding-left:2px!important;
-    padding-right:2px!important;
-  }
-}
-
-/* 머더미스터리 모바일 최종 열 비율 — 비고 약 8글자 기준 */
-@media(max-width:700px){
-  .murder-page .murder-table th:nth-child(1),
-  .murder-page .murder-table td:nth-child(1){width:30%!important}
-  .murder-page .murder-table th:nth-child(2),
-  .murder-page .murder-table td:nth-child(2){width:10%!important}
-  .murder-page .murder-table th:nth-child(3),
-  .murder-page .murder-table td:nth-child(3){width:10%!important}
-  .murder-page .murder-table th:nth-child(4),
-  .murder-page .murder-table td:nth-child(4){width:10%!important}
-  .murder-page .murder-table th:nth-child(5),
-  .murder-page .murder-table td:nth-child(5){width:12%!important}
-  .murder-page .murder-table th:nth-child(6),
-  .murder-page .murder-table td:nth-child(6){width:11%!important}
-  .murder-page .murder-table th:nth-child(7),
-  .murder-page .murder-table td:nth-child(7){width:17%!important}
-  .murder-page .murder-table td.catalog-note{
-    max-width:none!important;
-    overflow:hidden!important;
-    text-overflow:ellipsis!important;
-    white-space:nowrap!important;
-    font-size:7px!important;
-    letter-spacing:-.12px!important;
-    padding-left:2px!important;
-    padding-right:2px!important;
-  }
-}
-
-/* 머더 비고: 모바일은 공백 제외 정확히 8글자까지만 표시 */
+/* 머더 비고 — 모바일 공백 제외 최대 8글자 */
 .murder-note-mobile{display:none}
 @media(max-width:700px){
   .murder-page .murder-note-full{display:none!important}
@@ -480,7 +343,7 @@ body.murder-notice-open{overflow:hidden}
   }
 }
 
-/* 머더미스터리 모바일 열 비율 재조정 — 비고 8글자 기준 */
+/* 머더 모바일 최종 열 비율 — 게임명 34 / 인원 9 / 시간 9 / 난이도 9 / 상태 12 / 소유주 11 / 비고 16 */
 @media(max-width:700px){
   .murder-page .murder-table{table-layout:fixed!important;width:100%!important}
   .murder-page .murder-table th:nth-child(1),
