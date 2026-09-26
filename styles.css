@@ -1154,3 +1154,55 @@ body.calendar-detail-open{overflow:hidden}
   .murder-admin-editors #catalogDesc{min-height:80px;height:auto}
   .murder-admin-editors #murderNotice{min-height:150px;height:auto}
 }
+
+/* 관리자 머더 편집 카드: 저장 버튼 우측 상단, 입력영역 전폭 */
+.murder-admin-editors .catalog-admin-card-head{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+  margin-bottom:10px;
+}
+.murder-admin-editors .catalog-admin-card-head .label{margin:0}
+.murder-admin-editors .catalog-admin-card-head .btn{
+  flex:0 0 auto;
+  white-space:nowrap;
+}
+.murder-admin-editors .catalog-admin-desc-row{
+  display:block!important;
+  width:100%;
+  margin-top:0!important;
+}
+.murder-admin-editors .catalog-admin-desc-row .field{
+  width:100%!important;
+  max-width:none!important;
+}
+.murder-admin-editors #catalogDesc{
+  min-height:156px;
+  height:156px;
+}
+.murder-admin-editors #murderNotice{
+  min-height:96px;
+  height:96px;
+}
+@media(max-width:700px){
+  .murder-admin-editors .catalog-admin-card-head{align-items:flex-start}
+}
+
+/* 관리자 > 머더미스터리: 상단 카드/등록도구/목록 간격 보정 */
+.murder-admin-editors{
+  margin-bottom:18px!important;
+}
+.murder-admin-editors + .admin-tools{
+  margin-top:0!important;
+  margin-bottom:14px!important;
+  min-height:38px;
+  align-items:center;
+}
+.murder-admin-editors + .admin-tools + .table-wrap{
+  margin-top:0!important;
+}
+@media(max-width:700px){
+  .murder-admin-editors{margin-bottom:14px!important}
+  .murder-admin-editors + .admin-tools{margin-bottom:12px!important}
+}
