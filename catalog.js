@@ -23,10 +23,11 @@ function filterHtml(){
 function render(){
   const [title,defaultDesc]=labels[kind];
   const desc=(settings&&settings[descriptionKeys[kind]])||defaultDesc;
-  app.innerHTML=`${nav(kind)}<main class="page catalog-page ${kind}-page"><section class="hero"><span class="eyebrow">🎲 보유 현황</span><h1>${title} 리스트</h1><p>${nl2br(desc)}</p><div class="stat-row"><span class="stat-pill"><span class="stat-label">전체</span><b>${items.length}개</b></span>${murderNoticeHtml()}</div></section><section class="section"><div class="filters">${filterHtml()}</div><div class="catalog-meta"><span id="count"></span></div><div id="catalogContent"></div></section></main>${footer()}`;
+  app.innerHTML=`${nav(kind)}<main class="page catalog-page ${kind}-page"><section class="hero"><span class="eyebrow">🎲 보유 현황</span><h1>${title} 리스트</h1><p>${nl2br(desc)}</p><div class="stat-row"><span class="stat-pill"><span class="stat-label">전체</span><b>${items.length}개</b></span>${murderNoticeHtml()}${recommendOpenHtml()}</div></section><section class="section"><div class="filters">${filterHtml()}</div><div class="catalog-meta"><span id="count"></span></div><div id="catalogContent"></div></section></main>${footer()}`;
   ['q','players','difficulty','genre'].forEach(id=>{const el=document.getElementById(id);if(el)el.oninput=paint});
   paint();
   wireMurderNotice();
+  wireRecommendOpen();
 }
 
 function filteredItems(){
@@ -112,6 +113,77 @@ document.addEventListener('click',e=>{
   const b=e.target.closest('.owner-count');if(!b)return;
   showOwners(decodeURIComponent(b.dataset.owners||'').split('|').filter(Boolean));
 });
+
+
+function recommendOpenHtml(){
+  if(kind!=='boardgame')return '';
+  return `<button id="recommendOpenBtn" class="recommend-open-btn" type="button">🎲 오늘 뭐하지?</button>`;
+}
+function wireRecommendOpen(){
+  if(kind!=='boardgame')return;
+  const btn=document.getElementById('recommendOpenBtn');
+  if(btn)btn.onclick=openRecommendModal;
+}
+function playtimeMaxMinutes(v){
+  const nums=String(v??'').match(/\d+/g)?.map(Number).filter(Number.isFinite)||[];
+  return nums.length?Math.max(...nums):null;
+}
+function recommendEligibleBase(){
+  return items.filter(x=>!['대여중','분실'].includes(String(x.status||'').trim()));
+}
+function recommendMatches(x,{players,maxTime,genre,difficulty}){
+  if(players&&!(Number(x.min_players||0)<=players&&Number(x.max_players||99)>=players))return false;
+  if(maxTime){const t=playtimeMaxMinutes(x.playtime);if(t===null||t>maxTime)return false}
+  if(genre&&x.genre!==genre)return false;
+  if(difficulty){
+    const n=parseFloat(String(x.difficulty??'').trim());
+    if(!Number.isFinite(n)||Math.floor(Math.max(1,Math.min(5,n)))!==difficulty)return false;
+  }
+  return true;
+}
+function recommendResultHtml(x,count){
+  if(!x)return `<div class="recommend-empty"><b>조건에 맞는 게임이 없어!</b><span>조건을 조금 넓혀서 다시 뽑아봐.</span></div>`;
+  const status=statusClassName(x.status);
+  return `<div class="recommend-result-card">
+    <div class="recommend-result-kicker">조건에 맞는 게임 ${count}개 중 랜덤 추천</div>
+    <div class="recommend-result-name">${esc(x.name)}</div>
+    <div class="recommend-result-info">
+      <span>👥 ${x.min_players||'?'}~${x.max_players||'?'}인</span><span>⏱ ${esc(playtimeLabel(x.playtime))}</span><span>🎯 ${esc(x.genre||'-')}</span><span>난이도 ${esc(String(x.difficulty||'-'))}</span>
+    </div>
+    <span class="status catalog-status ${status}">${esc(x.status||'-')}</span>
+  </div>`;
+}
+function openRecommendModal(){
+  document.getElementById('recommendModal')?.remove();
+  const genres=BOARDGAME_GENRES.filter(g=>items.some(x=>x.genre===g));
+  const box=document.createElement('div');box.id='recommendModal';box.className='recommend-backdrop open';
+  box.innerHTML=`<div class="recommend-modal">
+    <div class="recommend-head"><div><h3>🎲 오늘 뭐하지?</h3><p>조건을 고르면 가능한 게임 중 하나를 랜덤으로 뽑아줘.</p></div><button type="button" class="recommend-close" aria-label="닫기">✕</button></div>
+    <div class="recommend-fields">
+      <label>인원<select id="recPlayers" class="field"><option value="">전체</option>${[2,3,4,5,6,7,8].map(v=>`<option value="${v}">${v}명</option>`).join('')}</select></label>
+      <label>플레이시간<select id="recTime" class="field"><option value="">전체</option><option value="30">30분 이하</option><option value="60">60분 이하</option><option value="90">90분 이하</option><option value="120">120분 이하</option><option value="180">180분 이하</option></select></label>
+      <label>장르<select id="recGenre" class="field"><option value="">전체</option>${genres.map(g=>`<option value="${esc(g)}">${esc(g)}</option>`).join('')}</select></label>
+      <label>난이도<select id="recDifficulty" class="field"><option value="">전체</option>${[1,2,3,4,5].map(v=>`<option value="${v}">${v}점대</option>`).join('')}</select></label>
+    </div>
+    <div id="recommendResult" class="recommend-result"><div class="recommend-placeholder">조건을 고르고 <b>추천받기</b>를 눌러줘!</div></div>
+    <div class="recommend-actions"><button type="button" id="recAny" class="btn recommend-secondary">🎲 그냥 하나 골라줘!</button><button type="button" id="recPick" class="btn recommend-primary">추천받기</button></div>
+  </div>`;
+  document.body.appendChild(box);document.body.classList.add('recommend-open');
+  const close=()=>{box.remove();document.body.classList.remove('recommend-open')};
+  box.querySelector('.recommend-close').onclick=close;box.onclick=e=>{if(e.target===box)close()};
+  const pick=(ignoreConditions=false)=>{
+    const cond=ignoreConditions?{players:0,maxTime:0,genre:'',difficulty:0}:{
+      players:+box.querySelector('#recPlayers').value||0,maxTime:+box.querySelector('#recTime').value||0,
+      genre:box.querySelector('#recGenre').value,difficulty:+box.querySelector('#recDifficulty').value||0
+    };
+    const candidates=recommendEligibleBase().filter(x=>recommendMatches(x,cond));
+    const chosen=candidates.length?candidates[Math.floor(Math.random()*candidates.length)]:null;
+    box.querySelector('#recommendResult').innerHTML=recommendResultHtml(chosen,candidates.length);
+    box.querySelector('#recPick').textContent=chosen?'다시 뽑기':'추천받기';
+  };
+  box.querySelector('#recPick').onclick=()=>pick(false);
+  box.querySelector('#recAny').onclick=()=>pick(true);
+}
 
 function murderNoticeHtml(){
   if(kind!=='murder')return '';

@@ -1431,3 +1431,17 @@ body.murder-notice-open{overflow:hidden}
   border-left:5px solid transparent;border-right:5px solid transparent;border-top:5px solid #2f2f2f
 }
 @media (hover:none),(pointer:coarse),(max-width:768px){.rental-hover-tooltip{display:none!important}}
+
+
+/* v66 오늘 뭐하지? 보드게임 랜덤 추천기 */
+.recommend-open-btn{border:0;border-radius:999px;padding:8px 13px;background:#4f7cff;color:#fff;font-size:12px;font-weight:800;cursor:pointer;box-shadow:0 4px 12px rgba(79,124,255,.22)}
+.recommend-open-btn:hover{transform:translateY(-1px)}
+.recommend-backdrop{position:fixed;inset:0;z-index:5000;background:rgba(15,23,42,.45);display:flex;align-items:center;justify-content:center;padding:18px}
+.recommend-modal{width:min(620px,100%);max-height:90vh;overflow:auto;background:#fff;border-radius:22px;padding:22px;box-shadow:0 24px 70px rgba(15,23,42,.24)}
+.recommend-head{display:flex;justify-content:space-between;gap:16px;align-items:flex-start}.recommend-head h3{margin:0;font-size:22px}.recommend-head p{margin:6px 0 0;color:var(--muted);font-size:13px}.recommend-close{border:0;background:transparent;font-size:20px;cursor:pointer;padding:3px 6px}
+.recommend-fields{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin-top:20px}.recommend-fields label{font-size:12px;font-weight:800;color:#475569}.recommend-fields .field{width:100%;margin-top:6px}
+.recommend-result{margin-top:18px;min-height:150px}.recommend-placeholder,.recommend-empty{min-height:150px;border:1px dashed #cbd5e1;border-radius:16px;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:5px;text-align:center;color:#64748b;font-size:13px}.recommend-empty b{color:#111827;font-size:16px}
+.recommend-result-card{position:relative;border:1px solid #e2e8f0;border-radius:18px;padding:20px;background:#f8fafc;text-align:center}.recommend-result-kicker{font-size:11px;color:#64748b;font-weight:700}.recommend-result-name{font-size:25px;font-weight:900;margin:8px 0 12px;color:#111827}.recommend-result-info{display:flex;flex-wrap:wrap;gap:7px;justify-content:center;margin-bottom:12px}.recommend-result-info span{background:#fff;border:1px solid #e2e8f0;border-radius:999px;padding:5px 9px;font-size:11px;font-weight:700;color:#475569}
+.recommend-actions{display:flex;gap:9px;margin-top:16px;justify-content:flex-end}.recommend-actions .btn{border:0;border-radius:12px;padding:11px 15px;font-weight:800;cursor:pointer}.recommend-primary{background:#4f7cff;color:#fff}.recommend-secondary{background:#eef2f7;color:#334155}
+body.recommend-open{overflow:hidden}
+@media(max-width:768px){.recommend-open-btn{padding:7px 11px}.recommend-modal{padding:18px;border-radius:18px}.recommend-fields{grid-template-columns:1fr 1fr;gap:10px}.recommend-actions{flex-direction:column-reverse}.recommend-actions .btn{width:100%}.recommend-result-name{font-size:22px}}
