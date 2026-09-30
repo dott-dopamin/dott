@@ -294,7 +294,22 @@ function attendancePanel(p){
   document.getElementById('addMember').onclick=()=>attendanceModal();
   document.querySelectorAll('[data-att-filter]').forEach(btn=>btn.onclick=()=>{attendanceFilter=btn.dataset.attFilter;attendancePanel(p)});
   const search=document.getElementById('attendanceSearch');
-  search.oninput=()=>{attendanceSearch=search.value;attendancePanel(p);const next=document.getElementById('attendanceSearch');if(next){next.focus();next.setSelectionRange(next.value.length,next.value.length)}};
+  // 한글 IME 조합 중에는 검색창을 다시 렌더링하지 않습니다.
+  // 조합 중 DOM을 교체하면 PC 브라우저에서 자모 순서/커서가 꼬일 수 있습니다.
+  let attendanceComposing=false;
+  const applyAttendanceSearch=()=>{
+    attendanceSearch=search.value;
+    attendancePanel(p);
+    const next=document.getElementById('attendanceSearch');
+    if(next){next.focus();next.setSelectionRange(next.value.length,next.value.length)}
+  };
+  search.addEventListener('compositionstart',()=>{attendanceComposing=true});
+  search.addEventListener('compositionend',()=>{attendanceComposing=false;applyAttendanceSearch()});
+  search.addEventListener('input',()=>{
+    attendanceSearch=search.value;
+    if(attendanceComposing)return;
+    applyAttendanceSearch();
+  });
   document.querySelectorAll('[data-attend]').forEach(btn=>btn.onclick=async()=>{
     btn.disabled=true;
     try{
