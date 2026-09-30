@@ -1445,3 +1445,46 @@ body.murder-notice-open{overflow:hidden}
 .recommend-actions{display:flex;gap:9px;margin-top:16px;justify-content:flex-end}.recommend-actions .btn{border:0;border-radius:12px;padding:11px 15px;font-weight:800;cursor:pointer}.recommend-primary{background:#4f7cff;color:#fff}.recommend-secondary{background:#eef2f7;color:#334155}
 body.recommend-open{overflow:hidden}
 @media(max-width:768px){.recommend-open-btn{padding:7px 11px}.recommend-modal{padding:18px;border-radius:18px}.recommend-fields{grid-template-columns:1fr 1fr;gap:10px}.recommend-actions{flex-direction:column-reverse}.recommend-actions .btn{width:100%}.recommend-result-name{font-size:22px}}
+
+/* 2026-09-30: 머더미스터리 상단 공지 버튼 = 보드게임 '오늘 뭐하지?' 동일 규격 / 옐로우 */
+.murder-page .notice-open-btn{
+  appearance:none!important;
+  border:0!important;
+  border-radius:999px!important;
+  padding:8px 13px!important;
+  background:#f6c84f!important;
+  color:#5f4700!important;
+  font-size:12px!important;
+  font-weight:800!important;
+  line-height:1!important;
+  cursor:pointer!important;
+  box-shadow:0 4px 12px rgba(246,200,79,.26)!important;
+  white-space:nowrap!important;
+  transform:none;
+  transition:transform .16s ease,background .16s ease,box-shadow .16s ease!important;
+}
+@media (hover:hover) and (pointer:fine){
+  .murder-page .notice-open-btn:hover{
+    background:#efbd3d!important;
+    border:0!important;
+    transform:translateY(-1px)!important;
+    box-shadow:0 5px 14px rgba(239,189,61,.30)!important;
+  }
+}
+.murder-page .notice-open-btn:focus-visible{
+  outline:3px solid rgba(246,200,79,.30)!important;
+  outline-offset:2px!important;
+}
+@media(max-width:768px){
+  .murder-page .notice-open-btn{
+    padding:7px 11px!important;
+    font-size:12px!important;
+  }
+}
+@media(hover:none),(pointer:coarse){
+  .murder-page .notice-open-btn:hover{
+    background:#f6c84f!important;
+    transform:none!important;
+    box-shadow:0 4px 12px rgba(246,200,79,.26)!important;
+  }
+}
