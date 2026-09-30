@@ -257,7 +257,6 @@ function attendancePanel(p){
   states.forEach(x=>counts[x.state.key]=(counts[x.state.key]||0)+1);
   let rows=states.filter(({member,state})=>{
     if(attendanceFilter!=='all'&&state.key!==attendanceFilter)return false;
-    if(attendanceSearch&&!String(member.name||'').toLowerCase().includes(attendanceSearch.toLowerCase()))return false;
     return true;
   });
   // 운영진은 항상 최상단에 고정하고, 운영진/일반회원 각각 이름 가나다순으로 정렬합니다.
@@ -294,22 +293,31 @@ function attendancePanel(p){
   document.getElementById('addMember').onclick=()=>attendanceModal();
   document.querySelectorAll('[data-att-filter]').forEach(btn=>btn.onclick=()=>{attendanceFilter=btn.dataset.attFilter;attendancePanel(p)});
   const search=document.getElementById('attendanceSearch');
-  // 한글 IME 조합 중에는 검색창을 다시 렌더링하지 않습니다.
-  // 조합 중 DOM을 교체하면 PC 브라우저에서 자모 순서/커서가 꼬일 수 있습니다.
-  let attendanceComposing=false;
+  // 검색 중에는 input DOM을 절대 다시 만들지 않습니다.
+  // 한글 IME의 compositionend 직후 input 자체를 교체하면 마지막 음절이 사라질 수 있습니다.
   const applyAttendanceSearch=()=>{
     attendanceSearch=search.value;
-    attendancePanel(p);
-    const next=document.getElementById('attendanceSearch');
-    if(next){next.focus();next.setSelectionRange(next.value.length,next.value.length)}
+    const q=attendanceSearch.trim().toLowerCase();
+    let visible=0;
+    document.querySelectorAll('.attendance-table tbody .attendance-row').forEach(row=>{
+      const name=String(row.querySelector('[data-label=\"이름\"] b')?.textContent||'').toLowerCase();
+      const show=!q||name.includes(q);
+      row.style.display=show?'':'none';
+      if(show)visible++;
+    });
+    let empty=document.querySelector('.attendance-table tbody .attendance-search-empty');
+    if(!visible){
+      if(!empty){
+        empty=document.createElement('tr');
+        empty.className='attendance-search-empty';
+        empty.innerHTML='<td colspan=\"7\" class=\"attendance-empty\">해당하는 회원이 없습니다.</td>';
+        document.querySelector('.attendance-table tbody')?.appendChild(empty);
+      }
+      empty.style.display='';
+    }else if(empty){empty.style.display='none'}
   };
-  search.addEventListener('compositionstart',()=>{attendanceComposing=true});
-  search.addEventListener('compositionend',()=>{attendanceComposing=false;applyAttendanceSearch()});
-  search.addEventListener('input',()=>{
-    attendanceSearch=search.value;
-    if(attendanceComposing)return;
-    applyAttendanceSearch();
-  });
+  search.addEventListener('input',applyAttendanceSearch);
+  applyAttendanceSearch();
   document.querySelectorAll('[data-attend]').forEach(btn=>btn.onclick=async()=>{
     btn.disabled=true;
     try{
