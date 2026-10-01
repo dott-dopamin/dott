@@ -247,12 +247,23 @@ function attendanceState(member){
   return {key:'keep',label:'유지'};
 }
 
+function attendanceDueSoon(due){
+  if(!due)return {active:false,days:0};
+  const today=String(todayYmd()||'').split('-').map(Number);
+  const target=String(due||'').split('-').map(Number);
+  if(today.length!==3||target.length!==3||today.some(Number.isNaN)||target.some(Number.isNaN))return {active:false,days:0};
+  const a=Date.UTC(today[0],today[1]-1,today[2]);
+  const b=Date.UTC(target[0],target[1]-1,target[2]);
+  const days=Math.round((b-a)/86400000);
+  return {active:days>=1&&days<=14,days};
+}
+
 function attendancePanel(p){
   if(window.DOTT_ATTENDANCE_ERROR){
     p.innerHTML=`<div class="info-box attendance-setup"><b>출석관리 DB를 아직 만들지 않았습니다.</b><br>Supabase SQL Editor에서 <code>add-attendance.sql</code>을 한 번 실행하면 이 메뉴가 활성화됩니다.</div>`;
     return;
   }
-  const states=data.attendance.map(x=>({member:x,state:attendanceState(x),due:attendanceDueDate(x)}));
+  const states=data.attendance.map(x=>{const due=attendanceDueDate(x);return {member:x,state:attendanceState(x),due,dueSoon:attendanceDueSoon(due)}});
   const counts={all:states.length,keep:0,overdue:0,grace:0,left:0};
   states.forEach(x=>counts[x.state.key]=(counts[x.state.key]||0)+1);
   let rows=states.filter(({member,state})=>{
@@ -268,7 +279,7 @@ function attendancePanel(p){
         <div class="attendance-summary">
           <span>전체 <b>${counts.all}</b></span><span class="keep">유지 <b>${counts.keep}</b></span><span class="overdue">경과 <b>${counts.overdue}</b></span><span class="grace">유예 <b>${counts.grace}</b></span><span>탈퇴 <b>${counts.left}</b></span>
         </div>
-        <p class="attendance-help">최근 참석일이 없으면 가입일 기준으로 계산하고, 최근 참석일 + 2개월이 되면 자동으로 ‘경과’ 표시됩니다.</p>
+        <p class="attendance-help">최근 참석일이 없으면 가입일 기준으로 계산하고, 최근 참석일 + 2개월이 되면 자동으로 ‘경과’ 표시됩니다. <b class="attendance-warning-guide">경과일 14일 전부터 노란색으로 표시됩니다.</b></p>
       </div>
       <button class="btn primary" id="addMember">+ 회원 추가</button>
     </div>
@@ -279,11 +290,11 @@ function attendancePanel(p){
     <div class="attendance-table-wrap">
       <table class="attendance-table">
         <thead><tr><th>이름</th><th>가입일</th><th><span class="att-head-desktop">최근 참석일</span><span class="att-head-mobile">최근</span></th><th><span class="att-head-desktop">2개월 경과일</span><span class="att-head-mobile">경과일</span></th><th>상태</th><th><span class="att-head-desktop">유예 사유</span><span class="att-head-mobile">유예</span></th><th>관리</th></tr></thead>
-        <tbody>${rows.map(({member:x,state,due})=>`<tr class="attendance-row ${state.key} ${x.is_staff?'staff':''}">
+        <tbody>${rows.map(({member:x,state,due,dueSoon})=>`<tr class="attendance-row ${state.key} ${dueSoon.active&&state.key==='keep'?'due-soon':''} ${x.is_staff?'staff':''}">
           <td data-label="이름"><span class="attendance-name-wrap"><b>${esc(x.name)}</b>${x.is_staff?'<span class="attendance-staff-badge">운영진</span>':''}</span></td>
           <td data-label="가입일"><span class="att-date-desktop">${shortDate(x.joined_at)}</span><span class="att-date-mobile">${compactAttendanceDate(x.joined_at)}</span></td>
           <td data-label="최근 참석일"><span class="att-date-desktop">${shortDate(x.last_attended_at)}</span><span class="att-date-mobile">${compactAttendanceDate(x.last_attended_at)}</span></td>
-          <td data-label="2개월 경과일"><span class="att-date-desktop">${shortDate(due)}</span><span class="att-date-mobile">${compactAttendanceDate(due)}</span></td>
+          <td data-label="2개월 경과일" class="${dueSoon.active&&state.key==='keep'?'attendance-due-cell due-soon':''}"><span class="att-date-desktop">${shortDate(due)}${dueSoon.active&&state.key==='keep'?` <span class="attendance-due-badge">D-${dueSoon.days}</span>`:''}</span><span class="att-date-mobile">${compactAttendanceDate(due)}${dueSoon.active&&state.key==='keep'?` <span class="attendance-due-badge">D-${dueSoon.days}</span>`:''}</span></td>
           <td data-label="상태"><span class="attendance-status ${state.key}">${state.label}</span></td>
           <td data-label="유예 사유" class="attendance-reason" title="${esc(x.grace?x.grace_reason||'-':'-')}">${x.grace?esc(x.grace_reason||'-'):'-'}</td>
           <td data-label="관리"><div class="attendance-actions">${x.member_status!=='left'?`<button class="btn attendance-today" data-attend="${x.id}" title="오늘 참석"><span class="att-action-desktop">오늘 참석</span><span class="att-action-mobile">✓</span></button>`:''}<button class="icon-btn" data-att-edit="${x.id}" title="수정">✎</button><button class="icon-btn" data-att-del="${x.id}" title="완전 삭제">♲</button></div></td>
