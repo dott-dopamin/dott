@@ -185,7 +185,22 @@ Object.assign(window.DOTT_DB,{
   async feeRecords(){try{return await restSelect('fee_records','select=*&order=fee_month.desc,paid_at.asc','회비',true)}catch(e){console.warn('fee_records',e);return []}},
   async accountingEntries(){try{return await restSelect('accounting_entries','select=*&order=entry_date.asc,created_at.asc','회계장부',true)}catch(e){console.warn('accounting_entries',e);return []}},
   async accountingClosures(){try{return await restSelect('accounting_month_closures','select=*&order=month.desc','월 마감',true)}catch(e){console.warn('accounting_month_closures',e);return []}},
-  async upsertFee(row){const body=await restWrite('POST','fee_records',{row,query:'on_conflict=member_id,fee_month',prefer:'resolution=merge-duplicates,return=representation'});return Array.isArray(body)?body[0]:body},
+  async upsertFee(row){
+    const res=await fetchWithTimeout(`${API_BASE}/rest/v1/rpc/dott_save_fee`,{
+      method:'POST',
+      headers:await headersFor({auth:true,json:true}),
+      body:JSON.stringify({
+        p_member_id:row.member_id,
+        p_member_name:row.member_name,
+        p_fee_month:row.fee_month,
+        p_status:row.status,
+        p_amount:Number(row.amount??5000),
+        p_paid_at:row.status==='paid'?(row.paid_at||null):null,
+        p_note:row.note||''
+      })
+    },15000);
+    return parseResponse(res);
+  },
   async closeAccountingMonth(month){return this.insert('accounting_month_closures',{month,closed_at:new Date().toISOString()})},
   async reopenAccountingMonth(id){return this.remove('accounting_month_closures',id)},
   async uploadReceipt(file){

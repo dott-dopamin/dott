@@ -793,7 +793,7 @@ function bulkFeeModal(memberIds){
       const existing=feeForMember(member.id);
       await DOTT_DB.upsertFee({member_id:member.id,member_name:member.name,fee_month:acctMonthKey(),status:'paid',amount,paid_at:paidAt,note:note||existing?.note||'',updated_at:new Date().toISOString()});
     }
-    await loadAll();accountingPanel(document.getElementById('panel'));toast(`${members.length}명 납부완료 · 장부 개별 등록 완료`);
+    await loadAll();const failed=members.filter(member=>feeForMember(member.id)?.status!=='paid');if(failed.length)throw new Error(`${failed.map(x=>x.name).join(', ')} 납부 상태 저장 확인에 실패했습니다.`);accountingPanel(document.getElementById('panel'));toast(`${members.length}명 납부완료 · 장부 개별 등록 완료`);
   });
   document.querySelector('#modal .modal')?.classList.add('accounting-modal');
   const save=document.getElementById('modalSave');if(save)save.textContent=`${members.length}명 납부처리 완료`;
@@ -801,7 +801,7 @@ function bulkFeeModal(memberIds){
 function feeModal(member,fee){
   const status=fee?.status||'unpaid',today=todayYmd();
   showModal(`${member.name} · ${acctMonthLabel()} 회비`,`<div style="display:grid;gap:12px"><div><label class="label">상태</label><select id="feeStatus" class="field"><option value="paid" ${status==='paid'?'selected':''}>납부완료</option><option value="unpaid" ${status==='unpaid'?'selected':''}>납부전</option><option value="exempt" ${status==='exempt'?'selected':''}>면제</option></select></div><div><label class="label">금액</label><input id="feeAmount" class="field" type="number" value="${fee?.amount??5000}"></div><div><label class="label">납부일</label><input id="feeDate" class="field" type="date" value="${fee?.paid_at?acctYmd(fee.paid_at):today}"></div><div><label class="label">비고</label><input id="feeNote" class="field" value="${esc(fee?.note||'')}"></div><div class="accounting-note">납부일은 오늘이 기본값이며 실제 입금일이 다르면 수정할 수 있습니다. 납부완료 시 회계장부에 이 회원의 회비 1건이 자동 생성됩니다.</div></div>`,async m=>{
-    const st=m.querySelector('#feeStatus').value,row={member_id:member.id,member_name:member.name,fee_month:acctMonthKey(),status:st,amount:Number(m.querySelector('#feeAmount').value||5000),paid_at:st==='paid'?m.querySelector('#feeDate').value:null,note:m.querySelector('#feeNote').value.trim(),updated_at:new Date().toISOString()}; await DOTT_DB.upsertFee(row);await loadAll();accountingPanel(document.getElementById('panel'));toast('회비 상태를 저장했습니다.');
+    const st=m.querySelector('#feeStatus').value,row={member_id:member.id,member_name:member.name,fee_month:acctMonthKey(),status:st,amount:Number(m.querySelector('#feeAmount').value||5000),paid_at:st==='paid'?m.querySelector('#feeDate').value:null,note:m.querySelector('#feeNote').value.trim(),updated_at:new Date().toISOString()}; await DOTT_DB.upsertFee(row);await loadAll();const saved=feeForMember(member.id);if(!saved||saved.status!==st)throw new Error('회비 상태 저장 확인에 실패했습니다. 새로고침 후 다시 시도해 주세요.');accountingPanel(document.getElementById('panel'));toast(st==='paid'?'납부완료 · 회계장부 자동등록 완료':'회비 상태를 저장했습니다.');
   });
   document.querySelector('#modal .modal')?.classList.add('accounting-modal');
   const save=document.getElementById('modalSave'); if(save)save.textContent=status==='unpaid'?'납부처리 완료':'저장';
