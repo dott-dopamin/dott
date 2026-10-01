@@ -207,7 +207,7 @@
   .brand strong{font-size:13px}
   .brand small{font-size:9.5px}
   .admin-link{padding:7px 8px;font-size:10px}
-  .nav{gap:3px}
+  
   .nav a{padding:7px 1px;font-size:9.5px;letter-spacing:-.2px}
 }
 
@@ -269,7 +269,7 @@
   .catalog-table th:nth-child(3),.catalog-table td:nth-child(3){width:10%}
   .catalog-table th:nth-child(4),.catalog-table td:nth-child(4){width:10%}
   .catalog-table th:nth-child(5),.catalog-table td:nth-child(5){width:12%}
-  .catalog-table th:nth-child(6),.catalog-table td:nth-child(6){width:10%}
+  
   .catalog-table th:nth-child(7),.catalog-table td:nth-child(7){width:10%}
   .catalog-table th:nth-child(8),.catalog-table td:nth-child(8){width:15%;padding-right:4px}
   .catalog-name{min-width:0;font-size:9.5px;font-weight:600}
@@ -307,9 +307,9 @@
 @media(max-width:700px){
   .catalog-table{min-width:0!important;width:100%;table-layout:fixed}
   .catalog-table th:nth-child(1),.catalog-table td:nth-child(1){width:28%;text-align:left;padding-left:5px}
-  .catalog-table th:nth-child(2),.catalog-table td:nth-child(2){width:10%}
+  
   .catalog-table th:nth-child(3),.catalog-table td:nth-child(3){width:11%}
-  .catalog-table th:nth-child(4),.catalog-table td:nth-child(4){width:11%}
+  
   .catalog-table th:nth-child(5),.catalog-table td:nth-child(5){width:15%}
   .catalog-table th:nth-child(6),.catalog-table td:nth-child(6){width:10%}
   .catalog-table th:nth-child(7),.catalog-table td:nth-child(7){width:15%;padding-right:4px}
@@ -937,13 +937,13 @@ body.calendar-detail-open{overflow:hidden}
   .schedule-table th{font-size:6.6px!important}
 }
 
-/* v29: mobile/network resilience */
+/* mobile/network resilience */
 .public-load-warning{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:0 0 14px;padding:10px 12px;border:1px solid #ead7c4;background:#fff8ef;border-radius:12px;color:#765c43;font-size:12px;line-height:1.45}
 .public-load-warning button{flex:0 0 auto;border:0;background:#fff;border:1px solid #ddc6b0;border-radius:9px;padding:6px 9px;color:#765c43;font-weight:700;cursor:pointer}
 .public-fatal{text-align:center;line-height:1.65}.public-fatal small{color:#999}.public-fatal .btn{margin-top:12px}
 @media(max-width:700px){.public-load-warning{font-size:11px;padding:8px 10px}.public-load-warning button{padding:5px 7px;font-size:11px}}
 
-/* v30: 머더미스터리 전용 리스트 / 숫자+회 입력 */
+/* 머더미스터리 전용 리스트 / 숫자+회 입력 */
 .number-suffix-field{position:relative;display:flex;align-items:center}
 .number-suffix-field .field{padding-right:34px}
 .number-suffix-field>span{position:absolute;right:12px;color:var(--muted);font-size:12px;pointer-events:none}}
@@ -1022,7 +1022,7 @@ body.calendar-detail-open{overflow:hidden}
 @media(max-width:700px){.day.empty-day{min-height:122px}}
 @media(max-width:390px){.day.empty-day{min-height:116px}}
 
-/* v45: 보드게임 확장 배지 */
+/* 보드게임 확장 배지 */
 .boardgame-expansion-badge{
   display:inline-flex;
   align-items:center;
@@ -1043,7 +1043,7 @@ body.calendar-detail-open{overflow:hidden}
   .catalog-name{white-space:normal;line-height:1.15}
 }
 
-/* ===== DOTT FINAL CLEAN: admin-only catalog flag controls merged from legacy admin stylesheet ===== */
+/* 관리자 카탈로그 플래그 */
 .catalog-flag-check{display:inline-flex;align-items:center;gap:7px;font-size:12px;color:#5e554d;white-space:nowrap;cursor:pointer}
 .catalog-flag-check input{margin:0;accent-color:#c55358}
 @media(max-width:700px){.catalog-flag-check{font-size:10px}}
@@ -1084,15 +1084,15 @@ body.calendar-detail-open{overflow:hidden}
 @media print{.accounting-report.final-report{width:100%;max-width:none;margin:0;box-shadow:none;padding:12mm}.accounting-report.final-report,.accounting-report.final-report *{visibility:visible}}
 
 /* DOTT unified catalog owner UI — boardgame / murder / deduction */
-.owner-mobile{display:none}
-.owner-desktop{white-space:normal;word-break:keep-all}
+
+
 .owner-count{appearance:none;border:1px solid #dfd2c5;background:#fff8f1;border-radius:999px;padding:2px 5px;font:inherit;font-weight:700;color:#6d6258;line-height:1.1;cursor:pointer;vertical-align:middle}
-.owner-popup-overlay{position:fixed;inset:0;z-index:9999;background:rgba(38,32,27,.28);display:flex;align-items:center;justify-content:center;padding:20px}
+
 .owner-popup{position:relative;width:min(260px,calc(100vw - 40px));background:#fffdf9;border:1px solid #e4d7c8;border-radius:14px;padding:20px 16px 15px;box-shadow:0 14px 40px #0002;text-align:center}
-.owner-popup b{display:block;font-size:15px;margin-bottom:12px}.owner-popup-names{font-size:14px;font-weight:700;line-height:1.7;word-break:keep-all}.owner-popup-x{position:absolute;right:9px;top:7px;border:0;background:transparent;font-size:21px;color:#81766c;cursor:pointer}.owner-popup-ok{margin-top:15px;border:0;border-radius:9px;background:#ef632d;color:#fff;font-weight:800;padding:7px 20px;cursor:pointer}
+.owner-popup b{display:block;font-size:15px;margin-bottom:12px}.owner-popup-x{position:absolute;right:9px;top:7px;border:0;background:transparent;font-size:21px;color:#81766c;cursor:pointer}.owner-popup-ok{margin-top:15px;border:0;border-radius:9px;background:#ef632d;color:#fff;font-weight:800;padding:7px 20px;cursor:pointer}
 .status-owned,.status-dott{background:#e8f1ff!important;color:#3567a8!important}.status-workshop{background:#eee7fb!important;color:#6d55a0!important}.status-rented{background:#fff2d8!important;color:#9b6a12!important}.status-lost{background:#ffe9e7!important;color:#c64a40!important}
 .notice-open-btn{appearance:none;border:1px solid #e8a27f;border-radius:10px;background:var(--accent-soft);padding:5px 10px;line-height:1.2;color:#9a3f18;font-size:12px;font-weight:800;cursor:pointer;box-shadow:none}
-.murder-notice-backdrop{position:fixed;inset:0;z-index:400;display:none;align-items:center;justify-content:center;padding:18px;background:rgba(35,29,24,.46)}.murder-notice-backdrop.open{display:flex}.murder-notice-modal{width:min(560px,100%);max-height:calc(100dvh - 36px);overflow:auto;border:1px solid var(--line);border-radius:18px;background:#fffefa;box-shadow:0 24px 70px rgba(0,0,0,.22)}.murder-notice-head{display:flex;justify-content:space-between;align-items:center;gap:14px;padding:18px 20px;border-bottom:1px solid var(--line)}.murder-notice-head h3{margin:0;font-size:19px}.murder-notice-close{width:34px;height:34px;border:1px solid var(--line);border-radius:10px;background:#fff;color:#5d544d;cursor:pointer}.murder-notice-content{padding:20px;font-size:13px;line-height:1.8;white-space:pre-wrap;overflow-wrap:anywhere;color:#3b342e}body.murder-notice-open{overflow:hidden}
+
 @media(max-width:700px){
  .catalog-owner .owner-desktop{display:none!important}.catalog-owner .owner-mobile{display:inline-block!important}
  .catalog-owner .owner-count{padding:1px 3px!important;font-size:inherit!important;line-height:1!important;min-width:0!important;height:auto!important;vertical-align:baseline!important}
@@ -1117,14 +1117,8 @@ body.calendar-detail-open{overflow:hidden}
 .murder-admin-editors>.catalog-admin-desc .catalog-admin-desc-row{
   margin-top:auto;
 }
-.murder-admin-editors #catalogDesc{
-  min-height:156px;
-  height:156px;
-}
-.murder-admin-editors #murderNotice{
-  min-height:96px;
-  height:96px;
-}
+
+
 @media(max-width:700px){
   .murder-admin-editors{grid-template-columns:1fr;gap:14px}
   .murder-admin-editors #catalogDesc{min-height:80px;height:auto}
@@ -1192,7 +1186,7 @@ body.calendar-detail-open{overflow:hidden}
 .boardgame-expansion-badge{display:inline-flex;align-items:center;padding:3px 7px;border-radius:999px;background:#fde8e8;border:1px solid #f3b9b9;color:#b83232;font-size:9.5px;font-weight:800;line-height:1;white-space:nowrap}
 
 
-/* DOTT v72: 모바일 표 폰트/비율을 머더미스터리 기준에 맞춰 재정리 */
+/* 모바일 표 폰트/비율을 머더미스터리 기준에 맞춰 재정리 */
 .catalog-kind-table{table-layout:fixed!important}
 .catalog-kind-table th,.catalog-kind-table td{text-align:center!important;vertical-align:middle}
 .catalog-kind-table th{text-align:center!important}
@@ -1226,10 +1220,10 @@ body.calendar-detail-open{overflow:hidden}
   }
 
 
-/* DOTT v61: 플레이시간은 60~90분 같은 범위도 한 줄 고정 */
+/* 플레이시간은 60~90분 같은 범위도 한 줄 고정 */
 .catalog-kind-table th:nth-child(3),.catalog-kind-table td:nth-child(3){white-space:nowrap!important;word-break:keep-all!important}
 
-/* DOTT v60: 보드게임/추리게임 난이도 5칸 게이지 + 모바일 5칸 보장 */
+/* 보드게임/추리게임 난이도 5칸 게이지 + 모바일 5칸 보장 */
 .catalog-kind-table .catalog-difficulty{text-align:center!important;white-space:nowrap!important}
 .difficulty-meter{display:inline-flex;align-items:center;gap:3px;vertical-align:middle;white-space:nowrap}
 .difficulty-box{display:inline-block;width:11px;height:11px;box-sizing:border-box;border:1px solid #dccdc0;border-radius:2px;background:linear-gradient(90deg,#e46f3a 0 var(--fill),#fffaf6 var(--fill) 100%)}
@@ -1239,7 +1233,7 @@ body.calendar-detail-open{overflow:hidden}
   .difficulty-box{width:8px;height:8px;border-radius:1.5px;flex:0 0 8px}
 }
 
-/* DOTT v68: mobile filters synced to murder page sizing */
+/* mobile filters synced to murder page sizing */
 @media(max-width:700px){
   .catalog-page .filters{
     display:grid!important;
@@ -1271,7 +1265,7 @@ body.calendar-detail-open{overflow:hidden}
 .catalog-status.status-lost{background:#fde9e9!important;color:#b13b3b!important;border-color:#f1c8c8!important}
 
 /* 추리게임: 데이터가 적어도 공용 리스트 폭 유지 */
-html{scrollbar-gutter:stable}
+html{overflow-y:scroll;scrollbar-gutter:stable}
 .catalog-kind-table.deduction-table{width:100%!important}
 @media(max-width:900px){html{scrollbar-gutter:auto}}
 
@@ -1414,12 +1408,12 @@ body.murder-notice-open{overflow:hidden}
 @media(max-width:700px){.rental-fields{grid-template-columns:1fr}.rental-table th,.rental-table td{font-size:10px;padding:8px 5px}.rental-return-btn{padding:5px 7px;font-size:9px}}
 
 
-/* v65: PC 대여중 배지는 상세 확인 가능함을 포인터로 표시 */
+/* PC 대여중 배지는 상세 확인 가능함을 포인터로 표시 */
 @media (hover:hover) and (pointer:fine) and (min-width:769px){
   .catalog-status.status-rented[data-rental-tooltip]{cursor:pointer}
 }
 
-/* v64: PC 대여중 대여자 말풍선 - body 레벨이라 테이블 overflow에 잘리지 않음 */
+/* PC 대여중 대여자 말풍선 - body 레벨이라 테이블 overflow에 잘리지 않음 */
 .rental-hover-tooltip{
   position:fixed;z-index:99999;pointer-events:none;white-space:nowrap;
   background:#2f2f2f;color:#fff;border-radius:7px;padding:6px 9px;
@@ -1580,3 +1574,9 @@ body.recommend-open{overflow:hidden}
     font-size:16px!important;
   }
 }
+
+
+/* 관리자 패널 공통 폭 */
+#panel{width:100%;min-width:0}
+#panel>.catalog-admin-desc,#panel>.admin-tools,#panel>.table-wrap{width:100%;max-width:none}
+#panel>.table-wrap>.table{width:100%!important}

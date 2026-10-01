@@ -1,4 +1,4 @@
-// DOTT v30: supabase-js CDN 없이 브라우저 기본 fetch로 Supabase Data API/Auth에 직접 연결합니다.
+// supabase-js CDN 없이 브라우저 기본 fetch로 Supabase Data API/Auth에 직접 연결합니다.
 const DOTT_API_CFG=window.DOTT_CONFIG;
 if(!DOTT_API_CFG?.supabaseUrl||!DOTT_API_CFG?.supabaseKey)throw new Error('Supabase 연결 정보가 없습니다.');
 
@@ -99,7 +99,7 @@ async function restSelect(table,query='',label='데이터',requireAuth=false){
 function sanitizeWriteRow(table,row){
   if(row===null||typeof row!=='object')return row;
   if(table==='catalog_items'){
-    // v33: catalog_items는 실제 운영 중인 기존 컬럼만 명시적으로 허용합니다.
+    // catalog_items는 실제 운영 중인 기존 컬럼만 명시적으로 허용합니다.
     // 운영에 사용하는 컬럼만 명시적으로 허용합니다. is_expansion은 보드게임 확장 여부에 사용합니다.
     const allowed=['kind','name','min_players','max_players','playtime','difficulty','genre','status','location','note','image_url','is_expansion','current_borrower','current_rented_at'];
     const clean={};
