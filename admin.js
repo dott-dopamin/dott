@@ -289,14 +289,14 @@ function attendancePanel(p){
     </div>
     <div class="attendance-table-wrap">
       <table class="attendance-table">
-        <thead><tr><th>이름</th><th>가입일</th><th><span class="att-head-desktop">최근 참석일</span><span class="att-head-mobile">최근</span></th><th><span class="att-head-desktop">2개월 경과일</span><span class="att-head-mobile">경과일</span></th><th>상태</th><th><span class="att-head-desktop">유예 사유</span><span class="att-head-mobile">유예</span></th><th>관리</th></tr></thead>
+        <thead><tr><th>이름</th><th>가입일</th><th><span class="att-head-desktop">최근 참석일</span><span class="att-head-mobile">최근</span></th><th><span class="att-head-desktop">2개월 경과일</span><span class="att-head-mobile">경과일</span></th><th>상태</th><th><span class="att-head-desktop">메모</span><span class="att-head-mobile">메모</span></th><th>관리</th></tr></thead>
         <tbody>${rows.map(({member:x,state,due,dueSoon})=>`<tr class="attendance-row ${state.key} ${dueSoon.active&&state.key==='keep'?'due-soon':''} ${x.is_staff?'staff':''}">
           <td data-label="이름"><span class="attendance-name-wrap"><b>${esc(x.name)}</b>${x.is_staff?'<span class="attendance-staff-badge">운영진</span>':''}</span></td>
           <td data-label="가입일"><span class="att-date-desktop">${shortDate(x.joined_at)}</span><span class="att-date-mobile">${compactAttendanceDate(x.joined_at)}</span></td>
           <td data-label="최근 참석일"><span class="att-date-desktop">${shortDate(x.last_attended_at)}</span><span class="att-date-mobile">${compactAttendanceDate(x.last_attended_at)}</span></td>
           <td data-label="2개월 경과일" class="${dueSoon.active&&state.key==='keep'?'attendance-due-cell due-soon':''}"><span class="att-date-desktop">${shortDate(due)}${dueSoon.active&&state.key==='keep'?` <span class="attendance-due-badge">D-${dueSoon.days}</span>`:''}</span><span class="att-date-mobile">${compactAttendanceDate(due)}${dueSoon.active&&state.key==='keep'?` <span class="attendance-due-badge">D-${dueSoon.days}</span>`:''}</span></td>
           <td data-label="상태"><span class="attendance-status ${state.key}">${state.label}</span></td>
-          <td data-label="유예 사유" class="attendance-reason" title="${esc(x.grace?x.grace_reason||'-':'-')}">${x.grace?esc(x.grace_reason||'-'):'-'}</td>
+          <td data-label="메모" class="attendance-reason" title="${esc(x.grace_reason||'-')}">${esc(x.grace_reason||'-')}</td>
           <td data-label="관리"><div class="attendance-actions">${x.member_status!=='left'?`<button class="btn attendance-today" data-attend="${x.id}" title="오늘 참석"><span class="att-action-desktop">오늘 참석</span><span class="att-action-mobile">✓</span></button>`:''}<button class="icon-btn" data-att-edit="${x.id}" title="수정">✎</button><button class="icon-btn" data-att-del="${x.id}" title="완전 삭제">♲</button></div></td>
         </tr>`).join('')||`<tr><td colspan="7" class="attendance-empty">해당하는 회원이 없습니다.</td></tr>`}</tbody>
       </table>
@@ -332,7 +332,7 @@ function attendancePanel(p){
   document.querySelectorAll('[data-attend]').forEach(btn=>btn.onclick=async()=>{
     btn.disabled=true;
     try{
-      await DOTT_DB.update('attendance_members',btn.dataset.attend,{last_attended_at:todayYmd(),grace:false,grace_reason:'',member_status:'active',left_at:null,updated_at:new Date().toISOString()});
+      await DOTT_DB.update('attendance_members',btn.dataset.attend,{last_attended_at:todayYmd(),grace:false,member_status:'active',left_at:null,updated_at:new Date().toISOString()});
       await loadAll();attendancePanel(p);toast('오늘 참석으로 처리했습니다.');
     }catch(e){alert(e.message||e)}finally{btn.disabled=false}
   });
@@ -353,7 +353,7 @@ function attendanceModal(x={}){
     <div><label class="label">최근 참석일</label><input id="m_last" class="field" type="date" value="${x.last_attended_at||''}"></div>
     <div><label class="label">회원 상태</label><select id="m_status" class="field"><option value="active" ${status==='active'?'selected':''}>활동중</option><option value="left" ${status==='left'?'selected':''}>탈퇴</option></select></div>
     <div class="attendance-grace-box attendance-check-group"><label class="attendance-check"><input id="m_staff" type="checkbox" ${x.is_staff?'checked':''}> 운영진 상단 고정</label><label class="attendance-check"><input id="m_grace" type="checkbox" ${x.grace?'checked':''}> 유예 적용</label></div>
-    <div class="full"><label class="label">유예 사유</label><textarea id="m_reason" class="field" rows="2" placeholder="필요할 때만 입력">${esc(x.grace_reason||'')}</textarea></div>
+    <div class="full"><label class="label">메모</label><textarea id="m_reason" class="field" rows="2" placeholder="회원 관련 메모를 자유롭게 입력">${esc(x.grace_reason||'')}</textarea></div>
   </div>`,async m=>{
     const memberStatus=m.querySelector('#m_status').value;
     const grace=memberStatus==='active'&&m.querySelector('#m_grace').checked;
@@ -364,7 +364,7 @@ function attendanceModal(x={}){
       member_status:memberStatus,
       is_staff:m.querySelector('#m_staff').checked,
       grace,
-      grace_reason:grace?m.querySelector('#m_reason').value.trim():'',
+      grace_reason:m.querySelector('#m_reason').value.trim(),
       left_at:memberStatus==='left'?(x.left_at||todayYmd()):null,
       updated_at:new Date().toISOString()
     };

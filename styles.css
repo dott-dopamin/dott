@@ -1496,14 +1496,14 @@ body.recommend-open{overflow:hidden}
   font-weight:800;
 }
 .attendance-row.due-soon{
-  background:#fffaf0;
+  background:#fff2c7;
 }
 .attendance-row.due-soon td{
-  background:#fffaf0;
+  background:#fff2c7;
 }
 .attendance-due-cell.due-soon{
-  color:#9a6a00;
-  font-weight:800;
+  color:#805900;
+  font-weight:900;
 }
 .attendance-due-badge{
   display:inline-flex;
@@ -1511,10 +1511,10 @@ body.recommend-open{overflow:hidden}
   justify-content:center;
   margin-left:5px;
   padding:3px 6px;
-  border:1px solid #efcf77;
+  border:1px solid #dfa900;
   border-radius:999px;
-  background:#fff0b8;
-  color:#8b6500;
+  background:#ffdf78;
+  color:#704d00;
   font-size:9px;
   line-height:1;
   font-weight:900;
