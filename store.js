@@ -184,6 +184,7 @@ window.DOTT_DB={
 Object.assign(window.DOTT_DB,{
   async feeRecords(){try{return await restSelect('fee_records','select=*&order=fee_month.desc,paid_at.asc','회비',true)}catch(e){console.warn('fee_records',e);return []}},
   async accountingEntries(){try{return await restSelect('accounting_entries','select=*&order=entry_date.asc,created_at.asc','회계장부',true)}catch(e){console.warn('accounting_entries',e);return []}},
+  async accountingReceipts(){try{return await restSelect('accounting_receipts','select=*&order=entry_id.asc,sort_order.asc,created_at.asc','회계 영수증',true)}catch(e){console.warn('accounting_receipts',e);return []}},
   async accountingClosures(){try{return await restSelect('accounting_month_closures','select=*&order=month.desc','월 마감',true)}catch(e){console.warn('accounting_month_closures',e);return []}},
   async upsertFee(row){
     const res=await fetchWithTimeout(`${API_BASE}/rest/v1/rpc/dott_save_fee`,{
@@ -217,6 +218,15 @@ Object.assign(window.DOTT_DB,{
   async deleteReceipt(path){
     const s=await currentSession(); if(!s?.access_token||!path)return;
     const res=await fetchWithTimeout(`${API_BASE}/storage/v1/object/accounting-receipts/${path}`,{method:'DELETE',headers:{apikey:API_KEY,Authorization:`Bearer ${s.access_token}`}},12000); if(!res.ok)throw apiError('영수증 삭제 실패',res.status);
+  },
+  async addAccountingReceipt(entryId,receipt,sortOrder){
+    return this.insert('accounting_receipts',{
+      entry_id:entryId,
+      receipt_path:receipt.path,
+      receipt_name:receipt.name||'receipt',
+      receipt_type:receipt.type||'application/octet-stream',
+      sort_order:Number(sortOrder)||1
+    });
   }
 });
 
@@ -242,7 +252,7 @@ async function backupDeleteIds(table,rows){
 }
 Object.assign(window.DOTT_DB,{
   async createFullBackup(){
-    const [schedules,notices,attendance,catalog_items,site_settings,fee_records,accounting_entries,accounting_month_closures,rental_loans]=await Promise.all([
+    const [schedules,notices,attendance,catalog_items,site_settings,fee_records,accounting_entries,accounting_receipts,accounting_month_closures,rental_loans]=await Promise.all([
       backupTable('schedules','일정 백업'),
       backupTable('notices','공지 백업'),
       backupTable('attendance_members','출석 백업'),
@@ -250,33 +260,35 @@ Object.assign(window.DOTT_DB,{
       backupTable('site_settings','사이트 설정 백업'),
       backupTable('fee_records','회비 백업'),
       backupTable('accounting_entries','회계장부 백업'),
+      backupTable('accounting_receipts','회계 영수증 백업'),
       backupTable('accounting_month_closures','월 마감 백업'),
       backupTable('rental_loans','대여 관리대장 백업')
     ]);
     return {
       format:'DOTT_FULL_BACKUP',
-      version:1,
+      version:2,
       created_at:new Date().toISOString(),
-      tables:{schedules,notices,attendance_members:attendance,catalog_items,site_settings,fee_records,accounting_entries,accounting_month_closures,rental_loans}
+      tables:{schedules,notices,attendance_members:attendance,catalog_items,site_settings,fee_records,accounting_entries,accounting_receipts,accounting_month_closures,rental_loans}
     };
   },
   async restoreFullBackup(backup){
-    if(!backup||backup.format!=='DOTT_FULL_BACKUP'||backup.version!==1||!backup.tables)throw new Error('DOTT 백업 파일 형식이 아닙니다.');
+    if(!backup||backup.format!=='DOTT_FULL_BACKUP'||![1,2].includes(backup.version)||!backup.tables)throw new Error('DOTT 백업 파일 형식이 아닙니다.');
     const required=['schedules','notices','attendance_members','catalog_items','site_settings','fee_records','accounting_entries','accounting_month_closures'];
     for(const t of required)if(!Array.isArray(backup.tables[t]))throw new Error(`백업 파일에 ${t} 데이터가 없습니다.`);
     if(!Array.isArray(backup.tables.rental_loans))backup.tables.rental_loans=[];
-    const allTables=[...required,'rental_loans'];
+    if(!Array.isArray(backup.tables.accounting_receipts))backup.tables.accounting_receipts=[];
+    const allTables=[...required,'accounting_receipts','rental_loans'];
 
     // 현재 행을 먼저 읽어 실제 존재하는 ID만 삭제합니다. 전체 테이블 무조건 삭제 쿼리는 사용하지 않습니다.
     const current={};
     for(const t of allTables)current[t]=await backupTable(t,`${t} 현재 데이터 확인`);
 
     // 참조 가능성이 있는 회계 데이터를 먼저 지운 뒤 회원/기본 데이터를 지웁니다.
-    for(const t of ['fee_records','accounting_entries','accounting_month_closures','rental_loans','schedules','notices','catalog_items','site_settings','attendance_members']){
+    for(const t of ['accounting_receipts','fee_records','accounting_entries','accounting_month_closures','rental_loans','schedules','notices','catalog_items','site_settings','attendance_members']){
       await backupDeleteIds(t,current[t]);
     }
-    // 회원을 먼저 복원하여 fee_records.member_id 같은 참조가 유지되게 합니다.
-    for(const t of ['attendance_members','site_settings','schedules','notices','catalog_items','rental_loans','accounting_month_closures','accounting_entries','fee_records']){
+    // 회원을 먼저 복원하고, 회계 내역 다음에 영수증 메타데이터를 복원합니다.
+    for(const t of ['attendance_members','site_settings','schedules','notices','catalog_items','rental_loans','accounting_month_closures','accounting_entries','accounting_receipts','fee_records']){
       await backupBulkInsert(t,backup.tables[t]);
     }
     return true;

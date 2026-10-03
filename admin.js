@@ -9,7 +9,7 @@ let accountingSubtab='fees';
 let accountingMonth=new Date(); accountingMonth.setDate(1);
 let accountingFilter='all';
 let accountingSearch='';
-let data={schedules:[],notices:[],attendance:[],boardgame:[],murder:[],deduction:[],settings:null,fees:[],ledger:[],closures:[],rentals:[]};
+let data={schedules:[],notices:[],attendance:[],boardgame:[],murder:[],deduction:[],settings:null,fees:[],ledger:[],receipts:[],closures:[],rentals:[]};
 let adminLoadWarnings=[];
 
 (async()=>{
@@ -49,6 +49,7 @@ async function loadAll(){
     ['settings','사이트 설정',DOTT_DB.settings()],
     ['fees','회비',DOTT_DB.feeRecords()],
     ['ledger','회계장부',DOTT_DB.accountingEntries()],
+    ['receipts','회계 영수증',DOTT_DB.accountingReceipts()],
     ['closures','월 마감',DOTT_DB.accountingClosures()],
     ['rentals','대여 관리대장',DOTT_DB.rentalLoans()]
   ];
@@ -806,17 +807,43 @@ function feeModal(member,fee){
   document.querySelector('#modal .modal')?.classList.add('accounting-modal');
   const save=document.getElementById('modalSave'); if(save)save.textContent=currentStatus==='unpaid'?'납부처리 완료':'저장';
 }
+function ledgerReceipts(entry){
+  const rows=(data.receipts||[]).filter(r=>r.entry_id===entry.id).sort((x,y)=>(Number(x.sort_order)||0)-(Number(y.sort_order)||0)||String(x.created_at||'').localeCompare(String(y.created_at||'')));
+  if(rows.length)return rows;
+  if(entry.receipt_path)return [{id:null,entry_id:entry.id,receipt_path:entry.receipt_path,receipt_name:entry.receipt_name||'receipt',receipt_type:entry.receipt_type||'application/octet-stream',sort_order:1,legacy:true}];
+  return [];
+}
 function ledgerPanel(p){
   const rows=acctRows(),closed=acctClosed(),carry=acctBalanceBefore(),feeIncome=rows.filter(x=>x.category==='회비'&&x.entry_type==='수입').reduce((a,x)=>a+Number(x.amount),0),otherIncome=rows.filter(x=>x.entry_type==='수입'&&x.category!=='회비').reduce((a,x)=>a+Number(x.amount),0),expense=rows.filter(x=>x.entry_type==='지출'&&x.category!=='미지급금').reduce((a,x)=>a+Number(x.amount),0)+rows.filter(x=>x.category==='미지급금'&&x.entry_type==='지급').reduce((a,x)=>a+Number(x.amount),0),payable=rows.filter(x=>x.category==='미지급금').reduce((a,x)=>a+(x.entry_type==='발생'?Number(x.amount):-Number(x.amount)),0),balance=carry+rows.reduce((a,x)=>a+acctCashDelta(x),0);
   p.innerHTML=`${acctMonthBar(`<button class="btn primary" id="addLedger" ${closed?'disabled':''}>+ 내역 추가</button>`)}${closed?`<div class="accounting-lockbar"><b>🔒 ${acctMonthLabel()} 마감 완료</b><span class="accounting-lock">수정 잠금</span></div>`:''}<div class="accounting-summary"><div class="accounting-stat"><small>전월 이월</small><b>${acctMoney(carry)}</b></div><div class="accounting-stat green"><small>회비 수입</small><b>${acctMoney(feeIncome)}</b></div><div class="accounting-stat green"><small>기타 수입 · 이자</small><b>${acctMoney(otherIncome)}</b></div><div class="accounting-stat red"><small>실제 지출</small><b>${acctMoney(expense)}</b></div><div class="accounting-stat purple"><small>남은 미지급금</small><b>${acctMoney(payable)}</b></div></div><div class="accounting-stat yellow" style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px"><small>현재 장부 잔액</small><b style="margin:0">${acctMoney(balance)}</b></div>
   <div class="table-wrap"><table class="table ledger-table" style="min-width:1000px"><thead><tr><th>날짜</th><th>수입/지출</th><th>구분</th><th>내용</th><th>관련 회원/거래처</th><th>금액</th><th>잔액</th><th>증빙</th><th>관리</th></tr></thead><tbody>${ledgerRowsHtml(rows,carry,closed)}</tbody></table></div><div class="accounting-note">※ 회비는 회비 현황에서 납부처리 완료 시 회원별 1건씩 자동등록되며 장부에서는 직접 수정하지 않습니다. 영수증은 관리자끼리 미리보기·다운로드할 수 있습니다.</div>`;
   wireAcctMonth(p);p.querySelector('#addLedger')?.addEventListener('click',()=>ledgerModal());p.querySelectorAll('[data-ledger-edit]').forEach(b=>b.onclick=()=>ledgerModal(data.ledger.find(x=>x.id===b.dataset.ledgerEdit)));p.querySelectorAll('[data-receipt]').forEach(b=>b.onclick=()=>receiptModal(data.ledger.find(x=>x.id===b.dataset.receipt)));
 }
-function ledgerRowsHtml(rows,carry,closed){let bal=carry;return rows.map(x=>{bal+=acctCashDelta(x);const payable=x.category==='미지급금',typeClass=payable?'money-payable':x.entry_type==='수입'?'money-in':'money-out',sign=x.entry_type==='수입'||(payable&&x.entry_type==='발생')?'+':'-';return `<tr><td>${acctYmd(x.entry_date).slice(5)}</td><td class="${typeClass}">${esc(x.entry_type)}</td><td>${esc(x.category)}</td><td>${esc(x.description||'-')}</td><td>${esc(x.party_name||'-')}</td><td class="${typeClass}">${sign}${acctMoney(x.amount)}</td><td>${acctMoney(bal)}</td><td>${x.receipt_path?`<button class="receipt-link" data-receipt="${x.id}">📎 영수증 보기</button>`:'-'}</td><td>${x.source_fee_id?'-':`<button class="btn" data-ledger-edit="${x.id}" ${closed?'disabled':''}>수정</button>`}</td></tr>`}).join('')||'<tr><td colspan="9">등록된 내역이 없습니다.</td></tr>'}
+function ledgerRowsHtml(rows,carry,closed){let bal=carry;return rows.map(x=>{bal+=acctCashDelta(x);const payable=x.category==='미지급금',typeClass=payable?'money-payable':x.entry_type==='수입'?'money-in':'money-out',sign=x.entry_type==='수입'||(payable&&x.entry_type==='발생')?'+':'-',receipts=ledgerReceipts(x);return `<tr><td>${acctYmd(x.entry_date).slice(5)}</td><td class="${typeClass}">${esc(x.entry_type)}</td><td>${esc(x.category)}</td><td>${esc(x.description||'-')}</td><td>${esc(x.party_name||'-')}</td><td class="${typeClass}">${sign}${acctMoney(x.amount)}</td><td>${acctMoney(bal)}</td><td>${receipts.length?`<button class="receipt-link" data-receipt="${x.id}">📎 영수증 ${receipts.length}개</button>`:'-'}</td><td>${x.source_fee_id?'-':`<button class="btn" data-ledger-edit="${x.id}" ${closed?'disabled':''}>수정</button>`}</td></tr>`}).join('')||'<tr><td colspan="9">등록된 내역이 없습니다.</td></tr>'}
+
 function ledgerModal(x={}){
-  const isPay=x.category==='미지급금',type=x.entry_type||'지출';
-  showModal(x.id?'회계 내역 수정':'회계 내역 추가',`<div class="form-grid"><div><label class="label">수입 / 지출</label><select id="leType" class="field"><option ${type==='지출'?'selected':''}>지출</option><option ${type==='수입'?'selected':''}>수입</option><option ${type==='발생'?'selected':''}>발생</option><option ${type==='지급'?'selected':''}>지급</option></select></div><div><label class="label">구분</label><select id="leCat" class="field"><option ${x.category==='유지비'?'selected':''}>유지비</option><option ${x.category==='기타'?'selected':''}>기타</option><option ${isPay?'selected':''}>미지급금</option><option ${x.category==='이자수익'?'selected':''}>이자수익</option></select></div><div><label class="label">날짜</label><input id="leDate" type="date" class="field" value="${x.entry_date?acctYmd(x.entry_date):todayYmd()}"></div><div><label class="label">금액</label><input id="leAmount" type="number" class="field" value="${x.amount||''}"></div><div class="full"><label class="label">내용</label><input id="leDesc" class="field" value="${esc(x.description||'')}"></div><div class="full"><label class="label">관련 회원 / 거래처</label><input id="leParty" class="field" value="${esc(x.party_name||'')}"></div><div class="full"><label class="label">영수증 / 증빙자료 (선택)</label><input id="leReceipt" type="file" class="field" accept="image/jpeg,image/png,application/pdf"><div class="accounting-note">지출 또는 미지급금 발생 시 첨부할 수 있습니다. JPG · PNG · PDF</div></div><div class="full"><label class="label">비고</label><input id="leNote" class="field" value="${esc(x.note||'')}"></div></div>`,async m=>{
-    const cat=m.querySelector('#leCat').value;let et=m.querySelector('#leType').value;if(cat==='미지급금'&&!['발생','지급'].includes(et))et='발생';if(cat!=='미지급금'&&!['수입','지출'].includes(et))et='지출';let receipt={path:x.receipt_path||null,name:x.receipt_name||null,type:x.receipt_type||null};const file=m.querySelector('#leReceipt').files[0];if(file){if(receipt.path)await DOTT_DB.deleteReceipt(receipt.path);receipt=await DOTT_DB.uploadReceipt(file)}const row={entry_date:m.querySelector('#leDate').value,entry_type:et,category:cat,description:m.querySelector('#leDesc').value.trim(),party_name:m.querySelector('#leParty').value.trim(),amount:Number(m.querySelector('#leAmount').value),note:m.querySelector('#leNote').value.trim(),receipt_path:receipt.path,receipt_name:receipt.name,receipt_type:receipt.type,updated_at:new Date().toISOString()};if(!row.entry_date||!row.amount)throw new Error('날짜와 금액을 입력해 주세요.');if(cat==='미지급금'&&!row.party_name)throw new Error('미지급금은 관련 회원/지급 대상을 입력해 주세요.');x.id?await DOTT_DB.update('accounting_entries',x.id,row):await DOTT_DB.insert('accounting_entries',row);await loadAll();accountingPanel(document.getElementById('panel'));toast('회계 내역을 저장했습니다.');
+  const isPay=x.category==='미지급금',type=x.entry_type||'지출',existing=x.id?ledgerReceipts(x):[];
+  showModal(x.id?'회계 내역 수정':'회계 내역 추가',`<div class="form-grid"><div><label class="label">수입 / 지출</label><select id="leType" class="field"><option ${type==='지출'?'selected':''}>지출</option><option ${type==='수입'?'selected':''}>수입</option><option ${type==='발생'?'selected':''}>발생</option><option ${type==='지급'?'selected':''}>지급</option></select></div><div><label class="label">구분</label><select id="leCat" class="field"><option ${x.category==='유지비'?'selected':''}>유지비</option><option ${x.category==='기타'?'selected':''}>기타</option><option ${isPay?'selected':''}>미지급금</option><option ${x.category==='이자수익'?'selected':''}>이자수익</option></select></div><div><label class="label">날짜</label><input id="leDate" type="date" class="field" value="${x.entry_date?acctYmd(x.entry_date):todayYmd()}"></div><div><label class="label">금액</label><input id="leAmount" type="number" class="field" value="${x.amount||''}"></div><div class="full"><label class="label">내용</label><input id="leDesc" class="field" value="${esc(x.description||'')}"></div><div class="full"><label class="label">관련 회원 / 거래처</label><input id="leParty" class="field" value="${esc(x.party_name||'')}"></div><div class="full"><label class="label">영수증 / 증빙자료 (선택)</label><input id="leReceipt" type="file" class="field" accept="image/jpeg,image/png,application/pdf" multiple><div class="accounting-note">${existing.length?`현재 <b>${existing.length}장</b> 첨부되어 있습니다. 새 파일을 선택하면 기존 영수증은 유지되고 뒤에 추가됩니다.`:'여러 장을 한 번에 선택할 수 있습니다.'}<br>JPG · PNG · PDF</div></div><div class="full"><label class="label">비고</label><input id="leNote" class="field" value="${esc(x.note||'')}"></div></div>`,async m=>{
+    const cat=m.querySelector('#leCat').value;let et=m.querySelector('#leType').value;if(cat==='미지급금'&&!['발생','지급'].includes(et))et='발생';if(cat!=='미지급금'&&!['수입','지출'].includes(et))et='지출';
+    const files=[...m.querySelector('#leReceipt').files];
+    const row={entry_date:m.querySelector('#leDate').value,entry_type:et,category:cat,description:m.querySelector('#leDesc').value.trim(),party_name:m.querySelector('#leParty').value.trim(),amount:Number(m.querySelector('#leAmount').value),note:m.querySelector('#leNote').value.trim(),updated_at:new Date().toISOString()};
+    if(!row.entry_date||!row.amount)throw new Error('날짜와 금액을 입력해 주세요.');
+    if(cat==='미지급금'&&!row.party_name)throw new Error('미지급금은 관련 회원/지급 대상을 입력해 주세요.');
+    const saved=x.id?await DOTT_DB.update('accounting_entries',x.id,row):await DOTT_DB.insert('accounting_entries',row);
+    const entryId=x.id||saved?.id;
+    if(!entryId)throw new Error('회계 내역 저장 ID를 확인하지 못했습니다.');
+    let nextSort=Math.max(0,...existing.map(r=>Number(r.sort_order)||0))+1;
+    for(const file of files){
+      let uploaded=null;
+      try{
+        uploaded=await DOTT_DB.uploadReceipt(file);
+        await DOTT_DB.addAccountingReceipt(entryId,uploaded,nextSort++);
+      }catch(error){
+        if(uploaded?.path){try{await DOTT_DB.deleteReceipt(uploaded.path)}catch(_e){}}
+        throw error;
+      }
+    }
+    await loadAll();accountingPanel(document.getElementById('panel'));toast(files.length?`회계 내역 저장 · 영수증 ${files.length}장 추가 완료`:'회계 내역을 저장했습니다.');
   });
   document.querySelector('#modal .modal')?.classList.add('accounting-modal','accounting-modal-ledger');
   if(x.id && !x.source_fee_id){
@@ -829,8 +856,9 @@ function ledgerModal(x={}){
         if(!confirm('이 회계 내역을 삭제할까요?\n삭제 후에는 복구할 수 없습니다.'))return;
         del.disabled=true;
         try{
+          const paths=[...new Set([...ledgerReceipts(x).map(r=>r.receipt_path),x.receipt_path].filter(Boolean))];
           await DOTT_DB.remove('accounting_entries',x.id);
-          if(x.receipt_path){try{await DOTT_DB.deleteReceipt(x.receipt_path)}catch(e){console.warn(e)}}
+          for(const path of paths){try{await DOTT_DB.deleteReceipt(path)}catch(e){console.warn(e)}}
           document.querySelector('#modal [data-close]')?.click();
           await loadAll(); accountingPanel(document.getElementById('panel')); toast('회계 내역을 삭제했습니다.');
         }catch(e){alert(e.message||e);del.disabled=false}
@@ -839,8 +867,29 @@ function ledgerModal(x={}){
   }
 }
 async function receiptModal(x){
-  const blob=await DOTT_DB.receiptBlob(x.receipt_path),url=URL.createObjectURL(blob),isPdf=(x.receipt_type||'').includes('pdf');showModal('영수증 / 증빙자료',`${isPdf?`<iframe src="${url}" style="width:100%;height:55vh;border:0"></iframe>`:`<img class="receipt-preview" src="${url}" alt="영수증">`}<div style="margin-top:12px;text-align:center"><a class="btn primary" href="${url}" download="${esc(x.receipt_name||'receipt')}">다운로드</a></div>`,async()=>{});const save=document.getElementById('modalSave');if(save)save.style.display='none';
+  const receipts=ledgerReceipts(x);
+  if(!receipts.length)return;
+  showModal('영수증 / 증빙자료',`<div id="receiptPreviewArea" class="receipt-preview-area"><div class="accounting-note">영수증을 불러오는 중...</div></div><div class="receipt-number-list">${receipts.map((r,i)=>`<button type="button" class="receipt-number ${i===0?'active':''}" data-receipt-index="${i}">${i+1}번</button>`).join('')}</div><div style="margin-top:12px;text-align:center"><a id="receiptDownload" class="btn primary" href="#" download>다운로드</a></div>`,async()=>{});
+  const save=document.getElementById('modalSave');if(save)save.style.display='none';
+  const preview=document.getElementById('receiptPreviewArea'),download=document.getElementById('receiptDownload');
+  let activeUrl=null;
+  const showReceipt=async index=>{
+    const r=receipts[index];
+    preview.innerHTML='<div class="accounting-note">영수증을 불러오는 중...</div>';
+    const blob=await DOTT_DB.receiptBlob(r.receipt_path);
+    if(activeUrl)URL.revokeObjectURL(activeUrl);
+    activeUrl=URL.createObjectURL(blob);
+    const isPdf=(r.receipt_type||'').includes('pdf');
+    preview.innerHTML=isPdf?`<iframe src="${activeUrl}" class="receipt-pdf-preview"></iframe>`:`<img class="receipt-preview" src="${activeUrl}" alt="${index+1}번 영수증">`;
+    download.href=activeUrl;download.download=r.receipt_name||`receipt-${index+1}`;
+    document.querySelectorAll('#modal [data-receipt-index]').forEach(b=>b.classList.toggle('active',Number(b.dataset.receiptIndex)===index));
+  };
+  document.querySelectorAll('#modal [data-receipt-index]').forEach(b=>b.onclick=()=>showReceipt(Number(b.dataset.receiptIndex)).catch(e=>{preview.innerHTML=`<div class="error">${esc(e.message||e)}</div>`}));
+  const close=document.querySelector('#modal [data-close]');
+  if(close)close.addEventListener('click',()=>{if(activeUrl)URL.revokeObjectURL(activeUrl)},{once:true});
+  await showReceipt(0);
 }
+
 function reportPanel(p){
   const rows=acctRows(),closed=acctClosed(),carry=acctBalanceBefore();
   const income=rows.filter(x=>x.entry_type==='수입').reduce((a,x)=>a+Number(x.amount),0);

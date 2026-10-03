@@ -13,3 +13,5 @@ DOTT database-history
 - add-rental-tooltip-fields.sql: 현재 대여자 표시 필드
 - add-self-rental-page.sql: QR 셀프 대여 RPC
 - fix-fee-payment-sync.sql: 회비 납부 + 장부 동기화 RPC
+
+- add-accounting-multi-receipts.sql: 회계 내역별 영수증 여러 장 첨부 + 기존 1장 데이터 자동 이전
