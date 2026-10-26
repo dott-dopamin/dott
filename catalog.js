@@ -12,7 +12,7 @@ let items=[];
 let settings=null;
 
 function filterHtml(){
-  const base=`<input class="field search-field" id="q" placeholder="게임명 검색"><select class="field" id="players"><option value="">인원 전체</option><option>2</option><option>3</option><option>4</option><option>5</option><option>6</option><option>7</option><option>8</option></select>`;
+  const base=`<input class="field search-field" id="q" placeholder="게임명 검색"><input class="field owner-search-field" id="ownerQ" placeholder="소유주 검색"><select class="field" id="players"><option value="">인원 전체</option><option>2</option><option>3</option><option>4</option><option>5</option><option>6</option><option>7</option><option>8</option></select>`;
   if(kind==='murder')return base+`<select class="field" id="difficulty"><option value="">난이도 전체</option>${['입문','쉬움','중간','어려움','매우어려움'].map(v=>`<option value="${v}">${v}</option>`).join('')}</select>`;
   const diff=`<select class="field" id="difficulty"><option value="">난이도 전체</option>${[1,2,3,4,5].map(v=>`<option value="${v}">${v}점대</option>`).join('')}</select>`;
   const genres=kind==='boardgame'?BOARDGAME_GENRES:[...new Set(items.map(x=>x.genre).filter(Boolean))];
@@ -24,7 +24,7 @@ function render(){
   const [title,defaultDesc]=labels[kind];
   const desc=(settings&&settings[descriptionKeys[kind]])||defaultDesc;
   app.innerHTML=`${nav(kind)}<main class="page catalog-page ${kind}-page"><section class="hero"><span class="eyebrow">🎲 보유 현황</span><h1>${title} 리스트</h1><p>${nl2br(desc)}</p><div class="stat-row"><span class="stat-pill"><span class="stat-label">전체</span><b>${items.length}개</b></span>${murderNoticeHtml()}${recommendOpenHtml()}</div></section><section class="section"><div class="filters">${filterHtml()}</div><div class="catalog-meta"><span id="count"></span></div><div id="catalogContent"></div></section></main>${footer()}`;
-  ['q','players','difficulty','genre'].forEach(id=>{const el=document.getElementById(id);if(el)el.oninput=paint});
+  ['q','ownerQ','players','difficulty','genre'].forEach(id=>{const el=document.getElementById(id);if(el)el.oninput=paint});
   paint();
   wireMurderNotice();
   wireRecommendOpen();
@@ -32,6 +32,7 @@ function render(){
 
 function filteredItems(){
   const q=document.getElementById('q').value.trim().toLowerCase();
+  const ownerQ=document.getElementById('ownerQ')?.value.trim().toLowerCase()||'';
   const p=+document.getElementById('players').value||0;
   const d=document.getElementById('difficulty')?.value||'';
   const g=document.getElementById('genre')?.value||'';
@@ -39,7 +40,9 @@ function filteredItems(){
     const difficultyOk=kind==='murder'
       ? (!d||x.difficulty===d)
       : (!d||(()=>{const n=parseFloat(String(x.difficulty??'').trim());return Number.isFinite(n)&&Math.min(5,Math.max(1,Math.floor(n)))===+d})());
-    return (!q||(x.name||'').toLowerCase().includes(q))&&(!p||((x.min_players||0)<=p&&(x.max_players||99)>=p))&&difficultyOk&&(!g||x.genre===g);
+    const ownerRaw=kind==='murder'?x.location:x.note;
+    const ownerOk=!ownerQ||ownerNames(ownerRaw).some(name=>name.toLowerCase().includes(ownerQ));
+    return (!q||(x.name||'').toLowerCase().includes(q))&&ownerOk&&(!p||((x.min_players||0)<=p&&(x.max_players||99)>=p))&&difficultyOk&&(!g||x.genre===g);
   });
 }
 

@@ -1801,3 +1801,34 @@ body.recommend-open{overflow:hidden}
   }
   .admin-catalog-table th,.rental-table th,.fee-table th,.ledger-table th{font-size:6.2px!important}
 }
+
+
+/* ===== 2026-10-26 공개 게임목록 소유주 검색 ===== */
+/* 보드게임/추리게임: 게임명 + 소유주 + 인원 + 난이도 + 장르 */
+.catalog-page:not(.murder-page) .filters{
+  grid-template-columns:minmax(220px,1.45fr) minmax(160px,1fr) repeat(3,minmax(105px,.62fr));
+}
+/* 머더미스터리: 게임명 + 소유주 + 인원 + 난이도 */
+.murder-page .filters{
+  grid-template-columns:minmax(220px,1.5fr) minmax(160px,1fr) repeat(2,minmax(115px,.65fr));
+}
+
+@media(max-width:900px){
+  .catalog-page .filters{
+    grid-template-columns:minmax(0,1fr) minmax(0,1fr)!important;
+  }
+  .catalog-page .filters .search-field,
+  .catalog-page .filters .owner-search-field{
+    grid-column:1/-1!important;
+  }
+}
+
+@media(max-width:700px){
+  .catalog-page .filters{
+    grid-template-columns:minmax(0,1fr) minmax(0,1fr)!important;
+  }
+  .catalog-page .filters .search-field,
+  .catalog-page .filters .owner-search-field{
+    grid-column:1/-1!important;
+  }
+}
