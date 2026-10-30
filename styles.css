@@ -1833,18 +1833,13 @@ body.recommend-open{overflow:hidden}
   }
 }
 
-/* DOTT calendar heading typography — match DOTT ADMIN weight, preserve existing color and size */
-.calendar-page .hero h1{
-  font-weight:850;
-  letter-spacing:normal;
-}
-
-/* DOTT public main headings — admin-style typography on all four pages (2026-10-31) */
+/* DOTT public main headings — subtitle-matched muted color / 750 weight (2026-10-31) */
 body.calendar-page .page > .hero > h1,
 body[data-kind="boardgame"] .catalog-page > .hero > h1,
 body[data-kind="murder"] .catalog-page > .hero > h1,
 body[data-kind="deduction"] .catalog-page > .hero > h1 {
   font-family: Pretendard, "Noto Sans KR", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-  font-weight: 850 !important;
+  font-weight: 750 !important;
+  color: var(--muted) !important;
   letter-spacing: normal !important;
 }
