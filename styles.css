@@ -1832,3 +1832,9 @@ body.recommend-open{overflow:hidden}
     grid-column:1/-1!important;
   }
 }
+
+/* DOTT calendar heading typography — match DOTT ADMIN weight, preserve existing color and size */
+.calendar-page .hero h1{
+  font-weight:850;
+  letter-spacing:normal;
+}
