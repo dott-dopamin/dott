@@ -68,7 +68,7 @@ function nav(active='calendar'){
     <a class="${active==='boardgame'?'active':''}" href="boardgames.html">보드게임</a>
     <a class="${active==='murder'?'active':''}" href="murder.html">머더미스터리</a>
     <a class="${active==='deduction'?'active':''}" href="deduction.html">추리게임</a>
-  </nav><a class="admin-link" href="admin.html">🔒 관리</a></header>`
+  </nav><a class="admin-link" href="https://dott-dopamin.github.io/dott-admin/">🔒 관리</a></header>`
 }
 function footer(){return `<footer class="footer"><span>📅 DOTT · 예약과 보유 게임을 한눈에</span><span>© ${new Date().getFullYear()} 도파민</span></footer>`}
 function toast(msg){let el=document.getElementById('toast');if(!el){el=document.createElement('div');el.id='toast';el.className='toast';document.body.appendChild(el)}el.textContent=msg;el.classList.add('show');setTimeout(()=>el.classList.remove('show'),1800)}
