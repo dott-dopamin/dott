@@ -2,7 +2,7 @@
 (()=>{
   'use strict';
   const app=document.getElementById('app');
-  const STORAGE_KEY='dott_mystery_wednesday_case001_v5';
+  const STORAGE_KEY='dott_mystery_wednesday_case001_v6';
   const title='수요일의 일격';
   const incident='20:58';
   const rooms=['정모실','회의실','창고','출입구'];
@@ -13,67 +13,52 @@
     {id:'jei',name:'서제이',emoji:'🚭',role:'담배 냄새에 질린 회원',motive:'장한철의 흡연 후 실내에 남는 담배 냄새가 싫었고 늦은 벙 시작에도 불만이 쌓였다.',statement:'“20시 55분에 답답해서 건물 밖으로 나갔고, 21시 02분 30초에 다시 들어왔어요. 문 CCTV랑 출입 기록 확인해보세요.”',detail:'그날도 회장의 흡연 습관에 항의했다. 그러나 사건 시각에는 건물 밖에 있었다고 주장한다.'}
   ];
   const clues=[
-    {id:'plan',room:'정모실',icon:'🗺️',name:'도트 공간 안내도',text:'이 게임의 가상 도트는 정모실, 회의실, 창고, 주출입구로 이루어진다. 정모실과 회의실은 얇은 벽 하나를 사이에 둔다. 건물에 드나들 수 있는 통로는 주출입구와 비상구뿐이다. 비상구는 열리면 경보가 울리는데 이날 경보·개방 기록이 없었다. 나머지 창문은 모두 고정창이며 손상 흔적이 없다. 20시 45분 당시 내부 인원은 장한철과 네 용의자뿐이고, 21시 07분까지 다른 사람의 출입도 없었다. 모든 디지털 기록의 시각은 같은 표준시로 동기화돼 있다.'},
-    {id:'box',room:'정모실',icon:'🗃️',name:'금속 카드 보관함',text:'정모실 책상 아래에 무거운 금속 카드 보관함이 떨어져 있다. 모서리에 새 충돌 자국이 있지만 정확한 용도는 감식 전이다. 손잡이에는 여러 사람의 접촉 흔적이 남았다.'},
-    {id:'medical',phase:2,room:'정모실',icon:'🩺',name:'현장 감식·응급 진료 소견',text:'추가 감식에서 피해자 머리 측면의 타박 흔적은 금속 카드 보관함 모서리의 형태·폭과 부합하며, 보관함에는 새 충돌 흔적도 확인됐다. 사고성 낙상보다 외부 충격의 개연성이 높다. 다만 이 소견만으로 누가 사용했는지는 특정할 수 없다.'},
-    {id:'watch',phase:2,room:'정모실',icon:'⌚',name:'스마트워치 활동 기록',text:'장한철의 스마트워치는 20시 58분 13초에 강한 충격과 쓰러짐에 해당하는 움직임을 기록했고 이후 활동이 거의 없다. 회의실 화상통화에 기록된 충격음(20시 58분 12초)과 1초 차이다. 의료 기기는 아니며 다른 단서와 함께 봐야 한다.'},
-    {id:'clock',room:'정모실',icon:'🕰️',name:'바닥에서 깨진 탁상시계',text:'회장 책상에 있던 시계가 바닥에 떨어져 20시 58분 부근에서 멈췄다. 충격으로 멈춘 시계는 정확한 범행 시간을 확정하지 못한다. 다른 시각 자료가 더 필요하다.'},
-    {id:'notice',room:'정모실',icon:'📱',name:'20시 48분 단체방 대화',text:'장한철: “본게임은 오늘도 23시 10분부터! 클라이밍 썰부터 푼다ㅋㅋ” / 허다은: “캘박도 안 해놓고 또요?” / 손승민: “클라이밍 얘기 그만 좀요.” / 박지훈: “내일 출근인데 또 11시 넘게 시작한다고요?” / 서제이: “흡연 문제도 오늘 얘기할 거예요.” 네 명 모두 짜증이 드러나 있다.'},
-    {id:'transfer',phase:2,room:'정모실',icon:'📷',name:'20시 45분 준비 사진 원본',text:'단체방에 손승민이 20시 45분 게시한 사진에 금속 카드함이 이미 정모실 책상 위에 놓여 있으며, 손승민이 손잡이를 잡은 모습도 선명하다. 지문을 남겼을 수 있는 범행 이전의 접촉 시각이 확인된다.'},
-    {id:'group',phase:2,room:'정모실',icon:'👥',name:'20시 50분 단체사진 원본',text:'20시 50분 촬영된 사진에 네 용의자와 장한철이 찍혀 있다. 고해상도 원본을 확대하면 정모실 책상 위의 카드함 옆에 서제이 이름이 적힌 탈취제 병이 이미 놓여 있다. 사건 시각의 각자 위치를 증명하지는 못한다.'},
-    {id:'da-note',room:'정모실',icon:'🗒️',name:'바닥에 떨어진 찢긴 일정표',text:'피해자 의자 아래에서 찢어진 수요일 일정표가 나왔다. 허다은의 필체로 “캘박은 안 하시면서 도트는 왜 오세요?”라고 쓰여 있다. 메모가 언제 떨어졌는지는 불명이다.'},
-    {id:'prints',room:'정모실',icon:'🖐️',name:'카드함 손잡이의 지문',text:'금속 카드 보관함 손잡이의 비교적 선명한 지문은 손승민과 일치한다. 손승민은 사건 전 그 물건을 옮겼다고 말하지만, 언제 마지막으로 만졌는지 지문만으로는 알 수 없다.'},
-    {id:'spray',room:'정모실',icon:'🧴',name:'회장 의자 아래의 탈취제',text:'장한철의 의자 밑에 서제이 이름이 적힌 소형 탈취제 병이 떨어져 있다. 병 표면에 “담배 냄새 좀 그만!”이라는 쪽지가 붙어 있다. 병과 의자 주변엔 넘어진 물건이 있지만 탈취제를 누가, 언제 그 자리에 두었는지는 아직 불명이다.'},
-    {id:'calendar',room:'회의실',icon:'🗓️',name:'겹쳐버린 수요일 예약',text:'장한철이 수요일 참석을 캘박하지 않아 예약 충돌이 났다. 캘린더 수정 이력에는 20시 49분 허다은이 “회장님 캘박 누락, 직접 전달 예정”이라고 남긴 메모가 있다. 허다은은 그 직후 회장에게 일정표를 보여주며 항의했다고 진술한다.'},
-    {id:'call',phase:2,room:'회의실',icon:'💻',name:'화상통화 원본 녹화',text:'허다은은 20시 54분부터 21시 01분까지 회의실에서 상대방과 얼굴을 보이며 실시간으로 대화했다. 20시 58분 12초 정모실 방향에서 둔탁한 소리가 녹음됐고, 바로 이어 상대방 질문에 다은이 화면을 벗어나지 않고 답했다.'},
-    {id:'shelf',room:'창고',icon:'📦',name:'카드함이 사라진 선반',text:'창고의 카드함 보관 자리가 비어 있다. 언제, 누가 카드함을 가져갔는지는 선반만 보고 알 수 없다. 손승민이 평소 이 선반의 카드·게임을 관리해왔다.'},
-    {id:'warehouse',phase:2,room:'창고',icon:'🚪',name:'창고 문·복도 영상',text:'손승민은 20시 53분 04초 창고로 들어가 문을 닫았고, 다음 문 열림은 21시 02분 06초다. 복도 CCTV에도 그 사이 문이 열린 흔적이 없으며, 창고에는 출입문 하나와 열리지 않는 창만 있다. 감시 기록은 같은 표준시로 동기화돼 있다.'},
-    {id:'door',phase:2,room:'출입구',icon:'🔑',name:'양방향 출입 인증 로그',text:'20시 55분 서제이 퇴실 → 20시 59분 06초 박지훈 퇴실 → 21시 02분 30초 서제이 재입실 → 21시 06분 35초 박지훈 재입실. 주출입구와 비상구 이외 통로는 없으며 비상구 개방 기록도 없다. 카드 명의만으로 이용자를 단정하지는 말 것.'},
-    {id:'gatevideo',phase:2,room:'출입구',icon:'📹',name:'출입구 CCTV 원본',text:'영상에는 서제이가 20시 55분에 나가 21시 02분 30초에 돌아오는 모습이 얼굴까지 확인된다. 20시 59분 06초 박지훈도 건물 안에서 밖으로 나가는 모습이 선명하게 찍혔다. 21시 06분 35초에는 편의점 봉투를 들고 재입실했다. 영상 시각은 출입 인증 로그와 동기화돼 있다.'},
-    {id:'receipt',room:'출입구',icon:'🧾',name:'20시 57분 편의점 영수증',text:'박지훈이 “편의점에서 결제했다”고 제시한 영수증에는 20시 57분 승인 시각과 점포명이 보인다. 아래쪽의 결제 방식 부분은 접혀 있어 이 사진만으로는 확인할 수 없다. 20시 57분에 매장에 있었다는 주장 자체는 추가 확인이 필요하다.'},
-    {id:'payment',phase:2,room:'출입구',icon:'📲',name:'편의점 결제 방식 상세 기록',text:'편의점 앱의 원거래 내역에는 박지훈의 20시 57분 승인이 모바일 사전 주문 결제라고 표시된다. 점포 계산대 결제는 없었다. 이 내역만으로 결제한 사람의 물리적 위치를 알 수는 없다.'},
-    {id:'pickup',phase:2,room:'출입구',icon:'🛍️',name:'21시 04분 편의점 수령 확인',text:'편의점 앱의 수령 QR 기록과 매장 영상에는 박지훈이 21시 04분 직접 간식 봉투를 수령한 사실이 나온다. 편의점은 도트 입구에서 약 150m, 평소 도보 약 2분 거리다. 이 기록은 20시 58분에 편의점에 있었다는 증거가 아니라 이후 이동이 가능했는지를 판단할 자료다.'},
-
+    {id:'da-note',phase:1,room:'정모실',icon:'🗒️',name:'찢긴 수요일 일정표',summary:'피해자 의자 아래에서 발견된 종이. 허다은의 불만이 그대로 남아 있다.',text:'회장 의자 아래서 발견된 수요일 일정표. 종이 끝은 찢어져 있고 허다은의 글씨로 “캘박은 안 하시면서 도트는 왜 오세요?”가 적혀 있다. 일정 등록 문제로 다툰 건 사실이지만 종이가 언제 바닥에 떨어졌는지는 알 수 없다.'},
+    {id:'prints',phase:1,room:'정모실',icon:'🖐️',name:'금속 카드함의 지문',summary:'바닥에 떨어진 무거운 카드함. 손잡이에 손승민의 지문이 발견됐다.',text:'금속 카드 보관함은 정모실 책상 아래에서 발견됐으며 한쪽 모서리에 새 충돌 흔적이 있다. 손잡이에서 나온 선명한 지문은 손승민의 것과 일치한다. 그러나 지문은 접촉 시각을 말해주지 않는다.'},
+    {id:'spray',phase:1,room:'정모실',icon:'🧴',name:'회장 의자 아래의 탈취제',summary:'“담배 냄새 좀 그만!”이라는 쪽지가 붙은 서제이의 물건.',text:'장한철이 쓰러진 의자 아래서 서제이 이름이 적힌 탈취제 병이 발견됐다. 병에는 “담배 냄새 좀 그만!”이라는 쪽지가 붙어 있다. 의자 주변 물건들이 흩어져 있어 누가 언제 그곳에 뒀는지는 불명이다.'},
+    {id:'receipt',phase:1,room:'출입구',icon:'🧾',name:'20시 57분 편의점 영수증',summary:'박지훈이 알리바이라며 제출한 영수증. 결제 방식 부분은 접혀 있다.',text:'박지훈은 20시 55분에 편의점으로 나갔다고 진술하며 20시 57분 승인 영수증 사진을 보여줬다. 점포명과 승인 시각만 보이고 결제 방식은 접힌 부분에 가려져 있다. 영수증이 그 시간에 실제로 매장에 있었다는 증거인지는 추가 확인이 필요하다.'},
+    {id:'call',phase:2,room:'회의실',icon:'💻',name:'화상통화·충격 시각 검증팩',summary:'허다은의 통화 영상, 사건 충격음, 피해자 기기·감식 기록을 대조한다.',text:'회의실 화상통화 원본에는 허다은이 20시 54분부터 21시 01분까지 얼굴을 보이며 연속 대화한 기록이 있다. 20시 58분 12초 정모실 방향에서 “쿵” 소리가 녹음됐고, 다은은 화면을 벗어나지 않은 채 바로 질문에 답했다. 한철의 스마트워치에도 20시 58분 13초 강한 충격이 기록돼 있다. 응급 진료·현장 감식 요약에서는 머리 측면 타박이 금속 카드함 모서리와 형태상 부합해 외부 충격이 의심된다. 이 자료만으로 범인을 특정할 수는 없다.'},
+    {id:'warehouse',phase:2,room:'창고',icon:'📦',name:'창고 출입 기록·20시 45분 사진',summary:'손승민의 실제 동선과 카드함을 이전에 만졌을 가능성을 확인한다.',text:'20시 45분 단체방에 올라온 준비 사진에는 손승민이 금속 카드함 손잡이를 잡고 정모실 책상으로 옮긴 모습이 있다. 따라서 지문은 사건 전 접촉으로 남았을 수 있다. 창고 문·복도 기록에는 20시 53분 04초 손승민이 출입구 하나뿐인 창고에 들어간 뒤 21시 02분 06초에야 나왔다고 남아 있다. 사건 추정 시각에는 창고 밖으로 나온 흔적이 없다.'},
+    {id:'group',phase:2,room:'정모실',icon:'📷',name:'20시 50분 사진·출입 검증팩',summary:'서제이의 탈취제가 사건 전에 어디 있었는지, 당시 동선은 어땠는지 확인한다.',text:'20시 50분 단체사진 원본을 확대하면 서제이 이름이 적힌 탈취제가 이미 정모실 책상 위에 놓여 있다. 사건 후 의자 아래에 떨어져 있던 경위 자체는 불명이다. 출입문 양방향 인증 로그와 얼굴이 식별되는 출입구 영상에는 제이가 20시 55분에 퇴실해 21시 02분 30초에야 재입실한 모습이 남아 있다. 비상구 경보와 다른 외부인 출입 기록은 없다.'},
+    {id:'gatevideo',phase:2,room:'출입구',icon:'📹',name:'출입구 CCTV·편의점 원거래',summary:'20시 59분 퇴실 영상과 20시 57분 결제 방식, 21시 04분 수령 내역.',text:'출입구 CCTV에는 박지훈 본인이 20시 59분 06초 도트 안에서 밖으로 나가는 모습이 찍혀 있다. 다시 들어온 시각은 21시 06분 35초다. 편의점 원거래 내역을 확인하니 20시 57분 승인은 매장에서의 결제가 아니라 모바일 앱 사전결제였으며, 실제 물건 수령은 21시 04분이었다. 편의점은 도트에서 약 150m 거리여서 퇴실 후 방문 동선도 성립한다. “20시 55분부터 편의점 안에 있었다”는 진술은 본인 퇴실 영상과 모순된다.'}
   ];
   const caseTimeline=[
-    {at:'20:45',src:'transfer',desc:'카드 보관함이 정모실 책상으로 옮겨짐'},
-    {at:'20:48',src:'notice',desc:'회장, 본게임 23시 10분 시작 공지'},
-    {at:'20:49',src:'calendar',desc:'허다은의 캘박 누락 항의 메모 기록'},
-    {at:'20:50',src:'group',desc:'단체사진 촬영 · 정모실 물건 배치'},
-    {at:'20:53:04',src:'warehouse',desc:'손승민 창고 입실 · 문 닫힘'},
+    {at:'20:45',src:'warehouse',desc:'손승민이 금속 카드함을 정모실로 옮긴 사진'},
+    {at:'20:48',src:null,desc:'장한철이 본게임 23시 10분 시작을 공지'},
+    {at:'20:50',src:'group',desc:'정모실 책상 위 탈취제가 단체사진에 찍힘'},
+    {at:'20:53:04',src:'warehouse',desc:'손승민 창고 입실'},
     {at:'20:54',src:'call',desc:'허다은 화상통화 시작'},
-    {at:'20:55',src:'door',desc:'서제이 명의 출입카드 퇴실'},
-    {at:'20:57',src:'receipt',desc:'박지훈이 20시 57분 승인 영수증을 제시'},
-    {at:'20:57',src:'payment',desc:'원거래 기록에서 모바일 사전 결제임이 확인'},
-    {at:'20:58:12',src:'call',desc:'회의실 통화에 정모실 쪽 충격음 녹음'},
-    {at:'20:58:13',src:'watch',desc:'장한철 스마트워치 급격한 충격 감지'},
-    {at:'20:59:06',src:'door',desc:'박지훈 명의 출입카드 퇴실'},
-    {at:'20:59:06',src:'gatevideo',desc:'출입구 영상에서 박지훈 본인 퇴실 확인'},
+    {at:'20:55',src:'group',desc:'서제이 건물 퇴실'},
+    {at:'20:57',src:'receipt',desc:'박지훈 영수증 결제 승인 시각'},
+    {at:'20:57',src:'gatevideo',desc:'상세 거래에서 모바일 사전결제로 확인'},
+    {at:'20:58:12',src:'call',desc:'정모실 방향 충격음 녹음'},
+    {at:'20:58:13',src:'call',desc:'스마트워치 충격 기록'},
+    {at:'20:59:06',src:'gatevideo',desc:'박지훈 건물 안에서 밖으로 퇴실'},
     {at:'21:01',src:'call',desc:'허다은 화상통화 종료'},
-    {at:'21:02:06',src:'warehouse',desc:'창고문 열림 · 손승민 복도 등장'},
-    {at:'21:02:30',src:'door',desc:'서제이 명의 출입카드 재입실'},
-    {at:'21:04',src:'pickup',desc:'박지훈 편의점 상품 직접 수령'},
-    {at:'21:06:35',src:'gatevideo',desc:'박지훈 봉투를 들고 도트 재입실'},
-    {at:'21:07',src:null,desc:'허다은이 정모실에서 쓰러진 장한철 발견'}
+    {at:'21:02:06',src:'warehouse',desc:'손승민 창고에서 나옴'},
+    {at:'21:02:30',src:'group',desc:'서제이 건물 재입실'},
+    {at:'21:04',src:'gatevideo',desc:'박지훈 편의점 상품 실제 수령'},
+    {at:'21:06:35',src:'gatevideo',desc:'박지훈 도트 재입실'},
+    {at:'21:07',src:null,desc:'허다은이 쓰러진 장한철 발견'}
   ];
-    const clueIds=new Set(clues.map(x=>x.id));
+  const clueIds=new Set(clues.map(x=>x.id));
   const suspectIds=new Set(suspects.map(x=>x.id));
-  const proofRequirements=[
-    {label:'범행 시각 교차 검증',ids:['call','watch']},
-    {label:'다른 용의자의 동선 검증',ids:['warehouse','door','gatevideo']},
-    {label:'범행 도구와 상해 연결',ids:['box','medical']},
-    {label:'결제 방식과 알리바이 반박',ids:['receipt','payment'],contradiction:'jihoon'}
-  ];
+  const leadIds=clues.filter(c=>c.phase===1).map(c=>c.id);
+  const secondIds=clues.filter(c=>c.phase===2).map(c=>c.id);
+  const MIN_CLUES_TO_SUBMIT=clues.length;
   function proofChecks(){
-    return proofRequirements.map(group=>({label:group.label,done:group.contradiction?
-      (state.contradictions.includes(group.contradiction)&&(group.ids||[]).every(id=>state.clues.includes(id))):group.ids.every(id=>state.clues.includes(id))}));
+    return [
+      {label:'1차 의심 단서 4개 확인',done:leadIds.every(id=>state.clues.includes(id))},
+      {label:'용의자 네 명 면담',done:suspects.every(p=>state.interviewed.includes(p.id))},
+      {label:'2차 검증 단서 4개 대조',done:secondIds.every(id=>state.clues.includes(id))}
+    ];
+  }
+  function canUnlockRound2(){
+    return state.phase===1&&leadIds.every(id=>state.clues.includes(id))&&suspects.every(p=>state.interviewed.includes(p.id));
   }
   function canSubmit(){
-    return state.phase===2&&state.clues.length>=MIN_CLUES_TO_SUBMIT&&leadIds.every(id=>state.clues.includes(id))&&suspects.every(person=>state.interviewed.includes(person.id))&&proofChecks().every(x=>x.done);
+    return state.phase===2&&proofChecks().every(c=>c.done);
   }
-  const leadIds=['da-note','prints','spray','notice'];
-  const MIN_CLUES_TO_SUBMIT=new Set([...leadIds,...proofRequirements.flatMap(g=>g.ids||[])]).size;
-  function canUnlockRound2(){return state.phase===1&&leadIds.every(id=>state.clues.includes(id))&&suspects.every(person=>state.interviewed.includes(person.id));}
   function defaults(){return {started:false,phase:1,clues:[],interviewed:[],contradictions:[],submitted:false,answer:null};}
   function load(){
     try{
@@ -105,11 +90,11 @@
       '<div class="mystery-kicker">허구의 코믹 추리 사건 · 체험판</div>'+
       '<h2>《누가 장한철을 때렸나?》</h2>'+
       '<p>유력 용의자는 허다은, 손승민, 박지훈, 서제이. 전원 수상한 동기가 있고 제각기 다른 알리바이를 주장한다. 진술과 시간을 대조해 거짓말을 찾아내자.</p>'+
-      '<div class="mystery-meta"><span class="mystery-pill">👤 1인용</span><span class="mystery-pill">⏱ 체험판 약 10~15분</span><span class="mystery-pill">🔍 입문~중간</span></div>'+
+      '<div class="mystery-meta"><span class="mystery-pill">👤 1인용</span><span class="mystery-pill">⏱ 체험판 약 15~25분</span><span class="mystery-pill">🔍 입문~중간</span></div>'+
       '<div class="mystery-actions">'+button('intro','사건 브리핑 보기','mystery-btn-primary')+
       (state.started?button('resume','이어서 수사하기'):'')+'</div></section>'+
       '<aside class="mystery-panel"><h3>수사 방법</h3>'+
-      '<p>① 사건 브리핑 확인</p><p>② 도트 네 장소 조사</p><p>③ 네 사람의 진술 심문</p><p>④ 거짓 알리바이 반박</p><p>⑤ 범인·동기·도구·결정적 증거 지목</p>'+
+      '<p>① 사건 브리핑 확인</p><p>② 증거 이미지 4개 조사</p><p>③ 네 사람의 진술 심문</p><p>④ 2차 증거 카드 4개 대조</p><p>⑤ 범인·동기·도구·결정적 증거 지목</p>'+
       '<div class="mystery-divider"></div><p class="mystery-subtle">※ 실제 인물과는 무관한 가상의 사건입니다. 수사 기록은 현재 브라우저에만 저장됩니다.</p>'+
       '</aside></div>';
   }
@@ -119,20 +104,35 @@
       '<div class="mystery-story">도파민 회장 장한철은 주 6일 근무한다. 유일하게 쉬는 수요일이면 그토록 기다리던 도트로 향한다.\n\n그날도 한철은 신이 나서 외쳤다.\n“오늘 본게임은 23시 10분부터! 그전엔 클라이밍 썰 풀어드림ㅋㅋ”\n\n회원들의 표정은 일제히 굳어졌다.\n\n20시 58분 무렵, 정모실 쪽에서 “쿵!” 소리가 났다. 하지만 당시에는 아무도 대수롭지 않게 여겼다.\n\n21시 07분, 회의실 통화를 끝내고 메모를 정리하던 허다은이 정모실에 들렀다가 쓰러진 한철을 발견했다. 곧바로 구조 요청이 이뤄졌고, 다행히 한철은 의식을 회복했다. 다만 공격자는 기억하지 못한다.\n\n그날 도트에 있던 인물은 회장과 네 명의 회원뿐이었다. 용의자 이름은 허다은, 손승민, 박지훈, 서제이.\n\n네 사람은 모두 한철에게 불만이 있었다. 하지만 이유가 있다고 모두 범인은 아니다. 사건 시각, 현장 물건의 위치, 출입 기록과 진술이 맞물리는지 조사하라.</div>'+
       '<div class="mystery-actions">'+button('start',state.submitted?'처음부터 재수사':state.started?'조사 이어하기':'사건 조사 시작','mystery-btn-primary')+button('home','사건 목록으로')+'</div></div>';
   }
+  const visualScenes={
+    'da-note':'<div class="ev-object ev-paper"><div class="ev-paper-top">수요일 일정표 <span>20:49</span></div><div class="ev-paper-lines">□ 정모 준비<br>☒ 예약 중복<br>□ 회장 캘박 확인</div><div class="ev-paper-hand">캘박은 안 하시면서<br>도트는 왜 오세요?</div><div class="ev-paper-tear"></div></div>',
+    'prints':'<div class="ev-object ev-metal"><div class="ev-metal-top">DOTT CARD BOX</div><div class="ev-metal-lock">▣</div><div class="ev-print">◎</div><div class="ev-metal-foot">지문 채취 구역 · 01</div></div>',
+    'spray':'<div class="ev-chair"></div><div class="ev-object ev-bottle"><span class="ev-nozzle"></span><div class="ev-bottle-label">탈취제<small>서제이</small></div></div><div class="ev-note-yellow">담배 냄새<br>좀 그만!</div>',
+    'receipt':'<div class="ev-object ev-receipt"><div class="ev-center">24 HOURS · 편의점</div><div class="ev-dashed"></div><div>결제 승인　20:57</div><div>상품　　　간식 외</div><div>합계　　　6,700원</div><div class="ev-dashed"></div><div class="ev-obscured">결제 수단　██████</div><div class="ev-barcode">|||| ||| ||||| ||</div></div>',
+    'call':'<div class="ev-object ev-laptop"><div class="ev-display"><div class="ev-face">●<span>●</span></div><div class="ev-display-top">회의실 · 화상통화</div><div class="ev-time">20:58:12</div><div class="ev-sound">▂▃▆▇▃▁</div></div><div class="ev-keyboard"></div></div><div class="ev-small-evidence">⌚ 20:58:13 · 충격 기록</div>',
+    'warehouse':'<div class="ev-cctv"><div class="ev-cctv-head">CAM 03 · STORAGE</div><div class="ev-door-shape"><span>03</span></div><div class="ev-cctv-times"><span>IN 20:53:04</span><span>OUT 21:02:06</span></div></div><div class="ev-photo-tag">📷 20:45 · 카드함 이동 기록</div>',
+    'group':'<div class="ev-object ev-photo"><div class="ev-photo-title">DOTT · 20:50</div><div class="ev-photo-desk"><div class="ev-mini-box"></div><div class="ev-mini-spray"></div></div><div class="ev-red-ring"></div><div class="ev-photo-caption">책상 위 탈취제</div></div><div class="ev-small-evidence">출입 영상 20:55 → 21:02:30</div>',
+    'gatevideo':'<div class="ev-cctv ev-exit"><div class="ev-cctv-head">CAM 01 · EXIT</div><div class="ev-cctv-person"><span>●</span><i></i></div><div class="ev-time">20:59:06</div></div><div class="ev-payment"><div>편의점 원거래</div><strong>20:57 · 앱 선결제</strong><small>수령 21:04</small></div>'
+  };
+  function evidenceArt(c){
+    return '<div class="evidence-art evidence-art--'+escText(c.id)+'" aria-hidden="true">'+(visualScenes[c.id]||'')+
+      '<span class="ev-photo-label">EVIDENCE / '+String(clues.indexOf(c)+1).padStart(2,'0')+'</span></div>';
+  }
   function investigate(){
-    const items=clues.filter(c=>c.room===ui.room&&(!c.phase||c.phase<=state.phase));
-    const leads=leadIds.filter(id=>state.clues.includes(id)).length;
-    const introRound=state.phase===1?'<div class="mystery-note"><strong>1차 조사 · 모두를 의심해보기</strong><p>찢긴 일정표, 보관함 지문, 탈취제, 단체방 대화를 확인하고 용의자 네 명의 말을 들어보세요.</p><p>수상한 흔적 '+leads+' / 4 · 면담 '+state.interviewed.length+' / 4</p>'+(canUnlockRound2()?button('unlock-round2','2차 조사 열기 · 알리바이 검증','mystery-btn-primary'):'<p>모든 흔적과 진술을 확인하면 CCTV·감식 자료가 열립니다.</p>')+'</div>':'<div class="mystery-success">✓ 2차 조사 · 통화 녹화, 출입 기록, 감식 자료가 공개되었습니다.</div>';
+    const items=clues.filter(c=>c.phase===state.phase);
+    const leadCount=leadIds.filter(id=>state.clues.includes(id)).length;
+    const secondCount=secondIds.filter(id=>state.clues.includes(id)).length;
     const selected=clues.find(c=>c.id===ui.selectedClue&&state.clues.includes(c.id));
-    return '<h2 class="mystery-section-title">현장 조사 · '+state.phase+'차</h2><p class="mystery-subtle">1차에서는 의심스러운 흔적을, 2차에서는 진술을 검증할 기록을 조사합니다.</p>'+introRound+
-      '<div class="mystery-room-tabs">'+rooms.map(room=>
-        '<button type="button" class="mystery-room '+(ui.room===room?'active':'')+'" data-action="room" data-id="'+room+'">'+room+'</button>'
-      ).join('')+'</div>'+
-      '<div class="mystery-item-grid">'+items.map(c=>
-        '<button type="button" class="mystery-item '+(state.clues.includes(c.id)?'done':'')+'" data-action="clue" data-id="'+c.id+'">'+
-        '<span class="mystery-emoji" aria-hidden="true">'+c.icon+'</span><strong>'+c.name+'</strong><small>'+(state.clues.includes(c.id)?'✓ 단서 확보':'눌러서 조사하기')+'</small></button>'
-      ).join('')+'</div>'+
-      (selected?'<div class="mystery-evidence" role="status"><h3>'+selected.icon+' '+selected.name+'</h3><p>'+selected.text+'</p>'+button('notebook','수사 수첩으로')+'</div>':'');
+    return '<div class="mystery-stage-head"><div><div class="mystery-kicker">INVESTIGATION · ROUND '+(state.phase===1?'01':'02')+'</div>'+
+      '<h2 class="mystery-section-title">'+(state.phase===1?'1차 · 의심스러운 물증':'2차 · 알리바이 검증')+'</h2></div>'+
+      '<span class="mystery-stage-count">'+(state.phase===1?leadCount:secondCount)+' / 4 확보</span></div>'+
+      '<p class="mystery-subtle">'+(state.phase===1?'누구에게나 의심스러운 흔적이 있습니다. 네 가지 증거를 확보하고 네 명을 심문하세요.':'주장과 시간을 대조할 수 있는 기록 네 가지가 추가 공개됐습니다. 이미지와 설명을 자세히 살펴보세요.')+'</p>'+
+      '<div class="evidence-card-grid">'+items.map(c=>'<button class="evidence-card '+(state.clues.includes(c.id)?'evidence-collected':'')+'" type="button" data-action="clue" data-id="'+c.id+'">'+
+      evidenceArt(c)+'<div class="evidence-card-copy"><strong>'+escText(c.name)+'</strong><p>'+escText(c.summary)+'</p><span class="evidence-card-status">'+(state.clues.includes(c.id)?'✓ 수사 수첩에 확보됨':'⌕ 증거 조사하기')+'</span></div></button>').join('')+'</div>'+
+      (selected?'<div class="evidence-detail" role="status"><div class="mystery-kicker">EVIDENCE FILE OPENED</div><h3>'+selected.icon+' '+escText(selected.name)+'</h3>'+evidenceArt(selected)+'<p>'+escText(selected.text)+'</p><div class="mystery-actions">'+button('notebook','수사 수첩에서 확인')+'</div></div>':'')+
+      (state.phase===1?'<div class="mystery-note"><strong>2차 조사 잠금</strong><p>1차 증거 '+leadCount+' / 4 · 면담 '+state.interviewed.length+' / 4명</p>'+
+      (canUnlockRound2()?button('unlock-round2','2차 증거 4개 공개하기','mystery-btn-primary'):'<p>증거 네 개를 모두 조사하고 용의자 네 명에게 말을 걸면 열립니다.</p>')+'</div>':
+      '<div class="mystery-success">2차 증거 '+secondCount+' / 4개 확보 · 최종 추리에서 범인과 범행 도구를 선택할 수 있습니다.</div>');
   }
   function interview(){
     const p=suspects.find(x=>x.id===ui.suspect)||suspects[0];
@@ -152,43 +152,31 @@
   function notebook(){
     const found=clues.filter(c=>state.clues.includes(c.id));
     const known=caseTimeline.filter(row=>!row.src||state.clues.includes(row.src));
-    return '<h2 class="mystery-section-title">수사 수첩</h2>'+
-      '<p class="mystery-subtle">확보 단서 '+found.length+' / '+clues.length+'개 · 면담 인원 '+state.interviewed.length+' / 4명</p>'+
-      '<h3 class="mystery-section-title">확인된 사건 타임라인</h3>'+
-      '<p class="mystery-subtle">확보한 단서로 입증된 시각만 표시됩니다. 새로운 증거를 수집하면 자동으로 추가됩니다.</p>'+
+    return '<h2 class="mystery-section-title">수사 수첩</h2><p class="mystery-subtle">확보 '+found.length+' / 8개 · 면담 '+state.interviewed.length+' / 4명</p>'+
+      '<h3 class="mystery-section-title">확인된 타임라인</h3>'+
       '<div class="mystery-timeline">'+known.map(row=>
         '<div class="mystery-timeline-row"><time>'+escText(row.at)+'</time><span>'+escText(row.desc)+'</span></div>'
-      ).join('')+'</div>'+
-      '<div class="mystery-divider"></div><h3 class="mystery-section-title">증거 원문</h3>'+
-      (found.length?found.map(c=>note(c.icon+' '+c.name,c.text)).join(''):'<p>아직 증거가 없습니다. 현장 조사부터 시작하세요.</p>')+
-      '<div class="mystery-divider"></div><h3>면담 완료</h3><p class="mystery-subtle">'+(state.interviewed.length?
-        state.interviewed.map(id=>suspects.find(s=>s.id===id)?.name).filter(Boolean).join(' · '):'면담한 사람이 없습니다.')+'</p>';
+      ).join('')+'</div><div class="mystery-divider"></div><h3>확보한 증거</h3>'+
+      (found.length?found.map(c=>note(c.icon+' '+c.name,c.text)).join(''):'<p class="mystery-subtle">수집한 증거가 없습니다.</p>')+
+      '<div class="mystery-divider"></div><h3>면담 완료</h3><p class="mystery-subtle">'+
+      (state.interviewed.length?state.interviewed.map(id=>suspects.find(s=>s.id===id)?.name).filter(Boolean).join(' · '):'없음')+'</p>';
   }
   function finalGuess(){
-    const ready=canSubmit();
-    const checks=proofChecks();
+    const ready=canSubmit(),checks=proofChecks();
     const evidence=clues.filter(c=>state.clues.includes(c.id));
-    return '<h2 class="mystery-section-title">최종 추리</h2>'+
-      '<p class="mystery-subtle">20시 58분에 누가 어디에 있었는지, 거짓 알리바이를 누가 만들어냈는지 확인하세요. 제출하면 정답과 해설이 공개됩니다.</p>'+
-      '<div class="mystery-note"><strong>논리 검증 체크리스트</strong><p>단서 '+MIN_CLUES_TO_SUBMIT+'개 이상을 수집하고 네 명 모두 면담하세요. 단순한 의심이 아닌 증거로 아래 항목을 확인해야 합니다.</p>'+
-      checks.map(x=>'<p>'+(x.done?'✓':'□')+' '+escText(x.label)+'</p>').join('')+'</div>'+
-      (!ready?'<div class="mystery-warning">🔒 최종 제출 대기 · 단서 '+state.clues.length+'개 / '+MIN_CLUES_TO_SUBMIT+'개 이상 · 면담 '+state.interviewed.length+'명 / 4명 · 논리 검증 '+checks.filter(x=>x.done).length+' / '+checks.length+'건</div>':'')+
-      '<label class="mystery-field" for="mystery-answer-person">① 장한철을 때린 사람은 누구인가요?<select id="mystery-answer-person"><option value="">범인 선택</option>'+
-      suspects.map(s=>'<option value="'+s.id+'">'+s.name+'</option>').join('')+'</select></label>'+
-      '<label class="mystery-field" for="mystery-answer-motive">② 범행 동기는 무엇인가요?<select id="mystery-answer-motive"><option value="">동기 선택</option>'+
-      '<option value="calendar">일정을 캘박하지 않아 예약이 꼬여서</option>'+
-      '<option value="climbing">맨날 클라이밍 얘기만 해서</option>'+
-      '<option value="late">매번 23시 이후에 벙을 시작해서</option>'+
-      '<option value="smoking">흡연 습관이 마음에 들지 않아서</option></select></label>'+
-      '<label class="mystery-field" for="mystery-answer-weapon">③ 무엇으로 공격했나요?<select id="mystery-answer-weapon"><option value="">사용한 물건 선택</option>'+
-      '<option value="metalbox">금속 카드 보관함</option>'+
-      '<option value="clock">탁상시계</option>'+
-      '<option value="mug">머그컵</option>'+
-      '<option value="book">두꺼운 룰북</option></select></label>'+
-      '<label class="mystery-field" for="mystery-answer-evidence">④ 범인이 20시 58분에도 건물 안에 있었음을 뒷받침하는 핵심 증거는?<select id="mystery-answer-evidence"><option value="">증거 선택</option>'+
-      evidence.map(c=>'<option value="'+c.id+'">'+c.name+'</option>').join('')+'</select></label>'+
-      '<div class="mystery-actions">'+button('submit','추리 제출하고 진상 확인','mystery-btn-primary',ready?'':'disabled')+'</div>'+
-      (ui.feedback?'<div class="mystery-warning" role="status">'+escText(ui.feedback)+'</div>':'');
+    return '<h2 class="mystery-section-title">최종 추리</h2><p class="mystery-subtle">증거는 모두 확보했습니다. 서로 다른 기록을 대조해 한 명을 지목하세요. 정답 제출 후 진상이 공개됩니다.</p>'+
+      '<div class="mystery-note"><strong>수사 완료 조건</strong>'+checks.map(x=>'<p>'+(x.done?'✓':'□')+' '+escText(x.label)+'</p>').join('')+'</div>'+
+      (!ready?'<div class="mystery-warning">🔒 1차 4개 + 2차 4개 증거와 네 명의 진술을 모두 확인하면 제출 가능합니다.</div>':'')+
+      '<label class="mystery-field" for="mystery-answer-person">① 범인은?<select id="mystery-answer-person"><option value="">범인 선택</option>'+
+      suspects.map(x=>'<option value="'+x.id+'">'+x.name+'</option>').join('')+'</select></label>'+
+      '<label class="mystery-field" for="mystery-answer-motive">② 범행 동기는?<select id="mystery-answer-motive"><option value="">동기 선택</option>'+
+      '<option value="calendar">캘박을 안 해서</option><option value="climbing">클라이밍 얘기만 해서</option><option value="late">23시 이후에 벙을 시작해서</option><option value="smoking">흡연 문제 때문에</option></select></label>'+
+      '<label class="mystery-field" for="mystery-answer-weapon">③ 사용한 물건은?<select id="mystery-answer-weapon"><option value="">도구 선택</option>'+
+      '<option value="metalbox">금속 카드 보관함</option><option value="clock">탁상시계</option><option value="mug">머그컵</option><option value="book">두꺼운 룰북</option></select></label>'+
+      '<label class="mystery-field" for="mystery-answer-evidence">④ 결정적인 모순을 드러내는 증거는?<select id="mystery-answer-evidence"><option value="">증거 선택</option>'+
+      evidence.map(c=>'<option value="'+c.id+'">'+escText(c.name)+'</option>').join('')+'</select></label>'+
+      '<div class="mystery-actions">'+button('submit','추리 제출 · 사건의 진상 확인','mystery-btn-primary',ready?'':'disabled')+'</div>'+
+      (ui.feedback?'<div class="mystery-warning">'+escText(ui.feedback)+'</div>':'');
   }
   function play(){
     const tabs=[['investigate','🔍 현장 조사'],['interview','💬 용의자 심문'],['notebook','📔 수사 수첩'],['final','⚖️ 최종 추리']];
@@ -246,9 +234,8 @@
     else if(action==='start'){if(state.submitted){if(!window.confirm('기존 수사 결과를 지우고 처음부터 다시 할까요?'))return;state=defaults();}state.started=true;save();ui.view='play';ui.tab='investigate';}
     else if(action==='resume')ui.view=state.submitted?'result':'play';
     else if(action==='tab'){tabChange(id);return;}
-    else if(action==='room'){if(!rooms.includes(id))return;ui.room=id;ui.selectedClue=null;}
     else if(action==='clue'){
-      const item=clues.find(c=>c.id===id);if(!item||(item.phase&&item.phase>state.phase))return;
+      const item=clues.find(c=>c.id===id);if(!item||item.phase!==state.phase)return;
       if(!state.clues.includes(id)){state.clues.push(id);save();}
       ui.selectedClue=id;
     }
@@ -261,38 +248,26 @@
     else if(action==='notebook'){ui.tab='notebook';ui.feedback='';}
     else if(action==='present'){
       const evidence=document.getElementById('mystery-claim')?.value;
-      if(!evidence)ui.feedback='먼저 증거를 선택해주세요.';
-      else if(!state.clues.includes(evidence)||!clues.some(c=>c.id===evidence&&(!c.phase||c.phase<=state.phase))){ui.feedback='아직 확보하지 않은 증거입니다. 현장 조사에서 먼저 수집해주세요.';}
+      if(!evidence)ui.feedback='증거를 선택해주세요.';
+      else if(!state.clues.includes(evidence))ui.feedback='아직 확보하지 않은 증거입니다.';
       else if(ui.suspect==='jihoon'&&evidence==='gatevideo'){
-        ui.feedback='🔎 결정적 모순! CCTV에는 박지훈 본인이 20시 59분 06초 도트 안에서 밖으로 나가는 장면이 있습니다. 20시 55분부터 편의점에 있었다는 진술과 양립할 수 없습니다.';
+        ui.feedback='🔎 모순 발견! 박지훈은 20시 55분부터 편의점에 있었다고 했지만, 20시 59분 06초 도트에서 직접 나가는 영상이 있습니다. 20시 57분 승인은 모바일 선결제였어요.';
         if(!state.contradictions.includes('jihoon')){state.contradictions.push('jihoon');save();}
-      }else if(ui.suspect==='jihoon'&&evidence==='door'){
-        ui.feedback='🔎 20시 59분 06초 박지훈 카드로 퇴실한 기록이 있습니다. 카드 소지자와 본인 일치를 CCTV로 확인하세요.';
       }else if(ui.suspect==='jihoon'&&evidence==='receipt'){
-        ui.feedback='20시 57분 승인 기록은 확인됩니다. 하지만 결제 방식이 보이지 않으니 매장 방문 여부를 아직 단정할 수 없습니다. 원거래 내역을 확보해보세요.';
-      }else if(ui.suspect==='jihoon'&&evidence==='payment'){
-        ui.feedback='20시 57분 승인은 모바일 선결제였습니다. 결제 사실은 진짜지만 매장에 있었다는 뜻은 아니에요. 다만 이것만으로 박지훈이 사건 현장에 있었다고 증명할 수는 없습니다.';
-      }else if(ui.suspect==='jihoon'&&evidence==='pickup'){
-        ui.feedback='21시 04분에 편의점에 있었다는 사실은 확인됩니다. 다만 그 사실만으로 20시 58분에도 편의점에 있었다고 볼 수는 없습니다.';
-      }else if(ui.suspect==='jihoon'&&evidence==='notice'){
-        ui.feedback='박지훈이 화난 것은 맞지만, 같은 대화에는 다른 세 명도 불만을 드러냈습니다. 메시지만으로 범인을 정할 수 없습니다.';
+        ui.feedback='20시 57분 승인 시각은 확인됩니다. 하지만 접힌 부분의 결제 방식과 실제 이동 기록은 아직 확인되지 않았습니다.';
       }else if(ui.suspect==='daeun'&&evidence==='da-note'){
-        ui.feedback='허다은: “제가 쓴 거 맞아요. 캘박도 안 하고 불쑥 오시면 예약이 다 꼬이잖아요! 20시 49분에 직접 따졌고, 일정표는 회장님이 들고 가셨어요.” 메모는 의심스럽지만 범행 시각의 위치를 보여주지는 않습니다.';
-      }else if(ui.suspect==='seungmin'&&evidence==='prints'){
-        ui.feedback='손승민: “그 물건 제가 자주 옮겨요. 지문이 있는 건 당연하죠. 마지막으로 만진 시각은 확인해 보세요.” 손잡이 지문은 접촉 사실만 보여주고 정확한 시각은 증명하지 않습니다.';
-      }else if(ui.suspect==='jei'&&evidence==='spray'){
-        ui.feedback='서제이: “제 탈취제 맞는데, 그게 왜 의자 밑에 있어요? 저는 아까 책상 쪽에 뒀어요.” 지금은 물건의 이동 경위가 확인되지 않았습니다.';
+        ui.feedback='허다은: “캘박은 안 하시면서 도트는 왜 오세요? 이거 제가 쓴 거 맞아요. 일정이 꼬여서 화났어요. 종이는 회장님이 갖고 가셨는데요!”';
       }else if(ui.suspect==='daeun'&&evidence==='call'){
-        ui.feedback='🔎 20시 58분 12초 충격음이 녹음된 순간 허다은은 회의실 화상통화 화면에서 실시간 대화를 하고 있었습니다.';
-      }else if(ui.suspect==='seungmin'&&evidence==='transfer'){
-        ui.feedback='🔎 20시 45분 준비 사진에서 손승민이 카드함 손잡이를 잡은 사실이 확인됩니다. 지문은 사건 이전에 남았을 가능성이 있습니다.';
+        ui.feedback='🔎 화상통화 원본에서 20시 58분 12초 충격음 직후에도 허다은은 회의실 화면에서 실시간 답변하고 있었습니다.';
+      }else if(ui.suspect==='seungmin'&&evidence==='prints'){
+        ui.feedback='손승민: “카드함 평소에 제가 옮기는데 지문이 없으면 그게 더 이상하죠!” 언제 손잡이를 만졌는지가 중요합니다.';
       }else if(ui.suspect==='seungmin'&&evidence==='warehouse'){
-        ui.feedback='🔎 창고문과 복도 영상에 20시 53분~21시 02분 출입 흔적이 없습니다. 카드함은 20시 45분부터 이미 정모실에 있었습니다.';
+        ui.feedback='🔎 손승민은 20시 45분 카드함을 옮겼고, 20시 53분부터 21시 02분까지 창고 밖으로 나온 기록이 없습니다.';
+      }else if(ui.suspect==='jei'&&evidence==='spray'){
+        ui.feedback='서제이: “탈취제는 제 거 맞아요. 근데 왜 의자 밑에 있죠? 저는 책상 쪽에 뒀는데요?”';
       }else if(ui.suspect==='jei'&&evidence==='group'){
-        ui.feedback='🔎 확대된 20시 50분 원본 사진에는 서제이의 탈취제가 이미 책상 위에 있습니다. 사건 후 의자 아래에 발견됐다는 사실만으로 공격자가 누구인지 알 수는 없습니다.';
-      }else if(ui.suspect==='jei'&&evidence==='gatevideo'){
-        ui.feedback='🔎 서제이는 20시 55분에 건물을 나갔고 21시 02분 30초에 돌아왔습니다. 주출입구 CCTV 영상으로 얼굴까지 확인됩니다.';
-      }else ui.feedback='이 증거만으로는 이 진술의 진위를 확정할 수 없습니다. 사건 시각과 다른 자료를 비교해보세요.';
+        ui.feedback='🔎 20시 50분 사진에는 탈취제가 이미 정모실에 있고, 출입 영상은 서제이가 사건 당시 건물 밖에 있었음을 뒷받침합니다.';
+      }else ui.feedback='이 증거는 그 사람의 동기나 현장 상태를 보여주지만, 지금 선택한 진술을 직접 뒤집지는 못합니다.';
     }
     else if(action==='submit'){
       if(!canSubmit())return;
