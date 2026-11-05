@@ -60,3 +60,7 @@
 @media(max-width:780px){.mystery-content{padding:29px 15px 46px}.mystery-grid{grid-template-columns:1fr}.mystery-panel{padding:17px}.mystery-item-grid{grid-template-columns:1fr 1fr}.mystery-title{letter-spacing:-.5px}.mystery-suspect-list{gap:6px}.mystery-suspect{padding:9px}.mystery-suspect strong{font-size:13px}.mystery-suspect small{font-size:11px}}
 @media(max-width:380px){.mystery-item-grid{grid-template-columns:1fr}.mystery-tabs{gap:5px}.mystery-tab{padding:9px 10px;font-size:12px}}
 @media(prefers-reduced-motion:reduce){.mystery-progress>span,.mystery-btn{transition:none}}
+
+/* Wednesday case: four suspects visible on desktop; two per row on mobile */
+.mystery-suspect-list{grid-template-columns:repeat(4,minmax(0,1fr))}
+@media(max-width:780px){.mystery-suspect-list{grid-template-columns:repeat(2,minmax(0,1fr))}}
