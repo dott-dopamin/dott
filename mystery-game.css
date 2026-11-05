@@ -72,3 +72,87 @@
 .mystery-timeline-row time{font-variant-numeric:tabular-nums;font-weight:800;color:#e2ba83;white-space:nowrap}
 .mystery-timeline-row span{color:#d3dae5;overflow-wrap:anywhere;word-break:keep-all}
 @media(max-width:390px){.mystery-timeline-row{grid-template-columns:78px minmax(0,1fr);gap:8px;padding:10px;font-size:12px}}
+
+/* Case 001 — eight evidence image-style exhibits, four per round */
+.mystery-stage-head{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:10px}
+.mystery-stage-head .mystery-section-title{margin:4px 0 0}
+.mystery-stage-count{font-size:13px;font-weight:800;color:#f6d5a4;border:1px solid #6d5d4c;border-radius:99px;padding:7px 12px;white-space:nowrap}
+.evidence-card-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px;margin:22px 0}
+.evidence-card{display:block;text-align:left;border:1px solid #535a69;border-radius:16px;overflow:hidden;background:#293141;color:#fff;padding:0;min-width:0;transition:transform .15s,border-color .15s,box-shadow .15s}
+.evidence-card:hover{transform:translateY(-2px);border-color:#d3ae82;box-shadow:0 14px 35px rgba(0,0,0,.18)}
+.evidence-card:focus-visible{outline:3px solid #e7be85;outline-offset:3px}
+.evidence-card.evidence-collected{border-color:#769b86}
+.evidence-card-copy{padding:13px 15px 16px;min-height:153px}
+.evidence-card-copy strong{font-size:15px;font-weight:850;color:#fff}
+.mystery-panel .evidence-card-copy p{font-size:12px;line-height:1.55;color:#bdc6d3;margin:7px 0 12px;min-height:37px;word-break:keep-all}
+.evidence-card-status{font-size:11px;font-weight:800;color:#f4c389}
+.evidence-collected .evidence-card-status{color:#98d1b2}
+.evidence-detail{border:1px solid #b89267;border-radius:15px;padding:17px;background:#262d3b;margin:12px 0 20px}
+.evidence-detail h3{color:#fff;margin:6px 0 14px}
+.mystery-panel .evidence-detail p{font-size:14px;line-height:1.85;margin:16px 0;color:#e1e4ea;word-break:keep-all}
+.evidence-detail .evidence-art{max-width:650px;height:280px;margin:0 auto}
+.evidence-art{height:205px;width:100%;position:relative;display:flex;align-items:center;justify-content:center;overflow:hidden;background:radial-gradient(circle at 50% 45%,#75665e,#363b48 75%);font-family:inherit;isolation:isolate}
+.evidence-art:before{content:"";position:absolute;inset:0;opacity:.15;background:repeating-linear-gradient(0deg,transparent 0 5px,rgba(0,0,0,.35) 5px 6px);pointer-events:none}
+.ev-photo-label{position:absolute;bottom:9px;left:11px;background:#151a25b8;color:#e5d5c3;padding:4px 7px;border-radius:4px;font:800 10px/1 monospace;letter-spacing:.08em;z-index:2}
+.ev-object{position:relative;box-shadow:0 12px 20px #1116;z-index:1}
+.evidence-art--da-note{background:radial-gradient(circle,#6c625c,#3e3a40)}
+.ev-paper{width:67%;max-width:300px;min-height:164px;background:#e6dcc1;color:#574b39;transform:rotate(-7deg);padding:16px 18px 22px;border-radius:2px;clip-path:polygon(0 0,100% 0,100% 90%,96% 94%,91% 90%,85% 97%,77% 91%,70% 98%,63% 92%,54% 100%,46% 93%,38% 97%,30% 93%,22% 98%,15% 92%,8% 96%,0 92%);box-shadow:0 9px 18px #1118}
+.ev-paper-top{font-size:13px;font-weight:900;border-bottom:1px solid #ab9a80;padding-bottom:7px}
+.ev-paper-top span{float:right;font:700 11px monospace}
+.ev-paper-lines{font-size:12px;line-height:1.7;margin-top:9px;color:#786956}
+.ev-paper-hand{font-size:13px;color:#9b453e;font-weight:900;line-height:1.45;transform:rotate(-3deg);margin-top:7px;word-break:keep-all}
+.evidence-art--prints{background:radial-gradient(circle,#6b6e70,#2a3541)}
+.ev-metal{width:64%;height:116px;background:linear-gradient(120deg,#bfc3bd,#7a8389 52%,#b4b6b3);border:5px solid #69737c;border-radius:9px;transform:perspective(400px) rotateY(-12deg) rotateZ(4deg);color:#27313e;text-align:center}
+.ev-metal-top{font:900 11px monospace;padding-top:11px;letter-spacing:2px}
+.ev-metal-lock{margin:9px auto 0;width:72px;height:20px;border:3px solid #596269;background:#d2d4d0;border-radius:3px}
+.ev-print{position:absolute;right:-13px;top:20px;border:2px dashed #ffd482;background:#253342bd;color:#fff;border-radius:99px;width:62px;height:62px;display:grid;place-items:center;font-size:39px;transform:rotate(18deg)}
+.ev-metal-foot{font:800 10px monospace;letter-spacing:1px;margin-top:8px}
+.evidence-art--spray{background:linear-gradient(135deg,#5e5650,#272e3a)}
+.ev-chair{position:absolute;top:-60px;width:75%;height:170px;border-radius:50%;background:#4f4541;box-shadow:0 18px 20px #15141a88;transform:rotate(-12deg)}
+.ev-bottle{width:78px;height:132px;border-radius:15px 15px 19px 19px;background:linear-gradient(90deg,#d9e4d5,#fff,#abbfae);transform:rotate(29deg) translate(3px,13px);border:2px solid #d2e0d3;padding:34px 6px 12px}
+.ev-nozzle{position:absolute;top:-30px;left:20px;height:32px;width:29px;background:#dddde3;border-radius:3px}
+.ev-nozzle:after{content:"";position:absolute;left:15px;top:2px;width:28px;height:8px;background:#e8e9eb;border-radius:3px}
+.ev-bottle-label{background:#a9c9ab;color:#305340;border-radius:5px;font-size:15px;font-weight:900;padding:9px 2px;text-align:center;line-height:1.25}
+.ev-bottle-label small{display:block;font-size:10px;margin-top:3px}
+.ev-note-yellow{position:absolute;right:7%;top:48%;padding:8px 10px;background:#e7c96f;color:#5f3c25;font-size:12px;font-weight:900;line-height:1.4;transform:rotate(-9deg);box-shadow:0 5px 12px #1016}
+.evidence-art--receipt{background:radial-gradient(circle,#77766c,#383945)}
+.ev-receipt{width:195px;max-width:77%;background:#f2ebdb;color:#333;transform:rotate(5deg);padding:15px 16px 22px;font:700 11px/2 monospace;clip-path:polygon(0 0,100% 0,100% 96%,94% 100%,86% 96%,78% 100%,70% 96%,62% 100%,54% 96%,46% 100%,38% 96%,30% 100%,22% 96%,14% 100%,6% 96%,0 100%)}
+.ev-center{text-align:center;font-size:12px;font-weight:900}
+.ev-dashed{border-bottom:1px dashed #8e8579;margin:8px 0}
+.ev-obscured{background:#ccc5bb;filter:blur(1px)}
+.ev-barcode{text-align:center;font-size:21px;letter-spacing:2px;line-height:1.2;margin-top:12px}
+.evidence-art--call{background:radial-gradient(circle,#53677b,#1d283a)}
+.ev-laptop{width:74%;height:125px;box-shadow:none}
+.ev-display{background:linear-gradient(135deg,#283e58,#1e2838);height:108px;border:6px solid #a2a5a6;border-radius:8px 8px 4px 4px;position:relative;overflow:hidden}
+.ev-display-top{position:absolute;top:4px;left:8px;color:#c1d5e9;font-size:10px}
+.ev-face{width:51px;height:61px;border-radius:50% 50% 15% 15%;background:#7187a3;position:absolute;left:43%;top:32%;font-size:0}
+.ev-face:before{content:"";position:absolute;width:36px;height:38px;left:8px;top:-14px;background:#bdac9e;border-radius:50%;box-shadow:0 -9px 0 #26232b}
+.ev-time{position:absolute;right:7px;bottom:7px;font:900 14px monospace;color:#f9d8a5}
+.ev-sound{position:absolute;left:9px;bottom:5px;color:#f5a8aa;letter-spacing:2px;font-size:15px}
+.ev-keyboard{height:13px;background:#adb5bf;border-radius:2px 2px 30% 30%;width:118%;margin-left:-9%}
+.ev-small-evidence,.ev-photo-tag{position:absolute;right:5%;bottom:23px;border:1px solid #d7b8867d;border-radius:5px;background:#181e2dd9;color:#f1d7ad;font:800 11px monospace;padding:7px;z-index:2}
+.evidence-art--warehouse{background:radial-gradient(circle,#55616d,#283244)}
+.ev-cctv{position:relative;width:82%;height:150px;border:7px solid #121e29;background:linear-gradient(45deg,#838a8e,#535d68);color:#f4f8f5;box-shadow:0 12px 20px #14161b9c;overflow:hidden}
+.ev-cctv:before{content:"";position:absolute;inset:0;background:repeating-linear-gradient(0deg,transparent 0 4px,#151c2936 4px 5px)}
+.ev-cctv-head{position:absolute;top:6px;left:8px;font:900 11px monospace;z-index:1}
+.ev-door-shape{height:125px;width:83px;background:#384553;border:4px solid #242e38;position:absolute;left:40%;top:29px}
+.ev-door-shape span{position:absolute;top:14px;left:15px;font:900 13px monospace}
+.ev-cctv-times{position:absolute;bottom:7px;left:7px;right:7px;display:flex;justify-content:space-between;font:900 10px monospace}
+.ev-photo-tag{bottom:14px;right:2%;font-size:10px}
+.evidence-art--group{background:radial-gradient(circle,#807464,#3a3440)}
+.ev-photo{width:73%;height:142px;background:#e6ded0;padding:12px;border:8px solid #eee6d9;transform:rotate(-5deg);color:#393c40}
+.ev-photo-title{font:900 12px monospace}
+.ev-photo-desk{height:75px;background:linear-gradient(140deg,#8c644b,#6e5043);border-radius:6px;position:relative;margin-top:7px}
+.ev-mini-box{position:absolute;width:80px;height:45px;background:#b8b8ac;border:4px solid #64696c;left:14%;top:18px;border-radius:4px}
+.ev-mini-spray{position:absolute;width:13px;height:29px;background:#e8e6d8;border-radius:5px;left:67%;top:20px}
+.ev-red-ring{border:3px solid #d6524b;width:52px;height:52px;border-radius:50%;position:absolute;left:64%;top:44px}
+.ev-photo-caption{font-size:10px;letter-spacing:1px;text-align:right;margin-top:4px}
+.evidence-art--gatevideo{background:radial-gradient(circle,#536477,#222a38)}
+.ev-exit{width:81%;height:148px;background:linear-gradient(130deg,#819097,#323d4c)}
+.ev-cctv-person{position:absolute;top:35px;left:36%;width:61px;height:100px}
+.ev-cctv-person span{display:block;background:#1a252f;width:33px;height:33px;border-radius:50%;margin:auto;font-size:0}
+.ev-cctv-person i{display:block;background:#1a252f;width:60px;height:75px;margin:-2px auto;border-radius:24px 24px 4px 4px;transform:skew(-8deg)}
+.ev-payment{position:absolute;bottom:12px;right:4%;background:#ebe8de;border:2px solid #adb8b8;color:#333;transform:rotate(-5deg);padding:7px 10px;z-index:2;font:900 11px monospace;box-shadow:0 5px 9px #1117}
+.ev-payment strong,.ev-payment small{display:block;font-size:10px}
+@media(max-width:640px){.evidence-card-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}.evidence-card-copy{padding:10px;min-height:175px}.evidence-card-copy strong{font-size:13px}.mystery-panel .evidence-card-copy p{font-size:11px;min-height:55px}.evidence-art{height:150px}.evidence-detail .evidence-art{height:230px}.ev-paper{width:80%;padding:10px 12px;min-height:128px}.ev-paper-lines{font-size:9px}.ev-paper-hand{font-size:11px}.ev-paper-top{font-size:11px}.ev-cctv-times{font-size:8px}.ev-photo-label{font-size:9px}.ev-note-yellow{font-size:10px}.ev-payment{right:1%;font-size:9px}}
+@media(max-width:360px){.evidence-card-grid{grid-template-columns:1fr}.evidence-card-copy{min-height:auto}.mystery-panel .evidence-card-copy p{min-height:auto}}
