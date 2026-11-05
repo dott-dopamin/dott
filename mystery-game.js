@@ -68,11 +68,11 @@
       (state.contradictions.includes(group.contradiction)&&(group.ids||[]).every(id=>state.clues.includes(id))):group.ids.every(id=>state.clues.includes(id))}));
   }
   function canSubmit(){
-    return state.phase===2&&state.clues.length>=MIN_CLUES_TO_SUBMIT&&state.interviewed.length===suspects.length&&proofChecks().every(x=>x.done);
+    return state.phase===2&&state.clues.length>=MIN_CLUES_TO_SUBMIT&&leadIds.every(id=>state.clues.includes(id))&&suspects.every(person=>state.interviewed.includes(person.id))&&proofChecks().every(x=>x.done);
   }
   const leadIds=['da-note','prints','spray','notice'];
   const MIN_CLUES_TO_SUBMIT=new Set([...leadIds,...proofRequirements.flatMap(g=>g.ids||[])]).size;
-  function canUnlockRound2(){return state.phase===1&&leadIds.every(id=>state.clues.includes(id))&&state.interviewed.length===suspects.length;}
+  function canUnlockRound2(){return state.phase===1&&leadIds.every(id=>state.clues.includes(id))&&suspects.every(person=>state.interviewed.includes(person.id));}
   function defaults(){return {started:false,phase:1,clues:[],interviewed:[],contradictions:[],submitted:false,answer:null};}
   function load(){
     try{
@@ -81,9 +81,9 @@
       return {
         started:saved.started===true,
         phase:saved.phase===2?2:1,
-        clues:Array.isArray(saved.clues)?saved.clues.filter(id=>clueIds.has(id)):[],
-        interviewed:Array.isArray(saved.interviewed)?saved.interviewed.filter(id=>suspectIds.has(id)):[],
-        contradictions:Array.isArray(saved.contradictions)?saved.contradictions.filter(id=>suspectIds.has(id)):[],
+        clues:Array.isArray(saved.clues)?[...new Set(saved.clues.filter(id=>clueIds.has(id)))]:[],
+        interviewed:Array.isArray(saved.interviewed)?[...new Set(saved.interviewed.filter(id=>suspectIds.has(id)))]:[],
+        contradictions:Array.isArray(saved.contradictions)?[...new Set(saved.contradictions.filter(id=>suspectIds.has(id)))]:[],
         submitted:saved.submitted===true,
         answer:saved.answer&&typeof saved.answer==='object'?saved.answer:null
       };
