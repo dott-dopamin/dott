@@ -50,7 +50,7 @@
         '<h2>《'+CASE_TITLE+'》</h2>'+
         '<p>정모가 끝난 직후, 동호회장이 숨진 채 발견됐다. 유력한 용의자는 세 명. 같은 시간을 다르게 기억하는 사람들 중 거짓말을 하고 있는 사람은 누구일까?</p>'+
         '<div class="mystery-meta"><span class="mystery-pill">👤 1인용</span><span class="mystery-pill">⏱ 약 10~20분</span><span class="mystery-pill">🔍 입문</span></div>'+
-        '<div class="mystery-actions">'+button('intro',progress.started?'처음부터 다시 보기':'사건 시작하기','mystery-btn-primary')+
+        '<div class="mystery-actions">'+button('intro',progress.started?'사건 브리핑 보기':'사건 시작하기','mystery-btn-primary')+
           (progress.started?button('resume','이어서 조사하기'):'')+'</div>'+
         '</section><aside class="mystery-panel">'+
         '<h3>수사 안내</h3><p>① 사건의 전말을 읽습니다.</p><p>② 세 장소에서 단서를 찾습니다.</p><p>③ 용의자를 심문하고 증거를 제시합니다.</p><p>④ 범인·동기·핵심 증거를 선택합니다.</p>'+
