@@ -1,195 +1,231 @@
-/* DOPAMIN MYSTERY — playable single-player case prototype */
-(function(){
+/* DOPAMIN MYSTERY — solo playable prototype, case 001 (fictional characters and events). */
+(()=>{
   'use strict';
-  const app = document.getElementById('app');
-  const STORAGE_KEY = 'dott_mystery_case001_v1';
-  const CASE_TITLE = '9시 7분, 정모실';
-  const clues = [
-    {id:'clock',room:'정모실',icon:'🕰️',name:'멈춘 탁상시계',text:'피해자 옆에 놓인 시계가 20시 58분에 멈춰 있다. 강한 충격으로 멈춘 흔적이 있어 사건 시각을 짐작하게 한다.'},
-    {id:'trophy',room:'정모실',icon:'🏆',name:'황동 트로피',text:'무거운 황동 트로피가 책상 아래에 떨어져 있다. 손잡이에는 검은색 목도리 섬유로 보이는 실밥이 걸려 있다.'},
-    {id:'phone',room:'정모실',icon:'📱',name:'피해자의 휴대전화',text:'20시 52분 수신 메시지: “장부 얘기, 정모실에서 둘이 정리해요.” 발신자 연락처는 “서 총무”로 저장돼 있다.'},
-    {id:'ledger',room:'서류함',icon:'📒',name:'회비 장부 메모',text:'피해자가 남긴 메모: “회비 120만 원이 비어 있다. 오늘 윤서에게 직접 확인할 것.” 누군가 장부 한 장을 찢어 간 흔적도 있다.'},
-    {id:'receipt',room:'서류함',icon:'☕',name:'카페 영수증',text:'서윤서 명의의 마지막 카드 결제 기록은 20시 42분. 이후 21시 10분까지 결제 내역은 확인되지 않는다. 카페에 계속 있었다는 증거는 아니다.'},
-    {id:'entry',room:'복도',icon:'🔑',name:'출입 카드 기록',text:'20시 56분 정모실 출입: STAFF-02. 카드 대여대장에 따르면 STAFF-02는 이날 서윤서에게 발급된 임시 출입카드다.'},
-    {id:'blackout',room:'복도',icon:'⚡',name:'정전 기록',text:'20시 55분부터 20시 59분까지 복도 CCTV가 꺼졌다. 카드 인식기는 예비 전원으로 정상 작동했다.'},
-    {id:'photo',room:'복도',icon:'📸',name:'복도 단체사진',text:'20시 58분 촬영된 원본 사진에는 복도의 강도현과 이나경 두 사람이 함께 찍혀 있다. 사진 촬영 시간 메타데이터도 일치한다.'}
+  const app=document.getElementById('app');
+  const STORAGE_KEY='dott_mystery_wednesday_case001_v1';
+  const title='수요일의 일격';
+  const incident='20:58';
+  const rooms=['정모실','회의실','창고','출입구'];
+  const suspects=[
+    {id:'daeun',name:'허다은',emoji:'📅',role:'캘박 누락에 폭발 직전',motive:'장한철이 수요일 참석 일정을 자꾸 캘박하지 않아 예약이 겹치고, 뒷수습은 매번 자신이 맡았다.',statement:'“20시 54분부터 21시 1분까지 회의실에서 예약 문제로 영상통화 중이었어요. 끊지도 않았는데요?”',detail:'실제로 장한철에게 “회장님 제발 캘박 좀!”이라고 항의한 기록이 있다.'},
+    {id:'seungmin',name:'손승민',emoji:'🧗',role:'클라이밍 얘기에 지친 회원',motive:'보드게임을 하자고 모이면 장한철이 또 클라이밍 얘기부터 꺼내는 게 불만이었다.',statement:'“20시 53분부터 21시 2분까지 창고에서 게임 정리했어요. 선반 정리한 사진도 있는데요?”',detail:'평소 “도파민이 보드게임 모임인지 클라이밍 모임인지 모르겠다”고 투덜거렸다.'},
+    {id:'jihoon',name:'박지훈',emoji:'🌙',role:'23시 벙 시작에 지친 회원',motive:'벙을 밤 11시 넘어서 시작하는 바람에 매번 새벽에 귀가했다. 이날도 일찍 시작하겠다던 약속을 회장이 뒤집었다.',statement:'“20시 55분부터 21시 4분까지 편의점에서 간식을 샀어요. 20시 57분 영수증도 있어요.”',detail:'남색 점퍼를 입었고, 오른쪽 소매 끝이 조금 뜯어져 있다. 편의점 봉투도 갖고 돌아왔다.'},
+    {id:'jei',name:'서제이',emoji:'🚭',role:'담배 냄새에 질린 회원',motive:'장한철의 흡연 습관 때문에 실내에 담배 냄새가 남는 게 싫었고, 늦은 벙 시작에도 불만이 쌓였다.',statement:'“20시 55분쯤 냄새 때문에 밖으로 나갔고 21시 2분에 다시 들어왔어요. 출입문 기록 보세요.”',detail:'흡연 문제로 장한철에게 여러 번 항의했다. 사건 이후에도 “냄새는 여전하네”라고 말했다.'}
   ];
-  const suspects = [
-    {id:'yoon',emoji:'🧣',name:'서윤서',role:'동호회 총무',text:'“20시 50분부터 21시 5분까지 카페에 있었어요. 정모실에는 들어가지 않았어요.”',detail:'사건 당일 검은 목도리를 착용했다. 회비 장부를 관리하는 담당자다.'},
-    {id:'kang',emoji:'🔦',name:'강도현',role:'전 운영진',text:'“정전이 나서 복도에 있었어요. 나경 씨와 같이 포스터 앞에서 사진도 찍었고요.”',detail:'피해자와 최근 운영 방식으로 다툰 적이 있다고 한다.'},
-    {id:'lee',emoji:'📷',name:'이나경',role:'신입 회원',text:'“20시 58분에는 도현 씨와 복도에서 사진을 찍었어요. 그 후 바로 자리를 떠났어요.”',detail:'정모실 근처에 있던 건 인정하지만 피해자와는 개인적인 친분이 없다.'}
+  const clues=[
+    {id:'box',room:'정모실',icon:'🗃️',name:'금속 카드 보관함',text:'정모실 책상 아래에 무거운 금속 카드 보관함이 떨어져 있다. 한쪽 모서리에는 남색 실밥이 걸려 있다. 원래 창고 선반에 있던 물건이다.'},
+    {id:'clock',room:'정모실',icon:'🕰️',name:'멈춘 탁상시계',text:'한철이 쓰러지며 떨어뜨린 시계가 20시 58분을 가리킨다. 출입구 기록 및 주변인의 증언과 맞춰보면 사건 시각은 20시 58분 전후다.'},
+    {id:'notice',room:'정모실',icon:'📱',name:'단체방 공지',text:'20시 48분, 장한철: “오늘도 본게임은 23시 10분부터! 그전엔 클라이밍 썰 풀어드림ㅋㅋ” / 박지훈: “일찍 한다며요? 내일 출근인데…”'},
+    {id:'fiber',room:'정모실',icon:'🧵',name:'남색 소매 실밥',text:'금속 카드 보관함 걸쇠에 남색 직물 조각이 끼어 있다. 누군가 보관함을 황급히 다루다 옷소매가 걸린 듯하다. 이것만으로 소유자를 확정할 수는 없다.'},
+    {id:'calendar',room:'회의실',icon:'🗓️',name:'중복 예약 기록',text:'장한철이 수요일 참석을 미리 캘린더에 등록하지 않아 도트 예약이 겹쳤다. 허다은이 중복 예약을 정리한 기록도 남아 있다.'},
+    {id:'call',room:'회의실',icon:'💻',name:'화상통화 녹화',text:'허다은은 20시 54분부터 21시 01분까지 예약자와 연속 영상통화를 했다. 20시 58분 화면에도 회의실에 앉은 모습이 확인된다.'},
+    {id:'shelf',room:'창고',icon:'📦',name:'빈 보관함 자리',text:'창고에 있던 금속 카드 보관함 하나가 사라져 있다. 선반에는 “카드 정리용 — 정모실 반출 금지”라는 표지가 붙어 있다.'},
+    {id:'warehouse',room:'창고',icon:'🚪',name:'창고 문 기록',text:'창고 문은 20시 53분에 닫히고 21시 02분에 다시 열렸다. 창고에는 다른 통로가 없다. 손승민이 그 시간 동안 창고에 있었다는 설명과 부합한다.'},
+    {id:'door',room:'출입구',icon:'🔑',name:'출입문 기록',text:'서제이의 개인 출입카드로 20시 55분 퇴실, 21시 02분 재입실한 기록이 있다. 출입구는 하나뿐이며 사건 전후의 기록에는 오류가 없다.'},
+    {id:'receipt',room:'출입구',icon:'🧾',name:'20시 57분 영수증',text:'박지훈이 보여준 편의점 영수증에는 20시 57분 결제 표시가 찍혀 있다. 그런데 결제 방식 옆 작은 글씨가 “모바일 선결제”로 되어 있다.'},
+    {id:'pickup',room:'출입구',icon:'🛍️',name:'편의점 수령 기록',text:'편의점 앱에는 결제 20시 57분, 실제 상품 수령 21시 04분이라고 나온다. 20시 57분 영수증은 박지훈이 그때 편의점 안에 있었다는 증거가 아니다.'},
+    {id:'sleeve',room:'출입구',icon:'🧥',name:'뜯어진 점퍼 소매',text:'박지훈의 남색 점퍼 오른쪽 소매가 뜯어져 있다. 현장의 금속 보관함에 걸린 실밥과 색상·직물 무늬가 유사하다. 정밀 감정은 하지 않았으므로 다른 단서와 함께 판단해야 한다.'}
   ];
-  const initial = () => ({started:false,clues:[],interviewed:[],contradiction:false,submitted:false,answer:null});
+  const clueIds=new Set(clues.map(x=>x.id));
+  const suspectIds=new Set(suspects.map(x=>x.id));
+  function defaults(){return {started:false,clues:[],interviewed:[],contradictions:[],submitted:false,answer:null};}
   function load(){
-    try {
-      const raw=JSON.parse(localStorage.getItem(STORAGE_KEY)||'null');
-      if(!raw||typeof raw!=='object')return initial();
-      const validClues=new Set(clues.map(x=>x.id));
-      const validSuspects=new Set(suspects.map(x=>x.id));
+    try{
+      const saved=JSON.parse(localStorage.getItem(STORAGE_KEY)||'null');
+      if(!saved||typeof saved!=='object')return defaults();
       return {
-        started:raw.started===true,
-        clues:Array.isArray(raw.clues)?raw.clues.filter(x=>validClues.has(x)):[],
-        interviewed:Array.isArray(raw.interviewed)?raw.interviewed.filter(x=>validSuspects.has(x)):[],
-        contradiction:raw.contradiction===true,
-        submitted:raw.submitted===true,
-        answer:raw.answer&&typeof raw.answer==='object'?raw.answer:null
+        started:saved.started===true,
+        clues:Array.isArray(saved.clues)?saved.clues.filter(id=>clueIds.has(id)):[],
+        interviewed:Array.isArray(saved.interviewed)?saved.interviewed.filter(id=>suspectIds.has(id)):[],
+        contradictions:Array.isArray(saved.contradictions)?saved.contradictions.filter(id=>suspectIds.has(id)):[],
+        submitted:saved.submitted===true,
+        answer:saved.answer&&typeof saved.answer==='object'?saved.answer:null
       };
-    } catch(e) {return initial();}
+    }catch(err){return defaults();}
   }
-  let progress=load();
-  const ui={view:'home',tab:'investigate',room:'정모실',suspect:'yoon',selectedClue:'',feedback:''};
-  function save(){try{localStorage.setItem(STORAGE_KEY,JSON.stringify(progress))}catch(e){ /* private mode */ }}
-  function button(action,label,extra='',attrs=''){return '<button class="mystery-btn '+extra+'" type="button" data-action="'+action+'" '+attrs+'>'+label+'</button>'}
-  function renderHome(){
+  let state=load();
+  const ui={view:'home',tab:'investigate',room:'정모실',suspect:'daeun',selectedClue:null,feedback:''};
+  const escText=s=>String(s??'').replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
+  const save=()=>{try{localStorage.setItem(STORAGE_KEY,JSON.stringify(state));}catch(err){}};
+  const button=(action,label,cls='',extra='')=>'<button type="button" class="mystery-btn '+cls+'" data-action="'+action+'" '+extra+'>'+label+'</button>';
+  const note=(name,body)=>'<div class="mystery-note"><strong>'+name+'</strong><p>'+body+'</p></div>';
+  function home(){
     return '<div class="mystery-kicker">DOPAMIN ORIGINAL MYSTERY · CASE 001</div>'+
-      '<h1 class="mystery-title">혼자서 밝혀내는 사건의 진실</h1>'+
-      '<p class="mystery-lead">스토리를 읽고, 현장을 조사하고, 용의자의 진술에 증거를 제시하세요. 마지막 선택에 따라 수사 결과가 달라집니다.</p>'+
+      '<h1 class="mystery-title">수요일의 일격</h1>'+
+      '<p class="mystery-lead">주 6일 일하는 도파민 회장 장한철. 수요일 하루 쉬는 날, 도트에서 누군가에게 얻어맞고 기절했다. 범인은 대체 누구일까?</p>'+
       '<div class="mystery-grid"><section class="mystery-panel mystery-card">'+
-        '<div class="mystery-case-symbol" aria-hidden="true">🕰️</div>'+
-        '<div class="mystery-kicker">체험판 · 첫 번째 사건</div>'+
-        '<h2>《'+CASE_TITLE+'》</h2>'+
-        '<p>정모가 끝난 직후, 동호회장이 숨진 채 발견됐다. 유력한 용의자는 세 명. 같은 시간을 다르게 기억하는 사람들 중 거짓말을 하고 있는 사람은 누구일까?</p>'+
-        '<div class="mystery-meta"><span class="mystery-pill">👤 1인용</span><span class="mystery-pill">⏱ 약 10~20분</span><span class="mystery-pill">🔍 입문</span></div>'+
-        '<div class="mystery-actions">'+button('intro',progress.started?'사건 브리핑 보기':'사건 시작하기','mystery-btn-primary')+
-          (progress.started?button('resume','이어서 조사하기'):'')+'</div>'+
-        '</section><aside class="mystery-panel">'+
-        '<h3>수사 안내</h3><p>① 사건의 전말을 읽습니다.</p><p>② 세 장소에서 단서를 찾습니다.</p><p>③ 용의자를 심문하고 증거를 제시합니다.</p><p>④ 범인·동기·핵심 증거를 선택합니다.</p>'+
-        '<div class="mystery-divider"></div><p class="mystery-subtle">진행 상황은 현재 브라우저에만 저장됩니다. 다른 기기와 자동 동기화되지는 않습니다.</p>'+
-        '</aside></div>';
+      '<div class="mystery-case-symbol" aria-hidden="true">🕵️‍♀️</div>'+
+      '<div class="mystery-kicker">허구의 코믹 추리 사건 · 체험판</div>'+
+      '<h2>《누가 장한철을 때렸나?》</h2>'+
+      '<p>유력 용의자는 허다은, 손승민, 박지훈, 서제이. 전원 수상한 동기가 있고 모두 확실한 알리바이를 주장한다. 진술과 시간을 대조해 거짓말을 찾아내자.</p>'+
+      '<div class="mystery-meta"><span class="mystery-pill">👤 1인용</span><span class="mystery-pill">⏱ 약 20~30분</span><span class="mystery-pill">🔍 입문~중간</span></div>'+
+      '<div class="mystery-actions">'+button('intro','사건 브리핑 보기','mystery-btn-primary')+
+      (state.started?button('resume','이어서 수사하기'):'')+'</div></section>'+
+      '<aside class="mystery-panel"><h3>수사 방법</h3>'+
+      '<p>① 사건 브리핑 확인</p><p>② 도트 네 장소 조사</p><p>③ 네 사람의 진술 심문</p><p>④ 거짓 알리바이 반박</p><p>⑤ 범인·동기·도구·결정적 증거 지목</p>'+
+      '<div class="mystery-divider"></div><p class="mystery-subtle">※ 실제 인물과는 무관한 가상의 사건입니다. 수사 기록은 현재 브라우저에만 저장됩니다.</p>'+
+      '</aside></div>';
   }
-  function renderIntro(){
-    return '<div class="mystery-kicker">CASE 001 · 사건 브리핑</div><h1 class="mystery-title">《'+CASE_TITLE+'》</h1>'+
-      '<div class="mystery-panel"><h2>그날 밤, 무슨 일이 있었나</h2>'+
-      '<div class="mystery-story">20시 40분. 도심의 작은 보드게임 동호회는 정기 모임을 마쳤다.\n\n21시 07분. 동호회장 김현우가 정모실에서 숨진 채 발견됐다. 정모실은 잠겨 있지 않았지만, 사건 전후 복도에는 짧은 정전이 발생했다.\n\n사건 발생 시간대에 건물에 남은 주요 인물은 총무 서윤서, 전 운영진 강도현, 신입 회원 이나경.\n\n당신은 사건을 맡은 조사관이다. 현장의 작은 흔적과 세 사람의 진술을 맞춰 범인을 밝혀야 한다.</div>'+
-      '<div class="mystery-actions">'+button('start','조사 시작','mystery-btn-primary')+button('home','게임 목록으로')+'</div></div>';
+  function intro(){
+    return '<div class="mystery-kicker">CASE 001 · 사건 브리핑</div><h1 class="mystery-title">《수요일의 일격》</h1>'+
+      '<div class="mystery-panel"><h2>20시 58분, 도트에서 무슨 일이?</h2>'+
+      '<div class="mystery-story">도파민 회장 장한철은 주 6일 근무 중이다. 유일하게 쉬는 수요일이면 그토록 기다리던 도트로 향한다.\n\n오늘도 도트에 모인 사람들 앞에서 한철은 외쳤다.\n“자, 본게임은 23시 10분부터! 그전에 클라이밍 썰 들으실 분?”\n\n불만을 품은 회원들의 표정이 순식간에 굳었다.\n\n20시 58분, 정모실 쪽에서 “쿵!” 하는 소리가 났다.\n21시 07분, 한철은 바닥에 쓰러진 채 발견됐다. 즉시 구조 요청이 이뤄졌고, 다행히 의식을 회복했다. 그러나 공격자가 누구인지는 기억하지 못한다.\n\n그 시각 도트에 있었던 용의자는 네 명.\n허다은, 손승민, 박지훈, 서제이.\n\n놀랍게도 모두 회장을 한 대 때리고 싶을 만큼 쌓인 불만이 있었다.\n\n당신은 도파민의 임시 탐정이다. 각자의 알리바이를 확인하고 범인과 이유, 사용한 물건까지 밝혀내야 한다.</div>'+
+      '<div class="mystery-actions">'+button('start','사건 조사 시작','mystery-btn-primary')+button('home','사건 목록으로')+'</div></div>';
   }
-  function renderInvestigation(){
-    const entries=clues.filter(x=>x.room===ui.room);
-    const selected=clues.find(x=>x.id===ui.selectedClue && progress.clues.includes(x.id));
-    return '<h2 class="mystery-section-title">현장 조사</h2>'+
-      '<p class="mystery-subtle">조사할 장소를 선택하고 수상한 물건을 눌러보세요. 단서는 수사 수첩에 자동 저장됩니다.</p>'+
-      '<div class="mystery-room-tabs">'+['정모실','서류함','복도'].map(room=>
-        '<button type="button" class="mystery-room '+(room===ui.room?'active':'')+'" data-action="room" data-id="'+room+'">'+room+'</button>'
+  function investigate(){
+    const items=clues.filter(c=>c.room===ui.room);
+    const selected=clues.find(c=>c.id===ui.selectedClue&&state.clues.includes(c.id));
+    return '<h2 class="mystery-section-title">현장 조사</h2><p class="mystery-subtle">각 장소에 남은 흔적을 수집하고, 다른 사람의 알리바이와 비교해보세요.</p>'+
+      '<div class="mystery-room-tabs">'+rooms.map(room=>
+        '<button type="button" class="mystery-room '+(ui.room===room?'active':'')+'" data-action="room" data-id="'+room+'">'+room+'</button>'
       ).join('')+'</div>'+
-      '<div class="mystery-item-grid">'+entries.map(c=>
-        '<button type="button" class="mystery-item '+(progress.clues.includes(c.id)?'done':'')+'" data-action="clue" data-id="'+c.id+'">'+
-        '<span class="mystery-emoji" aria-hidden="true">'+c.icon+'</span><strong>'+c.name+'</strong><small>'+(progress.clues.includes(c.id)?'✓ 단서 확보됨':'눌러서 조사하기')+'</small></button>'
+      '<div class="mystery-item-grid">'+items.map(c=>
+        '<button type="button" class="mystery-item '+(state.clues.includes(c.id)?'done':'')+'" data-action="clue" data-id="'+c.id+'">'+
+        '<span class="mystery-emoji" aria-hidden="true">'+c.icon+'</span><strong>'+c.name+'</strong><small>'+(state.clues.includes(c.id)?'✓ 단서 확보':'눌러서 조사하기')+'</small></button>'
       ).join('')+'</div>'+
-      (selected?'<div class="mystery-evidence" role="status"><h3>'+selected.icon+' '+selected.name+'</h3><p>'+selected.text+'</p>'+button('notebook','수사 수첩 열기')+'</div>':'');
+      (selected?'<div class="mystery-evidence" role="status"><h3>'+selected.icon+' '+selected.name+'</h3><p>'+selected.text+'</p>'+button('notebook','수사 수첩으로')+'</div>':'');
   }
-  function renderInterrogation(){
-    const selected=suspects.find(x=>x.id===ui.suspect)||suspects[0];
-    const available=clues.filter(x=>progress.clues.includes(x.id));
-    return '<h2 class="mystery-section-title">인물 심문</h2><p class="mystery-subtle">인물을 선택해 진술을 듣고, 의심스러운 주장에 확보한 증거를 제시해보세요.</p>'+
+  function interview(){
+    const p=suspects.find(x=>x.id===ui.suspect)||suspects[0];
+    const found=clues.filter(c=>state.clues.includes(c.id));
+    return '<h2 class="mystery-section-title">용의자 심문</h2><p class="mystery-subtle">모든 인물에게 의심할 만한 동기가 있어요. 그러나 동기만으로 범인을 단정할 수는 없습니다.</p>'+
       '<div class="mystery-suspect-list">'+suspects.map(s=>
         '<button type="button" class="mystery-suspect '+(ui.suspect===s.id?'active':'')+'" data-action="suspect" data-id="'+s.id+'">'+
         '<span aria-hidden="true">'+s.emoji+'</span><strong>'+s.name+'</strong><small>'+s.role+'</small></button>'
       ).join('')+'</div>'+
-      '<div class="mystery-note"><strong>'+selected.name+'의 진술</strong><p>'+selected.text+'</p></div>'+
-      '<div class="mystery-note"><strong>인물 기록</strong><p>'+selected.detail+'</p></div>'+
-      '<label class="mystery-field" for="mystery-claim">진술에 제시할 증거'+
-        '<select id="mystery-claim"><option value="">증거를 선택하세요</option>'+available.map(c=>'<option value="'+c.id+'">'+c.name+'</option>').join('')+'</select></label>'+
-      '<div class="mystery-actions">'+button('present','이 증거 제시하기','mystery-btn-primary',available.length?'':'disabled')+'</div>'+
-      (ui.feedback?'<div class="'+(ui.feedback.indexOf('모순 발견')>=0?'mystery-success':'mystery-warning')+'" role="status">'+esc(ui.feedback)+'</div>':'')+
-      (progress.contradiction?'<div class="mystery-success">✓ 중요한 진술의 모순을 밝혀냈습니다. 최종 추리에 활용하세요.</div>':'');
+      note(p.name+'의 진술',p.statement)+note('의심받는 이유',p.motive)+note('추가 관찰',p.detail)+
+      '<label class="mystery-field" for="mystery-claim">진술을 검증할 증거 선택<select id="mystery-claim"><option value="">증거를 골라주세요</option>'+
+      found.map(c=>'<option value="'+c.id+'">'+c.name+'</option>').join('')+'</select></label>'+
+      '<div class="mystery-actions">'+button('present','증거 제시하기','mystery-btn-primary',found.length?'':'disabled')+'</div>'+
+      (ui.feedback?'<div class="'+(ui.feedback.startsWith('🔎')?'mystery-success':'mystery-warning')+'" role="status">'+escText(ui.feedback)+'</div>':'')+
+      (state.contradictions.includes('jihoon')?'<div class="mystery-success">✓ 누군가의 핵심 알리바이에서 모순을 발견했습니다.</div>':'');
   }
-  function renderNotebook(){
-    const found=clues.filter(c=>progress.clues.includes(c.id));
+  function notebook(){
+    const found=clues.filter(c=>state.clues.includes(c.id));
     return '<h2 class="mystery-section-title">수사 수첩</h2>'+
-      '<p class="mystery-subtle">확보한 단서 '+found.length+' / '+clues.length+'개 · 면담한 용의자 '+progress.interviewed.length+' / '+suspects.length+'명</p>'+
-      (found.length?found.map(c=>'<div class="mystery-note"><strong>'+c.icon+' '+c.name+'</strong><p>'+c.text+'</p></div>').join(''):'<p>아직 확보한 단서가 없습니다. 현장 조사부터 시작하세요.</p>')+
-      '<div class="mystery-divider"></div><h3>용의자 면담</h3><p class="mystery-subtle">'+(progress.interviewed.length?progress.interviewed.map(id=>suspects.find(x=>x.id===id)?.name).filter(Boolean).join(' · '):'아직 면담한 인물이 없습니다.')+'</p>';
+      '<p class="mystery-subtle">확보 단서 '+found.length+' / '+clues.length+'개 · 면담 인원 '+state.interviewed.length+' / 4명</p>'+
+      (found.length?found.map(c=>note(c.icon+' '+c.name,c.text)).join(''):'<p>수집한 단서가 없습니다. 장소를 먼저 조사하세요.</p>')+
+      '<div class="mystery-divider"></div><h3>면담 완료</h3><p class="mystery-subtle">'+(state.interviewed.length?
+        state.interviewed.map(id=>suspects.find(s=>s.id===id)?.name).filter(Boolean).join(' · '):'면담한 사람이 없습니다.')+'</p>';
   }
-  function renderFinal(){
-    const ready=progress.clues.length>=4 && progress.interviewed.length>=2;
+  function finalGuess(){
+    const ready=state.clues.length>=6&&state.interviewed.length>=3;
+    const evidence=clues.filter(c=>state.clues.includes(c.id));
     return '<h2 class="mystery-section-title">최종 추리</h2>'+
-      '<p class="mystery-subtle">사건의 범인과 동기, 결정적인 증거를 선택하세요. 제출 후 사건의 진상을 확인할 수 있습니다.</p>'+
-      (!ready?'<div class="mystery-warning">🔒 최종 추리는 단서 4개 이상을 확보하고 용의자 2명 이상을 면담한 뒤에 제출할 수 있습니다. 현재 단서 '+progress.clues.length+'개 · 면담 '+progress.interviewed.length+'명</div>':'')+
-      '<label class="mystery-field" for="mystery-answer-person">01. 범인은 누구인가요?<select id="mystery-answer-person"><option value="">범인을 선택하세요</option>'+suspects.map(s=>'<option value="'+s.id+'">'+s.name+'</option>').join('')+'</select></label>'+
-      '<label class="mystery-field" for="mystery-answer-motive">02. 범행 동기는 무엇인가요?<select id="mystery-answer-motive"><option value="">동기를 선택하세요</option><option value="money">회비 장부의 금액 누락을 숨기기 위해</option><option value="jealousy">오랜 개인적인 질투 때문에</option><option value="game">분실된 게임의 책임을 피하기 위해</option></select></label>'+
-      '<label class="mystery-field" for="mystery-answer-evidence">03. 범인의 알리바이를 깨뜨리는 결정적 증거는?<select id="mystery-answer-evidence"><option value="">증거를 선택하세요</option>'+
-      clues.filter(c=>progress.clues.includes(c.id)).map(c=>'<option value="'+c.id+'">'+c.name+'</option>').join('')+'</select></label>'+
+      '<p class="mystery-subtle">20시 58분에 누가 어디에 있었는지, 거짓 알리바이를 누가 만들어냈는지 확인하세요. 제출하면 정답과 해설이 공개됩니다.</p>'+
+      (!ready?'<div class="mystery-warning">🔒 단서 6개 이상, 용의자 3명 이상 면담하면 최종 추리를 제출할 수 있습니다. 현재 단서 '+state.clues.length+'개 · 면담 '+state.interviewed.length+'명</div>':'')+
+      '<label class="mystery-field" for="mystery-answer-person">① 장한철을 때린 사람은 누구인가요?<select id="mystery-answer-person"><option value="">범인 선택</option>'+
+      suspects.map(s=>'<option value="'+s.id+'">'+s.name+'</option>').join('')+'</select></label>'+
+      '<label class="mystery-field" for="mystery-answer-motive">② 범행 동기는 무엇인가요?<select id="mystery-answer-motive"><option value="">동기 선택</option>'+
+      '<option value="calendar">일정을 캘박하지 않아 예약이 꼬여서</option>'+
+      '<option value="climbing">맨날 클라이밍 얘기만 해서</option>'+
+      '<option value="late">매번 23시 이후에 벙을 시작해서</option>'+
+      '<option value="smoking">흡연 습관이 마음에 들지 않아서</option></select></label>'+
+      '<label class="mystery-field" for="mystery-answer-weapon">③ 무엇으로 공격했나요?<select id="mystery-answer-weapon"><option value="">사용한 물건 선택</option>'+
+      '<option value="metalbox">금속 카드 보관함</option>'+
+      '<option value="clock">탁상시계</option>'+
+      '<option value="mug">머그컵</option>'+
+      '<option value="book">두꺼운 룰북</option></select></label>'+
+      '<label class="mystery-field" for="mystery-answer-evidence">④ 거짓 알리바이를 드러낸 핵심 단서는?<select id="mystery-answer-evidence"><option value="">증거 선택</option>'+
+      evidence.map(c=>'<option value="'+c.id+'">'+c.name+'</option>').join('')+'</select></label>'+
       '<div class="mystery-actions">'+button('submit','추리 제출하고 진상 확인','mystery-btn-primary',ready?'':'disabled')+'</div>'+
-      (ui.feedback?'<div class="mystery-warning" role="status">'+esc(ui.feedback)+'</div>':'');
+      (ui.feedback?'<div class="mystery-warning" role="status">'+escText(ui.feedback)+'</div>':'');
   }
-  function renderPlay(){
-    const completed=progress.clues.length;
-    const body={investigate:renderInvestigation,interrogate:renderInterrogation,notebook:renderNotebook,final:renderFinal}[ui.tab]();
-    return '<div class="mystery-kicker">CASE 001 · INVESTIGATION</div>'+
-      '<h1 class="mystery-title">《'+CASE_TITLE+'》</h1>'+
-      '<p class="mystery-lead">모든 물건이 진실을 말하지는 않습니다. 진술과 단서를 서로 비교해보세요.</p>'+
-      '<div class="mystery-meta"><span class="mystery-pill">단서 '+completed+' / 8</span><span class="mystery-pill">면담 '+progress.interviewed.length+' / 3</span><span class="mystery-pill">'+(progress.contradiction?'✓ 모순 발견':'모순 미발견')+'</span></div>'+
-      '<div class="mystery-progress" role="progressbar" aria-valuemin="0" aria-valuemax="8" aria-valuenow="'+completed+'" aria-label="단서 수집 진행률"><span style="width:'+(completed/8*100)+'%"></span></div>'+
-      '<div class="mystery-tabs" role="navigation" aria-label="게임 진행 메뉴">'+[
-        ['investigate','🔍 현장 조사'],['interrogate','💬 인물 심문'],['notebook','📔 수사 수첩'],['final','⚖️ 최종 추리']
-      ].map(t=>'<button type="button" class="mystery-tab '+(ui.tab===t[0]?'active':'')+'" data-action="tab" data-id="'+t[0]+'">'+t[1]+'</button>').join('')+'</div>'+
-      '<section class="mystery-panel">'+body+'</section>'+
-      '<p class="mystery-footer-note">진행 상황은 이 브라우저에 자동 저장됩니다. 다른 기기로는 이어할 수 없습니다.</p>';
+  function play(){
+    const tabs=[['investigate','🔍 현장 조사'],['interview','💬 용의자 심문'],['notebook','📔 수사 수첩'],['final','⚖️ 최종 추리']];
+    return '<div class="mystery-kicker">DOPAMIN MYSTERY · CASE 001 · 수요일</div>'+
+      '<h1 class="mystery-title">누가 장한철을 때렸나?</h1>'+
+      '<p class="mystery-lead">사건 발생 시각 '+incident+'. 범인, 동기, 사용한 물건을 밝혀 도파민 회장 습격 사건을 종결하세요.</p>'+
+      '<div class="mystery-meta"><span class="mystery-pill">단서 '+state.clues.length+' / '+clues.length+'</span><span class="mystery-pill">면담 '+state.interviewed.length+' / 4</span><span class="mystery-pill">모순 '+state.contradictions.length+'건</span></div>'+
+      '<div class="mystery-progress" role="progressbar" aria-label="단서 수집률" aria-valuemin="0" aria-valuemax="'+clues.length+'" aria-valuenow="'+state.clues.length+'"><span style="width:'+(state.clues.length/clues.length*100)+'%"></span></div>'+
+      '<div class="mystery-tabs" role="navigation" aria-label="수사 진행 메뉴">'+tabs.map(t=>
+        '<button type="button" class="mystery-tab '+(ui.tab===t[0]?'active':'')+'" data-action="tab" data-id="'+t[0]+'">'+t[1]+'</button>'
+      ).join('')+'</div><section class="mystery-panel">'+({
+        investigate,interview,notebook,final:finalGuess
+      }[ui.tab]||investigate)()+'</section>'+
+      '<p class="mystery-footer-note">이 사건은 실제 인물을 모티프로 한 가상 코믹 추리극입니다. 진행 기록은 이 브라우저에만 저장됩니다.</p>';
   }
-  function renderResult(){
-    const a=progress.answer||{};
-    const score=Number(a.person==='yoon')+Number(a.motive==='money')+Number(a.evidence==='entry');
-    return '<div class="mystery-kicker">CASE 001 · CASE CLOSED</div><h1 class="mystery-title">수사 결과</h1>'+
-      '<div class="mystery-panel"><div class="mystery-result-score">'+score+' / 3 정답</div>'+
-      '<p>'+(score===3?'축하합니다. 사건의 핵심을 정확하게 밝혀냈어요.':'수사를 마쳤습니다. 아래에서 실제 사건의 진상을 확인해보세요.')+'</p>'+
-      '<div class="mystery-divider"></div><h2>사건의 진상</h2>'+
-      '<div class="mystery-story">범인은 총무 서윤서였다.\n\n서윤서는 회비 장부에서 사라진 120만 원의 내역이 드러나는 것을 막으려 했다. 20시 42분 카페에서 결제한 뒤 다시 건물로 돌아와 피해자를 만나기로 했다.\n\n20시 55분 정전으로 복도 CCTV가 멈췄지만, 예비 전원으로 움직이던 출입 카드 인식기는 20시 56분 STAFF-02의 정모실 입장을 기록했다. 이 카드를 발급받은 사람은 서윤서였다.\n\n서윤서는 정모실에서 피해자와 다투다가 황동 트로피로 가격했다. 떨어진 트로피에는 서윤서가 착용한 검은 목도리 섬유가 남았다. 피해자 옆 시계는 충격으로 20시 58분에 멈췄다.\n\n복도의 20시 58분 사진은 강도현과 이나경의 진술을 뒷받침한다. 반면 “정모실에 들어간 적 없다”는 서윤서의 말은 출입 기록과 정면으로 모순된다.</div>'+
-      '<div class="mystery-divider"></div><h3>정답</h3>'+
-      '<p>범인: <span class="mystery-highlight">서윤서</span></p>'+
-      '<p>동기: <span class="mystery-highlight">회비 장부 누락 은폐</span></p>'+
-      '<p>결정적 증거: <span class="mystery-highlight">STAFF-02 출입 카드 기록</span></p>'+
-      '<div class="mystery-actions">'+button('restart','새로 수사하기','mystery-btn-primary')+button('home','게임 목록으로')+'</div></div>';
+  function result(){
+    const a=state.answer||{};
+    const score=Number(a.person==='jihoon')+Number(a.motive==='late')+
+      Number(a.weapon==='metalbox')+Number(a.evidence==='pickup');
+    return '<div class="mystery-kicker">CASE 001 · CASE CLOSED</div><h1 class="mystery-title">사건의 진상</h1>'+
+      '<div class="mystery-panel"><div class="mystery-result-score">'+score+' / 4 정답</div>'+
+      '<p>'+(score===4?'명탐정 인정! 도파민의 평화를 지켜냈습니다.':'사건을 마쳤습니다. 아래에서 실제 사건의 흐름과 결정적인 단서를 확인해보세요.')+'</p>'+
+      '<div class="mystery-divider"></div><h2>그 수요일, 도트에서 벌어진 일</h2>'+
+      '<div class="mystery-story">범인은 박지훈이었다.\n\n일찍 시작하겠다던 장한철이 또다시 “본게임은 23시 10분부터”라고 공지하자, 다음 날 일찍 출근해야 하는 지훈의 불만이 폭발했다.\n\n20시 57분, 지훈은 편의점 모바일 주문을 결제했다. 그는 결제 시각만 찍힌 영수증을 알리바이로 내세우며 “그 시간에 편의점에 있었다”고 주장했다. 하지만 편의점 기록상 상품은 21시 04분에 수령했다. 즉 20시 57분 영수증은 매장에 있었다는 증거가 아니었다.\n\n20시 58분 무렵, 정모실에서 한철과 마주친 지훈은 언쟁 끝에 창고에서 가져온 무거운 금속 카드 보관함으로 한철을 때렸다. 보관함 걸쇠에는 남색 옷실밥이 남았다. 이후 지훈의 남색 점퍼 오른쪽 소매가 뜯어진 점이 확인됐다.\n\n허다은은 회의실 화상통화 기록, 손승민은 창고 문 기록, 서제이는 출입문 기록으로 각각 사건 시각의 위치를 뒷받침할 수 있었다. 지훈만이 영수증 시간을 이용해 실제 위치를 흐렸다.\n\n한철은 다행히 의식을 회복했다. 사건을 설명해주자 잠시 침묵하더니 말했다.\n“...그럼 오늘 벙은 몇 시에 시작해?”\n\n도파민 일동: “회장님 제발요!!!!”</div>'+
+      '<div class="mystery-divider"></div><h3>정답 공개</h3>'+
+      '<p>범인: <span class="mystery-highlight">박지훈</span></p>'+
+      '<p>동기: <span class="mystery-highlight">밤 11시 이후에 시작하는 벙에 대한 불만</span></p>'+
+      '<p>사용한 물건: <span class="mystery-highlight">금속 카드 보관함</span></p>'+
+      '<p>핵심 단서: <span class="mystery-highlight">편의점 실제 수령 시각 21시 04분</span></p>'+
+      '<p class="mystery-subtle">현장의 남색 실밥과 뜯어진 소매는 추가 정황입니다. 사전 결제 기록만으로는 현장 부재를 증명할 수 없다는 사실이 핵심입니다.</p>'+
+      '<div class="mystery-actions">'+button('restart','처음부터 다시 수사','mystery-btn-primary')+button('home','사건 목록으로')+'</div></div>';
   }
   function render(){
-    const page={home:renderHome,intro:renderIntro,play:renderPlay,result:renderResult}[ui.view]();
-    app.innerHTML=nav('mystery')+'<main class="mystery-wrap"><div class="mystery-content">'+page+'</div></main>'+footer();
+    const html=({home,intro,play,result}[ui.view]||home)();
+    app.innerHTML=nav('mystery')+'<main class="mystery-wrap"><div class="mystery-content">'+html+'</div></main>'+footer();
   }
-  function openTab(id){
-    if(!['investigate','interrogate','notebook','final'].includes(id))return;
-    ui.tab=id;ui.selectedClue='';ui.feedback='';render();
+  function tabChange(id){
+    if(!['investigate','interview','notebook','final'].includes(id))return;
+    ui.tab=id;ui.selectedClue=null;ui.feedback='';
+    if(id==='interview'&&!state.interviewed.includes(ui.suspect)){
+      state.interviewed.push(ui.suspect);save();
+    }
+    render();
   }
-  app.addEventListener('click',function(e){
-    const el=e.target.closest('[data-action]');if(!el||!app.contains(el))return;
+  app.addEventListener('click',e=>{
+    const el=e.target.closest('[data-action]');
+    if(!el||!app.contains(el))return;
     const action=el.dataset.action,id=el.dataset.id;
-    if(action==='home'){ui.view='home'}
-    else if(action==='intro'){ui.view='intro'}
-    else if(action==='start'){progress.started=true;save();ui.view='play';ui.tab='investigate'}
-    else if(action==='resume'){ui.view=progress.submitted?'result':'play'}
-    else if(action==='tab'){openTab(id);return}
-    else if(action==='room'){ui.room=id;ui.selectedClue=''}
+    if(action==='home')ui.view='home';
+    else if(action==='intro')ui.view='intro';
+    else if(action==='start'){state.started=true;save();ui.view='play';ui.tab='investigate';}
+    else if(action==='resume')ui.view=state.submitted?'result':'play';
+    else if(action==='tab'){tabChange(id);return;}
+    else if(action==='room'){if(!rooms.includes(id))return;ui.room=id;ui.selectedClue=null;}
     else if(action==='clue'){
-      const clue=clues.find(c=>c.id===id);if(!clue)return;
-      if(!progress.clues.includes(id)){progress.clues.push(id);save()}
+      if(!clueIds.has(id))return;
+      if(!state.clues.includes(id)){state.clues.push(id);save();}
       ui.selectedClue=id;
     }
     else if(action==='suspect'){
-      if(!suspects.some(x=>x.id===id))return;
+      if(!suspectIds.has(id))return;
       ui.suspect=id;ui.feedback='';
-      if(!progress.interviewed.includes(id)){progress.interviewed.push(id);save()}
+      if(!state.interviewed.includes(id)){state.interviewed.push(id);save();}
     }
-    else if(action==='notebook'){ui.tab='notebook';ui.feedback=''}
+    else if(action==='notebook'){ui.tab='notebook';ui.feedback='';}
     else if(action==='present'){
       const evidence=document.getElementById('mystery-claim')?.value;
-      if(!evidence){ui.feedback='제시할 증거를 먼저 선택해주세요.'}
-      else if(ui.suspect==='yoon'&&evidence==='entry'){
-        progress.contradiction=true;save();
-        ui.feedback='모순 발견! 서윤서: “출입 카드는 제가 갖고 있었지만… 그날 누가 빌려 갔는지는 기억이 안 나요.” 정모실에 들어간 적 없다는 첫 진술과 충돌합니다.';
-      }else if((ui.suspect==='kang'||ui.suspect==='lee')&&evidence==='photo'){
-        ui.feedback='사진은 두 사람이 20시 58분에 복도에 있었다는 진술을 뒷받침합니다.';
-      }else{ui.feedback='아직 이 증거만으로는 해당 진술의 모순을 입증하기 어렵습니다. 다른 단서를 찾아보세요.'}
+      if(!evidence)ui.feedback='먼저 증거를 선택해주세요.';
+      else if(ui.suspect==='jihoon'&&evidence==='pickup'){
+        ui.feedback='🔎 알리바이 모순 발견! 20시 57분은 모바일 결제 시각일 뿐입니다. 박지훈이 편의점에서 물건을 받은 시각은 21시 04분이었어요.';
+        if(!state.contradictions.includes('jihoon')){state.contradictions.push('jihoon');save();}
+      }else if(ui.suspect==='daeun'&&evidence==='call'){
+        ui.feedback='🔎 화상통화 기록으로 허다은이 사건 시각 회의실에 있었다는 사실이 확인됐습니다.';
+      }else if(ui.suspect==='seungmin'&&evidence==='warehouse'){
+        ui.feedback='🔎 창고에는 다른 출구가 없었습니다. 손승민의 창고 알리바이에 무게가 실립니다.';
+      }else if(ui.suspect==='jei'&&evidence==='door'){
+        ui.feedback='🔎 출입문 기록은 서제이가 사건 시간에 건물 밖에 있었다는 진술을 뒷받침합니다.';
+      }else if(ui.suspect==='jihoon'&&evidence==='sleeve'){
+        ui.feedback='🔎 남색 점퍼 소매와 현장 실밥이 유사합니다. 단독 확증은 아니니 결제·수령 시각과 함께 비교하세요.';
+      }else if(ui.suspect==='jihoon'&&evidence==='receipt'){
+        ui.feedback='영수증에는 20시 57분이라고 찍혔지만, 그때 매장 안에 있었다는 뜻일까요?';
+      }else ui.feedback='이 증거만으로는 해당 진술의 거짓을 입증하기 어렵습니다. 시간 기록을 다시 비교해보세요.';
     }
     else if(action==='submit'){
-      if(progress.clues.length<4||progress.interviewed.length<2)return;
+      if(state.clues.length<6||state.interviewed.length<3)return;
       const person=document.getElementById('mystery-answer-person')?.value;
       const motive=document.getElementById('mystery-answer-motive')?.value;
+      const weapon=document.getElementById('mystery-answer-weapon')?.value;
       const evidence=document.getElementById('mystery-answer-evidence')?.value;
-      if(!person||!motive||!evidence){ui.feedback='범인, 동기, 결정적 증거를 모두 선택해주세요.'}
-      else{progress.submitted=true;progress.answer={person,motive,evidence};save();ui.view='result';ui.feedback=''}
+      if(!person||!motive||!weapon||!evidence)ui.feedback='범인, 동기, 사용한 물건, 핵심 증거까지 모두 선택해주세요.';
+      else {state.submitted=true;state.answer={person,motive,weapon,evidence};save();ui.view='result';ui.feedback='';}
     }
     else if(action==='restart'){
-      if(!window.confirm('기존 수사 기록을 지우고 처음부터 시작할까요?'))return;
-      progress=initial();save();ui.view='intro';ui.tab='investigate';ui.room='정모실';ui.suspect='yoon';ui.selectedClue='';ui.feedback='';
-    }else{return}
+      if(!window.confirm('기존 수사 기록을 지우고 처음부터 다시 할까요?'))return;
+      state=defaults();save();ui.view='intro';ui.tab='investigate';ui.room='정모실';ui.suspect='daeun';ui.selectedClue=null;ui.feedback='';
+    }else return;
     render();
   });
   render();
