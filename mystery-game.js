@@ -261,6 +261,7 @@
     else if(action==='present'){
       const evidence=document.getElementById('mystery-claim')?.value;
       if(!evidence)ui.feedback='먼저 증거를 선택해주세요.';
+      else if(!state.clues.includes(evidence)||!clues.some(c=>c.id===evidence&&(!c.phase||c.phase<=state.phase))){ui.feedback='아직 확보하지 않은 증거입니다. 현장 조사에서 먼저 수집해주세요.';}
       else if(ui.suspect==='jihoon'&&evidence==='gatevideo'){
         ui.feedback='🔎 결정적 모순! CCTV에는 박지훈 본인이 20시 59분 06초 도트 안에서 밖으로 나가는 장면이 있습니다. 20시 55분부터 편의점에 있었다는 진술과 양립할 수 없습니다.';
         if(!state.contradictions.includes('jihoon')){state.contradictions.push('jihoon');save();}
@@ -299,6 +300,7 @@
       const weapon=document.getElementById('mystery-answer-weapon')?.value;
       const evidence=document.getElementById('mystery-answer-evidence')?.value;
       if(!person||!motive||!weapon||!evidence)ui.feedback='범인, 동기, 사용한 물건, 핵심 증거까지 모두 선택해주세요.';
+      else if(!suspectIds.has(person)||!['calendar','climbing','late','smoking'].includes(motive)||!['metalbox','clock','mug','book'].includes(weapon)||!state.clues.includes(evidence)){ui.feedback='선택 항목 중 확인되지 않은 내용이 있습니다. 수사 기록을 다시 확인해주세요.';}
       else {state.submitted=true;state.answer={person,motive,weapon,evidence};save();ui.view='result';ui.feedback='';}
     }
     else if(action==='restart'){
