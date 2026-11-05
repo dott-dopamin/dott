@@ -2,7 +2,7 @@
 (()=>{
   'use strict';
   const app=document.getElementById('app');
-  const STORAGE_KEY='dott_mystery_wednesday_case001_v2';
+  const STORAGE_KEY='dott_mystery_wednesday_case001_v3';
   const title='수요일의 일격';
   const incident='20:58';
   const rooms=['정모실','회의실','창고','출입구'];
@@ -15,6 +15,7 @@
   const clues=[
     {id:'plan',room:'정모실',icon:'🗺️',name:'도트 공간 안내도',text:'이 게임의 가상 도트는 정모실, 회의실, 창고, 주출입구로 이루어진다. 정모실과 회의실은 얇은 벽 하나를 사이에 둔다. 주출입구 외 비상구는 열리면 경보가 울리며, 이날 경보는 없었다. 20시 45분부터 21시 07분까지 외부 방문객 출입도 없었다. 모든 디지털 기록의 시각은 같은 표준시로 동기화돼 있다.'},
     {id:'box',room:'정모실',icon:'🗃️',name:'금속 카드 보관함',text:'정모실 책상 아래에 무거운 금속 카드 보관함이 떨어져 있다. 모서리 걸쇠에는 남색 옷감 실밥이 끼어 있다. 외부 손상과 피해자 주변의 상황상 공격 도구로 의심된다.'},
+    {id:'medical',room:'정모실',icon:'🩺',name:'현장 감식·응급 진료 소견',text:'사건 후 확보한 초기 감식 요약에 따르면 피해자 머리 측면의 타박 흔적은 금속 카드 보관함 모서리와 형태·폭이 부합하며, 단순한 실신이나 넘어짐보다 외부에서 가해진 충격일 가능성이 높다. 현장 사진에는 보관함 모서리의 새 충돌 흔적도 남아 있다. 이 소견은 공격 도구를 뒷받침하지만 범인을 직접 특정하지는 못한다.'},
     {id:'watch',room:'정모실',icon:'⌚',name:'장한철의 스마트워치 활동 기록',text:'장한철이 차고 있던 시계의 활동 기록에는 20시 58분 13초 강한 충격과 쓰러짐에 해당하는 움직임이 감지됐고, 이후 수 분간 활동이 거의 없다. 이 기기의 자동 긴급 신고는 꺼져 있었다. 회의실 통화 녹음의 20시 58분 12초 소리와도 시각이 일치한다.'},
     {id:'clock',room:'정모실',icon:'🕰️',name:'바닥의 탁상시계',text:'시계 유리가 깨졌고 바늘이 20시 58분쯤에 멈춰 있다. 시계만으로 시각을 확정할 수는 없으므로, 피해자의 스마트워치 활동 기록과 화상통화 녹음도 함께 확인해야 한다.'},
     {id:'notice',room:'정모실',icon:'📱',name:'20시 48분 단체방 공지',text:'장한철: “오늘도 본게임은 23시 10분부터! 그전에 클라이밍 썰 풀어드림ㅋㅋ” / 박지훈: “분명 일찍 한다며요? 내일 아침 출근인데…” 네 용의자의 불만이 더 크게 드러난 메시지다.'},
@@ -52,6 +53,19 @@
   ];
     const clueIds=new Set(clues.map(x=>x.id));
   const suspectIds=new Set(suspects.map(x=>x.id));
+  const proofRequirements=[
+    {label:'범행 시각 교차 검증',ids:['call','watch']},
+    {label:'다른 용의자의 동선 검증',ids:['warehouse','door','gatevideo']},
+    {label:'범행 도구와 상해 연결',ids:['box','medical']},
+    {label:'거짓 알리바이를 증거로 반박',contradiction:'jihoon'}
+  ];
+  function proofChecks(){
+    return proofRequirements.map(group=>({label:group.label,done:group.contradiction?
+      state.contradictions.includes(group.contradiction):group.ids.every(id=>state.clues.includes(id))}));
+  }
+  function canSubmit(){
+    return state.clues.length>=8&&state.interviewed.length===suspects.length&&proofChecks().every(x=>x.done);
+  }
   function defaults(){return {started:false,clues:[],interviewed:[],contradictions:[],submitted:false,answer:null};}
   function load(){
     try{
@@ -94,7 +108,7 @@
     return '<div class="mystery-kicker">CASE 001 · 사건 브리핑</div><h1 class="mystery-title">《수요일의 일격》</h1>'+
       '<div class="mystery-panel"><h2>20시 58분, 도트에서 무슨 일이?</h2>'+
       '<div class="mystery-story">도파민 회장 장한철은 주 6일 근무한다. 유일하게 쉬는 수요일이면 그토록 기다리던 도트로 향한다.\n\n그날도 한철은 신이 나서 외쳤다.\n“오늘 본게임은 23시 10분부터! 그전엔 클라이밍 썰 풀어드림ㅋㅋ”\n\n회원들의 표정은 일제히 굳어졌다.\n\n20시 58분 무렵, 정모실 쪽에서 “쿵!” 소리가 났다. 하지만 당시에는 아무도 대수롭지 않게 여겼다.\n\n21시 07분, 회의실 통화를 끝내고 메모를 정리하던 허다은이 정모실에 들렀다가 쓰러진 한철을 발견했다. 곧바로 구조 요청이 이뤄졌고, 다행히 한철은 의식을 회복했다. 다만 공격자는 기억하지 못한다.\n\n그날 도트에 있던 인물은 회장과 네 명의 회원뿐이었다. 용의자 이름은 허다은, 손승민, 박지훈, 서제이.\n\n네 사람은 모두 한철에게 불만이 있었다. 하지만 이유가 있다고 모두 범인은 아니다. 사건 시각, 현장 물건의 위치, 출입 기록과 진술이 맞물리는지 조사하라.</div>'+
-      '<div class="mystery-actions">'+button('start','사건 조사 시작','mystery-btn-primary')+button('home','사건 목록으로')+'</div></div>';
+      '<div class="mystery-actions">'+button('start',state.submitted?'처음부터 재수사':state.started?'조사 이어하기':'사건 조사 시작','mystery-btn-primary')+button('home','사건 목록으로')+'</div></div>';
   }
   function investigate(){
     const items=clues.filter(c=>c.room===ui.room);
@@ -140,11 +154,14 @@
         state.interviewed.map(id=>suspects.find(s=>s.id===id)?.name).filter(Boolean).join(' · '):'면담한 사람이 없습니다.')+'</p>';
   }
   function finalGuess(){
-    const ready=state.clues.length>=8&&state.interviewed.length===4;
+    const ready=canSubmit();
+    const checks=proofChecks();
     const evidence=clues.filter(c=>state.clues.includes(c.id));
     return '<h2 class="mystery-section-title">최종 추리</h2>'+
       '<p class="mystery-subtle">20시 58분에 누가 어디에 있었는지, 거짓 알리바이를 누가 만들어냈는지 확인하세요. 제출하면 정답과 해설이 공개됩니다.</p>'+
-      (!ready?'<div class="mystery-warning">🔒 단서 8개 이상, 용의자 전원(4명) 면담하면 최종 추리를 제출할 수 있습니다. 현재 단서 '+state.clues.length+'개 · 면담 '+state.interviewed.length+'명</div>':'')+
+      '<div class="mystery-note"><strong>논리 검증 체크리스트</strong><p>단서 8개 이상을 수집하고 네 명 모두 면담하세요. 단순한 의심이 아닌 증거로 아래 항목을 확인해야 합니다.</p>'+
+      checks.map(x=>'<p>'+(x.done?'✓':'□')+' '+escText(x.label)+'</p>').join('')+'</div>'+
+      (!ready?'<div class="mystery-warning">🔒 최종 제출 대기 · 단서 '+state.clues.length+'개 / 8개 이상 · 면담 '+state.interviewed.length+'명 / 4명 · 논리 검증 '+checks.filter(x=>x.done).length+' / '+checks.length+'건</div>':'')+
       '<label class="mystery-field" for="mystery-answer-person">① 장한철을 때린 사람은 누구인가요?<select id="mystery-answer-person"><option value="">범인 선택</option>'+
       suspects.map(s=>'<option value="'+s.id+'">'+s.name+'</option>').join('')+'</select></label>'+
       '<label class="mystery-field" for="mystery-answer-motive">② 범행 동기는 무엇인가요?<select id="mystery-answer-motive"><option value="">동기 선택</option>'+
@@ -184,13 +201,13 @@
       '<div class="mystery-panel"><div class="mystery-result-score">'+score+' / 4 정답</div>'+
       '<p>'+(score===4?'명탐정 인정! 시간 기록과 물증을 모두 꿰뚫어봤습니다.':'수사를 마쳤습니다. 아래에서 기록을 대조하며 사건의 진상을 확인하세요.')+'</p>'+
       '<div class="mystery-divider"></div><h2>수요일 20시 58분의 진실</h2>'+
-      '<div class="mystery-story">범인은 박지훈이었다.\n\n사건 전 20시 45분, 손승민이 창고의 금속 카드 보관함을 정모실 책상 위로 옮겼다. 따라서 범행 도구가 20시 53분부터 닫혀 있던 창고에서 갑자기 튀어나올 필요는 없었다.\n\n20시 48분, 장한철은 또 “본게임은 23시 10분부터”라고 공지했다. 다음 날 출근을 앞둔 박지훈은 크게 화가 났다.\n\n20시 55분쯤 지훈은 “편의점에 간다”고 말했지만 실제로는 건물에 남아 있었다. 20시 57분 스마트폰으로 편의점 앱 선결제를 하고, 정모실에서 한철과 마주쳤다.\n\n20시 58분 12초 무렵 두 사람이 말다툼하다 지훈이 정모실에 있던 금속 카드 보관함으로 한철을 때렸다. 충격음은 회의실 화상통화 녹음(20시 58분 12초)에 남고, 피해자의 스마트워치는 1초 뒤 강한 충격을 기록했다. 바닥에서 발견된 탁상시계도 비슷한 시각에 멈췄다.\n\n20시 59분 06초, 지훈은 오른쪽 소매가 뜯어진 채 주출입구에서 밖으로 나갔다. 이 장면은 출입 인증 기록과 본인 얼굴이 찍힌 CCTV로 확인된다. 20시 50분에는 멀쩡했던 소매가 20시 59분에 뜯어져 있었고, 현장 보관함의 남색 실밥과도 부합한다.\n\n편의점은 도트에서 약 150m 거리였다. 지훈은 21시 04분에 모바일 주문 상품을 실제 수령하고, 21시 06분 35초에 도트로 돌아왔다. 20시 57분 영수증은 매장 결제가 아닌 앱 선결제였으므로 그의 “20시 55분부터 매장에 있었다”는 주장은 거짓이다.\n\n같은 시각 허다은은 회의실 화상통화에 실시간으로 나타났고, 손승민은 다른 출입구가 없는 창고 안에 있었으며, 서제이는 20시 55분부터 21시 02분 30초까지 건물 밖이었다. 각 기록은 통화 영상, 창고문 센서·복도 영상, 주출입구 CCTV로 독립 검증된다.\n\n21시 07분, 허다은이 정모실에서 쓰러진 회장을 발견했다. 의식을 회복한 한철은 잠시 침묵하다 말했다.\n“...그럼 오늘 벙은 몇 시에 시작해?”\n\n도파민 일동: “회장님 제발요!!!!”</div>'+
+      '<div class="mystery-story">범인은 박지훈이었다.\n\n사건 전 20시 45분, 손승민이 창고의 금속 카드 보관함을 정모실 책상 위로 옮겼다. 따라서 범행 도구가 20시 53분부터 닫혀 있던 창고에서 갑자기 튀어나올 필요는 없었다.\n\n20시 48분, 장한철은 또 “본게임은 23시 10분부터”라고 공지했다. 다음 날 출근을 앞둔 박지훈은 크게 화가 났다.\n\n20시 55분쯤 지훈은 “편의점에 간다”고 말했지만 실제로는 건물에 남아 있었다. 20시 57분 스마트폰으로 편의점 앱 선결제를 하고, 정모실에서 한철과 마주쳤다.\n\n20시 58분 12초 무렵 두 사람이 말다툼하다 지훈이 정모실에 있던 금속 카드 보관함으로 한철을 때렸다. 충격음은 회의실 화상통화 녹음(20시 58분 12초)에 남고, 피해자의 스마트워치는 1초 뒤 강한 충격을 기록했다. 바닥에서 발견된 탁상시계도 비슷한 시각에 멈췄다.\n\n20시 59분 06초, 지훈은 오른쪽 소매가 뜯어진 채 주출입구에서 밖으로 나갔다. 이 장면은 출입 인증 기록과 본인 얼굴이 찍힌 CCTV로 확인된다. 20시 50분에는 멀쩡했던 소매가 20시 59분에 뜯어져 있었고, 현장 보관함의 남색 실밥과도 부합한다. 부상 형태 또한 보관함 모서리와 맞아 단순 낙상보다 외부 충격이 강하게 의심됐다.\n\n편의점은 도트에서 약 150m 거리였다. 지훈은 21시 04분에 모바일 주문 상품을 실제 수령하고, 21시 06분 35초에 도트로 돌아왔다. 20시 57분 영수증은 매장 결제가 아닌 앱 선결제였으므로 그의 “20시 55분부터 매장에 있었다”는 주장은 거짓이다.\n\n같은 시각 허다은은 회의실 화상통화에 실시간으로 나타났고, 손승민은 다른 출입구가 없는 창고 안에 있었으며, 서제이는 20시 55분부터 21시 02분 30초까지 건물 밖이었다. 각 기록은 통화 영상, 창고문 센서·복도 영상, 주출입구 CCTV로 독립 검증된다.\n\n21시 07분, 허다은이 정모실에서 쓰러진 회장을 발견했다. 의식을 회복한 한철은 잠시 침묵하다 말했다.\n“...그럼 오늘 벙은 몇 시에 시작해?”\n\n도파민 일동: “회장님 제발요!!!!”</div>'+
       '<div class="mystery-divider"></div><h3>정답 및 증거 논리</h3>'+
       '<p>범인: <span class="mystery-highlight">박지훈</span></p>'+
       '<p>동기: <span class="mystery-highlight">밤 11시 이후 벙 시작에 대한 누적 불만</span></p>'+
       '<p>도구: <span class="mystery-highlight">정모실에 미리 옮겨져 있던 금속 카드 보관함</span></p>'+
       '<p>핵심 증거: <span class="mystery-highlight">20시 59분 06초 박지훈 본인의 퇴실 영상</span></p>'+
-      '<p class="mystery-subtle">주의: 편의점 21시 04분 수령 기록만으로 20시 58분의 위치를 증명할 수는 없습니다. 20시 59분 본인 퇴실 영상이 그의 “20시 55분부터 편의점에 있었다”는 주장과 정면 충돌합니다. 소매 손상은 추가 정황 증거입니다.</p>'+
+      '<p class="mystery-subtle">주의: 편의점 21시 04분 수령 기록만으로 20시 58분의 위치를 증명할 수는 없습니다. 20시 59분 본인 퇴실 영상이 그의 “20시 55분부터 편의점에 있었다”는 주장과 정면 충돌합니다. 소매 손상은 추가 정황 증거이며, 초기 감식 소견과 도구의 충돌 흔적이 공격 도구를 뒷받침합니다.</p>'+
       '<div class="mystery-actions">'+button('restart','처음부터 다시 수사','mystery-btn-primary')+button('home','사건 목록으로')+'</div></div>';
   }
   function render(){
@@ -211,7 +228,7 @@
     const action=el.dataset.action,id=el.dataset.id;
     if(action==='home')ui.view='home';
     else if(action==='intro')ui.view='intro';
-    else if(action==='start'){state.started=true;save();ui.view='play';ui.tab='investigate';}
+    else if(action==='start'){if(state.submitted){if(!window.confirm('기존 수사 결과를 지우고 처음부터 다시 할까요?'))return;state=defaults();}state.started=true;save();ui.view='play';ui.tab='investigate';}
     else if(action==='resume')ui.view=state.submitted?'result':'play';
     else if(action==='tab'){tabChange(id);return;}
     else if(action==='room'){if(!rooms.includes(id))return;ui.room=id;ui.selectedClue=null;}
@@ -249,7 +266,7 @@
       }else ui.feedback='이 증거만으로는 이 진술의 진위를 확정할 수 없습니다. 사건 시각과 다른 자료를 비교해보세요.';
     }
     else if(action==='submit'){
-      if(state.clues.length<8||state.interviewed.length!==4)return;
+      if(!canSubmit())return;
       const person=document.getElementById('mystery-answer-person')?.value;
       const motive=document.getElementById('mystery-answer-motive')?.value;
       const weapon=document.getElementById('mystery-answer-weapon')?.value;
