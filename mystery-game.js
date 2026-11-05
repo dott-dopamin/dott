@@ -31,7 +31,26 @@
     {id:'pickup',room:'출입구',icon:'🛍️',name:'21시 04분 편의점 수령 확인',text:'편의점 앱의 수령 QR 기록과 매장 영상에 박지훈이 21시 04분 직접 간식 봉투를 수령하는 장면이 있다. 편의점은 도트 주출입구에서 도보 약 150m(약 2분) 거리다. 20시 59분 퇴실 후 21시 04분 수령, 21시 06분 재입실은 충분히 가능한 동선이다.'},
     {id:'sleeve',room:'출입구',icon:'🧥',name:'뜯어진 오른쪽 소매',text:'20시 50분 단체사진에서는 멀쩡했던 박지훈의 남색 점퍼 오른쪽 소매가 20시 59분 06초 출입구 영상에서는 찢어져 있다. 사건 현장 카드함 걸쇠의 남색 실밥·사선 이중 봉제 흔적과 형태가 유사하다. 정밀 감정 결과는 아니므로 다른 증거와 종합해야 한다.'}
   ];
-  const clueIds=new Set(clues.map(x=>x.id));
+  const caseTimeline=[
+    {at:'20:45',src:'transfer',desc:'카드 보관함이 정모실 책상으로 옮겨짐'},
+    {at:'20:48',src:'notice',desc:'회장, 본게임 23시 10분 시작 공지'},
+    {at:'20:50',src:'group',desc:'단체 사진 촬영 · 박지훈 오른쪽 소매 멀쩡함'},
+    {at:'20:53:04',src:'warehouse',desc:'손승민 창고 입실 · 문 닫힘'},
+    {at:'20:54',src:'call',desc:'허다은 화상통화 시작'},
+    {at:'20:55',src:'door',desc:'서제이 명의 출입카드 퇴실'},
+    {at:'20:57',src:'receipt',desc:'박지훈 편의점 모바일 선결제'},
+    {at:'20:58:12',src:'call',desc:'회의실 통화에 정모실 쪽 충격음 녹음'},
+    {at:'20:58:13',src:'watch',desc:'장한철 스마트워치 급격한 충격 감지'},
+    {at:'20:59:06',src:'door',desc:'박지훈 명의 출입카드 퇴실'},
+    {at:'20:59:06',src:'gatevideo',desc:'출입구 영상에서 박지훈 본인 퇴실 확인'},
+    {at:'21:01',src:'call',desc:'허다은 화상통화 종료'},
+    {at:'21:02:06',src:'warehouse',desc:'창고문 열림 · 손승민 복도 등장'},
+    {at:'21:02',src:'door',desc:'서제이 명의 출입카드 재입실'},
+    {at:'21:04',src:'pickup',desc:'박지훈 편의점 상품 직접 수령'},
+    {at:'21:06:35',src:'gatevideo',desc:'박지훈 봉투를 들고 도트 재입실'},
+    {at:'21:07',src:null,desc:'허다은이 정모실에서 쓰러진 장한철 발견'}
+  ];
+    const clueIds=new Set(clues.map(x=>x.id));
   const suspectIds=new Set(suspects.map(x=>x.id));
   function defaults(){return {started:false,clues:[],interviewed:[],contradictions:[],submitted:false,answer:null};}
   function load(){
@@ -107,9 +126,16 @@
   }
   function notebook(){
     const found=clues.filter(c=>state.clues.includes(c.id));
+    const known=caseTimeline.filter(row=>!row.src||state.clues.includes(row.src));
     return '<h2 class="mystery-section-title">수사 수첩</h2>'+
       '<p class="mystery-subtle">확보 단서 '+found.length+' / '+clues.length+'개 · 면담 인원 '+state.interviewed.length+' / 4명</p>'+
-      (found.length?found.map(c=>note(c.icon+' '+c.name,c.text)).join(''):'<p>수집한 단서가 없습니다. 장소를 먼저 조사하세요.</p>')+
+      '<h3 class="mystery-section-title">확인된 사건 타임라인</h3>'+
+      '<p class="mystery-subtle">확보한 단서로 입증된 시각만 표시됩니다. 새로운 증거를 수집하면 자동으로 추가됩니다.</p>'+
+      '<div class="mystery-timeline">'+known.map(row=>
+        '<div class="mystery-timeline-row"><time>'+escText(row.at)+'</time><span>'+escText(row.desc)+'</span></div>'
+      ).join('')+'</div>'+
+      '<div class="mystery-divider"></div><h3 class="mystery-section-title">증거 원문</h3>'+
+      (found.length?found.map(c=>note(c.icon+' '+c.name,c.text)).join(''):'<p>아직 증거가 없습니다. 현장 조사부터 시작하세요.</p>')+
       '<div class="mystery-divider"></div><h3>면담 완료</h3><p class="mystery-subtle">'+(state.interviewed.length?
         state.interviewed.map(id=>suspects.find(s=>s.id===id)?.name).filter(Boolean).join(' · '):'면담한 사람이 없습니다.')+'</p>';
   }
