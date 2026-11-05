@@ -66,15 +66,18 @@
       state.contradictions.includes(group.contradiction):group.ids.every(id=>state.clues.includes(id))}));
   }
   function canSubmit(){
-    return state.clues.length>=8&&state.interviewed.length===suspects.length&&proofChecks().every(x=>x.done);
+    return state.phase===2&&state.clues.length>=8&&state.interviewed.length===suspects.length&&proofChecks().every(x=>x.done);
   }
-  function defaults(){return {started:false,clues:[],interviewed:[],contradictions:[],submitted:false,answer:null};}
+  const leadIds=['da-note','prints','spray','notice'];
+  function canUnlockRound2(){return state.phase===1&&leadIds.every(id=>state.clues.includes(id))&&state.interviewed.length===suspects.length;}
+  function defaults(){return {started:false,phase:1,clues:[],interviewed:[],contradictions:[],submitted:false,answer:null};}
   function load(){
     try{
       const saved=JSON.parse(localStorage.getItem(STORAGE_KEY)||'null');
       if(!saved||typeof saved!=='object')return defaults();
       return {
         started:saved.started===true,
+        phase:saved.phase===2?2:1,
         clues:Array.isArray(saved.clues)?saved.clues.filter(id=>clueIds.has(id)):[],
         interviewed:Array.isArray(saved.interviewed)?saved.interviewed.filter(id=>suspectIds.has(id)):[],
         contradictions:Array.isArray(saved.contradictions)?saved.contradictions.filter(id=>suspectIds.has(id)):[],
@@ -97,7 +100,7 @@
       '<div class="mystery-case-symbol" aria-hidden="true">🕵️‍♀️</div>'+
       '<div class="mystery-kicker">허구의 코믹 추리 사건 · 체험판</div>'+
       '<h2>《누가 장한철을 때렸나?》</h2>'+
-      '<p>유력 용의자는 허다은, 손승민, 박지훈, 서제이. 전원 수상한 동기가 있고 모두 확실한 알리바이를 주장한다. 진술과 시간을 대조해 거짓말을 찾아내자.</p>'+
+      '<p>유력 용의자는 허다은, 손승민, 박지훈, 서제이. 전원 수상한 동기가 있고 제각기 다른 알리바이를 주장한다. 진술과 시간을 대조해 거짓말을 찾아내자.</p>'+
       '<div class="mystery-meta"><span class="mystery-pill">👤 1인용</span><span class="mystery-pill">⏱ 체험판 약 10~15분</span><span class="mystery-pill">🔍 입문~중간</span></div>'+
       '<div class="mystery-actions">'+button('intro','사건 브리핑 보기','mystery-btn-primary')+
       (state.started?button('resume','이어서 수사하기'):'')+'</div></section>'+
@@ -113,9 +116,11 @@
       '<div class="mystery-actions">'+button('start',state.submitted?'처음부터 재수사':state.started?'조사 이어하기':'사건 조사 시작','mystery-btn-primary')+button('home','사건 목록으로')+'</div></div>';
   }
   function investigate(){
-    const items=clues.filter(c=>c.room===ui.room);
+    const items=clues.filter(c=>c.room===ui.room&&(!c.phase||c.phase<=state.phase));
+    const leads=leadIds.filter(id=>state.clues.includes(id)).length;
+    const introRound=state.phase===1?'<div class="mystery-note"><strong>1차 조사 · 모두를 의심해보기</strong><p>찢긴 일정표, 보관함 지문, 탈취제, 단체방 대화를 확인하고 용의자 네 명의 말을 들어보세요.</p><p>수상한 흔적 '+leads+' / 4 · 면담 '+state.interviewed.length+' / 4</p>'+(canUnlockRound2()?button('unlock-round2','2차 조사 열기 · 알리바이 검증','mystery-btn-primary'):'<p>모든 흔적과 진술을 확인하면 CCTV·감식 자료가 열립니다.</p>')+'</div>':'<div class="mystery-success">✓ 2차 조사 · 통화 녹화, 출입 기록, 감식 자료가 공개되었습니다.</div>';
     const selected=clues.find(c=>c.id===ui.selectedClue&&state.clues.includes(c.id));
-    return '<h2 class="mystery-section-title">현장 조사</h2><p class="mystery-subtle">각 장소에 남은 흔적을 수집하고, 다른 사람의 알리바이와 비교해보세요.</p>'+
+    return '<h2 class="mystery-section-title">현장 조사 · '+state.phase+'차</h2><p class="mystery-subtle">1차에서는 의심스러운 흔적을, 2차에서는 진술을 검증할 기록을 조사합니다.</p>'+introRound+
       '<div class="mystery-room-tabs">'+rooms.map(room=>
         '<button type="button" class="mystery-room '+(ui.room===room?'active':'')+'" data-action="room" data-id="'+room+'">'+room+'</button>'
       ).join('')+'</div>'+
@@ -186,7 +191,7 @@
     return '<div class="mystery-kicker">DOPAMIN MYSTERY · CASE 001 · 수요일</div>'+
       '<h1 class="mystery-title">누가 장한철을 때렸나?</h1>'+
       '<p class="mystery-lead">사건 발생 시각 '+incident+'. 범인, 동기, 사용한 물건을 밝혀 도파민 회장 습격 사건을 종결하세요.</p>'+
-      '<div class="mystery-meta"><span class="mystery-pill">단서 '+state.clues.length+' / '+clues.length+'</span><span class="mystery-pill">면담 '+state.interviewed.length+' / 4</span><span class="mystery-pill">모순 '+state.contradictions.length+'건</span></div>'+
+      '<div class="mystery-meta"><span class="mystery-pill">'+state.phase+'차 조사</span><span class="mystery-pill">단서 '+state.clues.length+' / '+clues.length+'</span><span class="mystery-pill">면담 '+state.interviewed.length+' / 4</span><span class="mystery-pill">모순 '+state.contradictions.length+'건</span></div>'+
       '<div class="mystery-progress" role="progressbar" aria-label="단서 수집률" aria-valuemin="0" aria-valuemax="'+clues.length+'" aria-valuenow="'+state.clues.length+'"><span style="width:'+(state.clues.length/clues.length*100)+'%"></span></div>'+
       '<div class="mystery-tabs" role="navigation" aria-label="수사 진행 메뉴">'+tabs.map(t=>
         '<button type="button" class="mystery-tab '+(ui.tab===t[0]?'active':'')+'" data-action="tab" data-id="'+t[0]+'">'+t[1]+'</button>'
@@ -235,10 +240,11 @@
     else if(action==='tab'){tabChange(id);return;}
     else if(action==='room'){if(!rooms.includes(id))return;ui.room=id;ui.selectedClue=null;}
     else if(action==='clue'){
-      if(!clueIds.has(id))return;
+      const item=clues.find(c=>c.id===id);if(!item||(item.phase&&item.phase>state.phase))return;
       if(!state.clues.includes(id)){state.clues.push(id);save();}
       ui.selectedClue=id;
     }
+    else if(action==='unlock-round2'){if(!canUnlockRound2())return;state.phase=2;save();ui.tab='investigate';ui.selectedClue=null;ui.feedback='';}
     else if(action==='suspect'){
       if(!suspectIds.has(id))return;
       ui.suspect=id;ui.feedback='';
