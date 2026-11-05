@@ -68,9 +68,10 @@
       (state.contradictions.includes(group.contradiction)&&(group.ids||[]).every(id=>state.clues.includes(id))):group.ids.every(id=>state.clues.includes(id))}));
   }
   function canSubmit(){
-    return state.phase===2&&state.clues.length>=8&&state.interviewed.length===suspects.length&&proofChecks().every(x=>x.done);
+    return state.phase===2&&state.clues.length>=MIN_CLUES_TO_SUBMIT&&state.interviewed.length===suspects.length&&proofChecks().every(x=>x.done);
   }
   const leadIds=['da-note','prints','spray','notice'];
+  const MIN_CLUES_TO_SUBMIT=new Set([...leadIds,...proofRequirements.flatMap(g=>g.ids||[])]).size;
   function canUnlockRound2(){return state.phase===1&&leadIds.every(id=>state.clues.includes(id))&&state.interviewed.length===suspects.length;}
   function defaults(){return {started:false,phase:1,clues:[],interviewed:[],contradictions:[],submitted:false,answer:null};}
   function load(){
@@ -168,9 +169,9 @@
     const evidence=clues.filter(c=>state.clues.includes(c.id));
     return '<h2 class="mystery-section-title">최종 추리</h2>'+
       '<p class="mystery-subtle">20시 58분에 누가 어디에 있었는지, 거짓 알리바이를 누가 만들어냈는지 확인하세요. 제출하면 정답과 해설이 공개됩니다.</p>'+
-      '<div class="mystery-note"><strong>논리 검증 체크리스트</strong><p>단서 8개 이상을 수집하고 네 명 모두 면담하세요. 단순한 의심이 아닌 증거로 아래 항목을 확인해야 합니다.</p>'+
+      '<div class="mystery-note"><strong>논리 검증 체크리스트</strong><p>단서 '+MIN_CLUES_TO_SUBMIT+'개 이상을 수집하고 네 명 모두 면담하세요. 단순한 의심이 아닌 증거로 아래 항목을 확인해야 합니다.</p>'+
       checks.map(x=>'<p>'+(x.done?'✓':'□')+' '+escText(x.label)+'</p>').join('')+'</div>'+
-      (!ready?'<div class="mystery-warning">🔒 최종 제출 대기 · 단서 '+state.clues.length+'개 / 8개 이상 · 면담 '+state.interviewed.length+'명 / 4명 · 논리 검증 '+checks.filter(x=>x.done).length+' / '+checks.length+'건</div>':'')+
+      (!ready?'<div class="mystery-warning">🔒 최종 제출 대기 · 단서 '+state.clues.length+'개 / '+MIN_CLUES_TO_SUBMIT+'개 이상 · 면담 '+state.interviewed.length+'명 / 4명 · 논리 검증 '+checks.filter(x=>x.done).length+' / '+checks.length+'건</div>':'')+
       '<label class="mystery-field" for="mystery-answer-person">① 장한철을 때린 사람은 누구인가요?<select id="mystery-answer-person"><option value="">범인 선택</option>'+
       suspects.map(s=>'<option value="'+s.id+'">'+s.name+'</option>').join('')+'</select></label>'+
       '<label class="mystery-field" for="mystery-answer-motive">② 범행 동기는 무엇인가요?<select id="mystery-answer-motive"><option value="">동기 선택</option>'+
