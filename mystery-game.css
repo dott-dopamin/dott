@@ -64,3 +64,11 @@
 /* Wednesday case: four suspects visible on desktop; two per row on mobile */
 .mystery-suspect-list{grid-template-columns:repeat(4,minmax(0,1fr))}
 @media(max-width:780px){.mystery-suspect-list{grid-template-columns:repeat(2,minmax(0,1fr))}}
+
+/* Investigation notebook: evidence-gated chronology */
+.mystery-timeline{border:1px solid #495366;border-radius:13px;overflow:hidden;margin:14px 0 22px;background:#232b3a}
+.mystery-timeline-row{display:grid;grid-template-columns:92px minmax(0,1fr);gap:12px;align-items:start;padding:11px 14px;border-top:1px solid #414a5c;line-height:1.5;font-size:13px}
+.mystery-timeline-row:first-child{border-top:0}
+.mystery-timeline-row time{font-variant-numeric:tabular-nums;font-weight:800;color:#e2ba83;white-space:nowrap}
+.mystery-timeline-row span{color:#d3dae5;overflow-wrap:anywhere;word-break:keep-all}
+@media(max-width:390px){.mystery-timeline-row{grid-template-columns:78px minmax(0,1fr);gap:8px;padding:10px;font-size:12px}}
