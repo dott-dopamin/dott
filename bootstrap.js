@@ -3,7 +3,7 @@
   const entry=bootScript?.dataset?.entry||'';
   const app=document.getElementById('app');
   const sleep=ms=>new Promise(r=>setTimeout(r,ms));
-  const BUILD='dott-20261112-mystery-score-v17';
+  const BUILD='dott-20261112-mystery-score-v18';
 
   function loadScript(src,{timeout=9000,retries=2}={}){
     return (async()=>{
