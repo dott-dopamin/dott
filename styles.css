@@ -1872,3 +1872,45 @@ body[data-kind="deduction"] .catalog-page > .hero > h1 {
     font-weight:750;
   }
 }
+
+
+/* ===== Embedded DOPAMIN mystery inside DOTT navigation ===== */
+.mystery-host-page .mystery-embed-page{
+  padding:0 12px 16px;
+  background:#f7f2eb;
+}
+.mystery-host-page .mystery-embed-frame{
+  display:block;
+  width:100%;
+  height:calc(100dvh - 116px);
+  min-height:540px;
+  border:0;
+  background:#f7f2eb;
+  border-radius:0 0 12px 12px;
+}
+.mystery-host-page .mystery-embed-fallback{
+  font-size:12px;
+  line-height:1.6;
+  margin:8px 7px 0;
+  color:#93867d;
+  text-align:right;
+}
+.mystery-host-page .mystery-embed-fallback a{
+  color:#805142;
+  text-decoration:underline;
+}
+@media(max-width:900px){
+  .mystery-host-page .mystery-embed-page{padding:0 0 12px}
+  .mystery-host-page .mystery-embed-frame{
+    height:calc(100dvh - 152px);
+    min-height:450px;
+    border-radius:0;
+  }
+}
+@media(max-width:700px){
+  .mystery-host-page .mystery-embed-frame{
+    height:calc(100dvh - 176px);
+    min-height:440px;
+  }
+  .mystery-host-page .mystery-embed-fallback{padding:0 10px}
+}
