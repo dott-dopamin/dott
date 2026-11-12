@@ -1843,3 +1843,32 @@ body[data-kind="deduction"] .catalog-page > .hero > h1 {
   color: #4b433a !important;
   letter-spacing: normal !important;
 }
+
+
+/* ===== DOTT 2026-11-12 mystery game navigation ===== */
+/* Keep the five menu items readable on mid-size desktops. */
+@media (min-width:901px) and (max-width:1120px){
+  .topbar{gap:12px;padding-left:16px;padding-right:16px}
+  .brand{min-width:180px}
+  .nav{gap:2px}
+  .nav a{font-size:12px;padding:9px 7px}
+  .admin-link{font-size:12px;padding:8px;white-space:nowrap}
+}
+/* Four original tabs keep their row; the new long game title gets its own row. */
+@media (max-width:700px){
+  .topbar .nav > a.mystery-shortcut{
+    grid-column:1 / -1;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    min-height:36px;
+    padding:9px 12px;
+    white-space:normal;
+    overflow:visible;
+    overflow-wrap:break-word;
+    background:#fff7ee;
+    border:1px solid #eadfce;
+    font-size:12px;
+    font-weight:750;
+  }
+}
