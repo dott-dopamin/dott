@@ -7,7 +7,7 @@
         class="mystery-embed-frame"
         id="mysteryFrame"
         title="누가 장한철을 뚜까 팼나? 게임"
-        src="https://dott-dopamin.github.io/dott-admin/mystery-test/?embed=1"
+        src="https://dott-dopamin.github.io/dott-admin/mystery-test/?embed=1&scorev=17"
         loading="eager"
         allowfullscreen>
       </iframe>
