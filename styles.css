@@ -2221,3 +2221,36 @@ body[data-kind="deduction"] .catalog-page > .hero > h1 {
     font-size:8.5px;
   }
 }
+
+
+/* ===== 2026-11-24 대기 가능 체크 강조 ===== */
+.day-wait-check{
+  width:16px;
+  height:16px;
+  border-radius:50%;
+  background:#4f7cff;
+  color:#fff!important;
+  font-size:11px!important;
+  line-height:16px!important;
+  font-weight:900!important;
+  box-shadow:0 1px 3px rgba(79,124,255,.25);
+}
+@media(max-width:700px){
+  .calendar-grid>.day .day-date-wrap{
+    gap:3px!important;
+  }
+  .calendar-grid>.day .day-wait-check{
+    width:12px;
+    height:12px;
+    font-size:8px!important;
+    line-height:12px!important;
+  }
+}
+@media(max-width:390px){
+  .calendar-grid>.day .day-wait-check{
+    width:11px;
+    height:11px;
+    font-size:7.5px!important;
+    line-height:11px!important;
+  }
+}
