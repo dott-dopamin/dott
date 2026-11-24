@@ -122,6 +122,24 @@ async function restWrite(method,table,{id=null,row=null,ids=null,query='',prefer
 
 window.DOTT_DB={
   async schedules(){return restSelect('schedules','select=*&order=event_date.asc,event_time.asc','일정')},
+  async scheduleWaits(){return restSelect('schedule_waits','select=*&order=created_at.asc','대기 요청')},
+  async createScheduleWait(row){
+    const payload={
+      schedule_id:row.schedule_id,
+      category:row.category,
+      requester_name:String(row.requester_name||'').trim(),
+      people:Number(row.people||0),
+      requested_time:row.requested_time,
+      response:null
+    };
+    const res=await fetchWithTimeout(`${API_BASE}/rest/v1/schedule_waits`,{
+      method:'POST',
+      headers:await headersFor({json:true,prefer:'return=representation'}),
+      body:JSON.stringify(payload)
+    },12000);
+    const body=await parseResponse(res);
+    return Array.isArray(body)?body[0]:body;
+  },
   async notices(){return restSelect('notices','select=*&order=created_at.asc','공지')},
   async attendance(){
     try{const rows=await restSelect('attendance_members','select=*&order=name.asc','출석',true);window.DOTT_ATTENDANCE_ERROR=null;return rows}
