@@ -2189,3 +2189,35 @@ body[data-kind="deduction"] .catalog-page > .hero > h1 {
     letter-spacing:-.45px!important;
   }
 }
+
+
+/* ===== 2026-11-24 날짜 옆 대기 가능 체크 표시 ===== */
+.day-date-wrap{
+  display:flex;
+  align-items:center;
+  gap:3px;
+  min-width:0;
+}
+.day-wait-check{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  color:#3f67c6;
+  font-size:11px;
+  line-height:1;
+  font-weight:900;
+}
+@media(max-width:700px){
+  .calendar-grid>.day .day-date-wrap{
+    gap:1px;
+  }
+  .calendar-grid>.day .day-wait-check{
+    font-size:9px;
+    font-weight:800;
+  }
+}
+@media(max-width:390px){
+  .calendar-grid>.day .day-wait-check{
+    font-size:8.5px;
+  }
+}
