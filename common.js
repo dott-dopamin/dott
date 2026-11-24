@@ -63,12 +63,12 @@ function tag(v){const c=catInfo(v);return `<span class="cat-tag" style="backgrou
 function isCancelledStatus(v){return v==='취소'||v==='cancelled'||v==='canceled'}
 function scheduleStatusLabel(v){return isCancelledStatus(v)?'취소':'예약'}
 function nav(active='calendar'){
-  return `<header class="topbar"><a class="brand" href="index.html"><span class="brand-mark">D</span><span><strong>${esc(CFG.siteTitle)}</strong><small>${esc(CFG.siteSubtitle)}</small></span></a><nav class="nav">
-    <a class="${active==='calendar'?'active':''}" href="index.html">도트 예약</a>
+  return `<header class="topbar"><a class="brand" href="index.html?v=20261124-nav-final-v2"><span class="brand-mark">D</span><span><strong>${esc(CFG.siteTitle)}</strong><small>${esc(CFG.siteSubtitle)}</small></span></a><nav class="nav">
+    <a class="${active==='calendar'?'active':''}" href="index.html?v=20261124-nav-final-v2">도트 예약</a>
     <a href="https://hapikl.github.io/taraehyanggi.github.io/" target="_blank" rel="noopener noreferrer">백석공방 예약</a>
-    <a class="${active==='boardgame'?'active':''}" href="boardgames.html">보드게임</a>
-    <a class="${active==='murder'?'active':''}" href="murder.html">머더미스터리</a>
-    <a class="${active==='deduction'?'active':''}" href="deduction.html">추리게임</a>
+    <a class="${active==='boardgame'?'active':''}" href="boardgames.html?v=20261124-nav-final-v2">보드게임</a>
+    <a class="${active==='murder'?'active':''}" href="murder.html?v=20261124-nav-final-v2">머더미스터리</a>
+    <a class="${active==='deduction'?'active':''}" href="deduction.html?v=20261124-nav-final-v2">추리게임</a>
   </nav><a class="admin-link" href="https://dott-dopamin.github.io/dott-admin/">🔒 운영진 관리실</a></header>`
 }
 function footer(){return `<footer class="footer"><span>📅 DOTT · 예약과 보유 게임을 한눈에</span><span>© ${new Date().getFullYear()} 도파민</span></footer>`}
