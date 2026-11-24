@@ -2389,3 +2389,66 @@ body.calendar-page .hero.hero-with-overview + .calendar-card{margin-top:20px}
   body.calendar-page .hero-sidebar .overview-stats{padding:9px}
   body.calendar-page .hero.hero-with-overview + .calendar-card{margin-top:18px}
 }
+
+
+/* DOTT calendar header: inline counts and categories on desktop (2026-11-25) */
+body.calendar-page .calendar-heading-meta{display:none}
+@media(min-width:901px){
+  /* 회원 안내 옆은 오늘 일정 한 장만 남깁니다. */
+  body.calendar-page .hero-sidebar .overview-stats,
+  body.calendar-page .hero-sidebar .legend{display:none}
+  body.calendar-page .hero-sidebar .today-box{
+    min-height:144px;
+  }
+  body.calendar-page .calendar-card .card-head.calendar-head-with-meta{
+    display:grid;
+    grid-template-columns:max-content minmax(0,1fr) max-content;
+    align-items:center;
+    gap:14px;
+    padding:13px 17px;
+  }
+  body.calendar-page .calendar-card .calendar-head-with-meta h2{
+    margin:0;
+    white-space:nowrap;
+    font-size:20px;
+  }
+  body.calendar-page .calendar-heading-meta{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    min-width:0;
+    gap:11px;
+    overflow-x:auto;
+    overflow-y:hidden;
+    white-space:nowrap;
+    scrollbar-width:none;
+  }
+  body.calendar-page .calendar-heading-meta::-webkit-scrollbar{display:none}
+  body.calendar-page .calendar-inline-count{
+    display:inline-flex;align-items:center;gap:4px;
+    flex:0 0 auto;
+    color:#76685c;font-size:11px;
+  }
+  body.calendar-page .calendar-inline-count b{
+    color:#4b433a;font-size:12px;font-weight:850;
+    font-variant-numeric:tabular-nums;
+  }
+  body.calendar-page .calendar-inline-divider{
+    height:17px;width:1px;flex:0 0 1px;background:#e9dfd2;
+  }
+  body.calendar-page .calendar-inline-category-title{font-size:12px;flex:0 0 auto}
+  body.calendar-page .calendar-inline-categories{
+    display:inline-flex;align-items:center;gap:8px;flex:0 0 auto;
+  }
+  body.calendar-page .calendar-inline-category{
+    display:inline-flex;align-items:center;gap:4px;flex:0 0 auto;
+    color:#675b50;font-size:10.5px;
+  }
+  body.calendar-page .calendar-inline-category .dot{
+    width:7px;height:7px;flex:0 0 7px;
+  }
+  body.calendar-page .calendar-head-with-meta .toolbar{
+    flex:0 0 auto;
+    margin-left:0;
+  }
+}
