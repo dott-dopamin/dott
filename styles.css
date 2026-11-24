@@ -2273,3 +2273,11 @@ body[data-kind="deduction"] .catalog-page > .hero > h1 {
     margin:0;
   }
 }
+
+/* DOTT homepage: selectively styled text from administrator (2026-11-25) */
+body.calendar-page .page > .hero > h1 b,
+body.calendar-page .page > .hero > h1 strong{font-weight:900}
+body.calendar-page .page > .hero > p b,
+body.calendar-page .page > .hero > p strong{font-weight:800}
+body.calendar-page .page > .hero > .eyebrow b,
+body.calendar-page .page > .hero > .eyebrow strong{font-weight:900}
