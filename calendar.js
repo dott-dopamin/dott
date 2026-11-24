@@ -57,8 +57,9 @@ function calendarHtml(){
     const fridayClass=date.getDay()===5?'friday-priority':'';
     const eligibleWaitSchedules=ev.filter(x=>x.wait_allowed&&!isCancelledStatus(x.status));
     const dayWaits=scheduleWaits.filter(w=>eligibleWaitSchedules.some(s=>String(s.id)===String(w.schedule_id))||ev.some(s=>String(s.id)===String(w.schedule_id)));
+    const waitAllowedCheck=eligibleWaitSchedules.length?'<span class="day-wait-check" title="대기 가능" aria-label="대기 가능">✓</span>':'';
     const mobileWaitTrigger=(eligibleWaitSchedules.length||dayWaits.length)?`<button class="mobile-day-wait-trigger" type="button" data-day-wait-date="${ds}">${dayWaits.length?`대기${dayWaits.length}`:'대기+'}</button>`:'';
-    out+=`<div class="day ${ds===todayYmd()?'today':''} ${weekendClass} ${fridayClass}" data-date="${ds}"><div class="day-head"><div class="day-num">${dayNum}</div>${mobileWaitTrigger}</div><div class="day-events">${ev.slice(0,3).map(calendarEventHtml).join('')}${ev.length>3?`<div class="day-more">+${ev.length-3}개 일정</div>`:''}</div></div>`;
+    out+=`<div class="day ${ds===todayYmd()?'today':''} ${weekendClass} ${fridayClass}" data-date="${ds}"><div class="day-head"><div class="day-date-wrap"><div class="day-num">${dayNum}</div>${waitAllowedCheck}</div>${mobileWaitTrigger}</div><div class="day-events">${ev.slice(0,3).map(calendarEventHtml).join('')}${ev.length>3?`<div class="day-more">+${ev.length-3}개 일정</div>`:''}</div></div>`;
   }
   return out;
 }
