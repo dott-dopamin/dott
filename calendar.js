@@ -9,7 +9,7 @@ function monthEvents(){
 }
 
 function render(){
-  const me=monthEvents(),today=todayYmd(),te=schedules.filter(x=>x.event_date===today),hero={...DEFAULT_HERO,...(siteSettings||{})};
+  const me=monthEvents(),today=todayYmd(),te=schedules.filter(x=>x.event_date===today).sort((a,b)=>String(a.event_time||'99:99').localeCompare(String(b.event_time||'99:99'))),hero={...DEFAULT_HERO,...(siteSettings||{})};
   app.innerHTML=`${nav('calendar')}<main class="page"><section class="hero hero-with-overview"><div class="hero-heading"><span class="eyebrow">${heroPublicHtml(hero.hero_badge)}</span><h1>${heroPublicHtml(hero.hero_title)}</h1></div><div class="hero-intro-row"><div class="hero-copy"><p>${heroPublicHtml(hero.hero_description)}</p></div><aside class="hero-sidebar calendar-overview" aria-label="오늘 일정 및 일정 현황"><div class="today-box today-agenda"><div class="today-head"><strong>오늘 일정</strong><small>${fmtDate(today)}</small><span class="count-badge">${te.length}건</span></div><div class="mini-events">${te.length?te.map(todayEventHtml).join(''):'<div class="today-agenda-empty">오늘 등록된 일정이 없습니다.</div>'}</div></div><div class="overview-stats" aria-label="일정 현황">
   <div class="overview-stat"><span class="overview-stat-label"><span aria-hidden="true">📅</span> 이번 달 일정</span><strong>${me.length}<small>건</small></strong></div>
   <div class="overview-stat"><span class="overview-stat-label"><span aria-hidden="true">🟢</span> 오늘 일정</span><strong>${te.length}<small>건</small></strong></div>
