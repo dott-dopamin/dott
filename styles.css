@@ -2152,3 +2152,20 @@ body[data-kind="deduction"] .catalog-page > .hero > h1 {
   font-size:11px;
 }
 .mobile-day-wait-register-btn b{margin-right:5px}
+
+
+/* ===== 2026-11-24 모바일 대기 버튼 폰트 = 날짜 숫자와 동일 ===== */
+@media(max-width:700px){
+  .calendar-grid>.day .mobile-day-wait-trigger{
+    font-size:9px!important;
+    font-weight:700!important;
+    line-height:1!important;
+    padding:1px 2px!important;
+  }
+}
+@media(max-width:390px){
+  .calendar-grid>.day .mobile-day-wait-trigger{
+    font-size:8.5px!important;
+    font-weight:700!important;
+  }
+}
