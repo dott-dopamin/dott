@@ -33,7 +33,7 @@ function scheduleWaitHtml(w){
     : w.response==='no'
       ? '<span class="calendar-wait-status no">X 불가</span>'
       : '';
-  return `<div class="calendar-wait-row"><span class="calendar-wait-label">대기</span><b>${waitCategoryLabel(w.category)}</b><span class="calendar-wait-text">${esc(w.requester_name||'-')} · ${w.people||'-'}명 · ${esc(String(w.requested_time||'').slice(0,5)||'-')}</span>${state}</div>`;
+  return `<div class="calendar-wait-row" data-wait-id="${esc(w.id||'')}" role="button" tabindex="0" title="대기 상세 보기"><span class="calendar-wait-label">대기</span><b>${waitCategoryLabel(w.category)}</b><span class="calendar-wait-text">${esc(w.requester_name||'-')} · ${w.people||'-'}명 · ${esc(String(w.requested_time||'').slice(0,5)||'-')}</span>${state}</div>`;
 }
 
 function todayEventHtml(e){
@@ -86,7 +86,50 @@ function wireScheduleWaitActions(){
       openScheduleWaitModal(btn.dataset.waitSchedule);
     };
   });
+  document.querySelectorAll('.calendar-wait-row[data-wait-id]').forEach(row=>{
+    const open=()=>{
+      const wait=scheduleWaits.find(x=>String(x.id)===String(row.dataset.waitId));
+      if(wait)openScheduleWaitDetail(wait);
+    };
+    row.addEventListener('click',ev=>{ev.preventDefault();ev.stopPropagation();open()});
+    row.addEventListener('keydown',ev=>{
+      if(ev.key==='Enter'||ev.key===' '){ev.preventDefault();ev.stopPropagation();open()}
+    });
+  });
 }
+function openScheduleWaitDetail(wait){
+  const schedule=schedules.find(x=>String(x.id)===String(wait.schedule_id));
+  if(!schedule)return;
+  let back=document.getElementById('calendarWaitDetailModal');
+  if(!back){
+    back=document.createElement('div');
+    back.id='calendarWaitDetailModal';
+    back.className='calendar-detail-backdrop';
+    document.body.appendChild(back);
+  }
+  const response=wait.response==='ok'
+    ? '<b class="calendar-wait-detail-state ok">O 가능</b>'
+    : wait.response==='no'
+      ? '<b class="calendar-wait-detail-state no">X 불가</b>'
+      : '<b class="calendar-wait-detail-state pending">응답 전</b>';
+  back.innerHTML=`<div class="calendar-detail calendar-wait-detail" role="dialog" aria-modal="true" aria-label="대기 상세">
+    <div class="calendar-detail-head"><div><span class="calendar-detail-category">대기</span><h3>${esc(schedule.title||'일정')}</h3></div><button class="calendar-detail-close" type="button" aria-label="닫기">✕</button></div>
+    <div class="calendar-detail-body">
+      <div class="calendar-detail-row"><span>일정 날짜</span><b>${fmtDate(schedule.event_date)}</b></div>
+      <div class="calendar-detail-row"><span>기존 일정</span><b>${esc(String(schedule.event_time||'').slice(0,5)||'-')} · ${esc(schedule.title||'-')}</b></div>
+      <div class="calendar-detail-row"><span>대기 종류</span><b>${waitCategoryLabel(wait.category)}</b></div>
+      <div class="calendar-detail-row"><span>신청자</span><b>${esc(wait.requester_name||'-')}</b></div>
+      <div class="calendar-detail-row"><span>희망 시간</span><b>${esc(String(wait.requested_time||'').slice(0,5)||'-')}</b></div>
+      <div class="calendar-detail-row"><span>인원</span><b>${wait.people||'-'}명</b></div>
+      <div class="calendar-detail-row"><span>벙주 응답</span>${response}</div>
+    </div>
+  </div>`;
+  const close=()=>back.classList.remove('open');
+  back.classList.add('open');
+  back.querySelector('.calendar-detail-close').onclick=close;
+  back.onclick=ev=>{if(ev.target===back)close()};
+}
+
 function openScheduleWaitModal(scheduleId){
   const schedule=schedules.find(x=>String(x.id)===String(scheduleId));
   if(!schedule||!schedule.wait_allowed||isCancelledStatus(schedule.status))return;
