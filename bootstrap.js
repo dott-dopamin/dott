@@ -3,7 +3,7 @@
   const entry=bootScript?.dataset?.entry||'';
   const app=document.getElementById('app');
   const sleep=ms=>new Promise(r=>setTimeout(r,ms));
-  const BUILD='dott-20261125-intro-card-typography-v5';
+  const BUILD='dott-20261125-agenda-fixed-header-v6';
 
   function loadScript(src,{timeout=9000,retries=2}={}){
     return (async()=>{
