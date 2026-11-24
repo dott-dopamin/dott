@@ -10,7 +10,7 @@ function monthEvents(){
 
 function render(){
   const me=monthEvents(),today=todayYmd(),te=schedules.filter(x=>x.event_date===today),hero={...DEFAULT_HERO,...(siteSettings||{})};
-  app.innerHTML=`${nav('calendar')}<main class="page"><section class="hero hero-with-overview"><div class="hero-heading"><span class="eyebrow">${heroPublicHtml(hero.hero_badge)}</span><h1>${heroPublicHtml(hero.hero_title)}</h1></div><div class="hero-intro-row"><div class="hero-copy"><p>${heroPublicHtml(hero.hero_description)}</p></div><aside class="hero-sidebar calendar-overview" aria-label="오늘 일정 및 일정 현황"><div class="today-box"><div class="today-icon">▣</div><div><div class="today-head"><strong>오늘 일정</strong><small>${fmtDate(today)}</small><span class="count-badge">${te.length}건</span></div><div class="mini-events">${te.length?te.map(todayEventHtml).join(''):'오늘 등록된 일정이 없습니다.'}</div></div></div><div class="overview-stats" aria-label="일정 현황">
+  app.innerHTML=`${nav('calendar')}<main class="page"><section class="hero hero-with-overview"><div class="hero-heading"><span class="eyebrow">${heroPublicHtml(hero.hero_badge)}</span><h1>${heroPublicHtml(hero.hero_title)}</h1></div><div class="hero-intro-row"><div class="hero-copy"><p>${heroPublicHtml(hero.hero_description)}</p></div><aside class="hero-sidebar calendar-overview" aria-label="오늘 일정 및 일정 현황"><div class="today-box today-agenda"><div class="today-head"><strong>오늘 일정</strong><small>${fmtDate(today)}</small><span class="count-badge">${te.length}건</span></div><div class="mini-events">${te.length?te.map(todayEventHtml).join(''):'<div class="today-agenda-empty">오늘 등록된 일정이 없습니다.</div>'}</div></div><div class="overview-stats" aria-label="일정 현황">
   <div class="overview-stat"><span class="overview-stat-label"><span aria-hidden="true">📅</span> 이번 달 일정</span><strong>${me.length}<small>건</small></strong></div>
   <div class="overview-stat"><span class="overview-stat-label"><span aria-hidden="true">🟢</span> 오늘 일정</span><strong>${te.length}<small>건</small></strong></div>
 </div><div class="legend"><div class="legend-title">🎨 카테고리 색상</div><div class="legend-row">${CFG.categories.map(c=>`<span class="legend-chip"><i class="dot" style="background:${c.color}"></i>${esc(c.label)}</span>`).join('')}</div></div></aside></div></section>
@@ -40,7 +40,7 @@ function scheduleWaitHtml(w){
 
 function todayEventHtml(e){
   const cancelled=isCancelledStatus(e.status);
-  return `<div class="mini-event ${cancelled?'is-cancelled':''}">${tag(e.category)} <b>${esc(e.title)}</b> <span>◷ ${(e.event_time||'').slice(0,5)}</span> <span>♙ ${e.people||'-'}명</span> <span>벙주 ${esc(e.manager||'-')}</span>${cancelled?'<span class="cancel-label">취소</span>':''}</div>`;
+  return `<div class="mini-event today-agenda-item ${cancelled?'is-cancelled':''}"><div class="today-agenda-main">${tag(e.category)}<b class="today-agenda-name">${esc(e.title)}</b>${cancelled?'<span class="cancel-label">취소</span>':''}</div><div class="today-agenda-info"><span>◷ ${esc(String(e.event_time||'').slice(0,5)||'-')}</span><span>♙ ${e.people||'-'}명</span><span>벙주 ${esc(e.manager||'-')}</span></div></div>`;
 }
 
 function calendarHtml(){
