@@ -182,11 +182,11 @@ function openScheduleWaitDetail(wait){
     back.className='calendar-detail-backdrop';
     document.body.appendChild(back);
   }
-  const response=wait.response==='ok'
-    ? '<b class="calendar-wait-detail-state ok">O 가능</b>'
+  const responseRow=wait.response==='ok'
+    ? '<div class="calendar-detail-row"><span>벙주 응답</span><b class="calendar-wait-detail-state ok">O 가능</b></div>'
     : wait.response==='no'
-      ? '<b class="calendar-wait-detail-state no">X 불가</b>'
-      : '<b class="calendar-wait-detail-state pending">응답 전</b>';
+      ? '<div class="calendar-detail-row"><span>벙주 응답</span><b class="calendar-wait-detail-state no">X 불가</b></div>'
+      : '';
   back.innerHTML=`<div class="calendar-detail calendar-wait-detail" role="dialog" aria-modal="true" aria-label="대기 상세">
     <div class="calendar-detail-head"><div><span class="calendar-detail-category">대기</span><h3>${esc(schedule.title||'일정')}</h3></div><button class="calendar-detail-close" type="button" aria-label="닫기">✕</button></div>
     <div class="calendar-detail-body">
@@ -196,7 +196,7 @@ function openScheduleWaitDetail(wait){
       <div class="calendar-detail-row"><span>신청자</span><b>${esc(wait.requester_name||'-')}</b></div>
       <div class="calendar-detail-row"><span>희망 시간</span><b>${esc(String(wait.requested_time||'').slice(0,5)||'-')}</b></div>
       <div class="calendar-detail-row"><span>인원</span><b>${wait.people||'-'}명</b></div>
-      <div class="calendar-detail-row"><span>벙주 응답</span>${response}</div>
+      ${responseRow}
     </div>
   </div>`;
   const close=()=>back.classList.remove('open');
