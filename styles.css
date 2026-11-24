@@ -1834,7 +1834,7 @@ body.recommend-open{overflow:hidden}
 }
 
 /* DOTT public main headings — subtitle-matched muted color / 750 weight (2026-10-31) */
-body.calendar-page .page > .hero > h1,
+body.calendar-page .page > .hero .hero-heading > h1,
 body[data-kind="boardgame"] .catalog-page > .hero > h1,
 body[data-kind="murder"] .catalog-page > .hero > h1,
 body[data-kind="deduction"] .catalog-page > .hero > h1 {
@@ -2275,12 +2275,12 @@ body[data-kind="deduction"] .catalog-page > .hero > h1 {
 }
 
 /* DOTT homepage: selectively styled text from administrator (2026-11-25) */
-body.calendar-page .page > .hero > h1 b,
-body.calendar-page .page > .hero > h1 strong{font-weight:900}
-body.calendar-page .page > .hero > p b,
-body.calendar-page .page > .hero > p strong{font-weight:800}
-body.calendar-page .page > .hero > .eyebrow b,
-body.calendar-page .page > .hero > .eyebrow strong{font-weight:900}
+body.calendar-page .page > .hero .hero-heading > h1 b,
+body.calendar-page .page > .hero .hero-heading > h1 strong{font-weight:900}
+body.calendar-page .page > .hero .hero-copy > p b,
+body.calendar-page .page > .hero .hero-copy > p strong{font-weight:800}
+body.calendar-page .page > .hero .hero-heading > .eyebrow b,
+body.calendar-page .page > .hero .hero-heading > .eyebrow strong{font-weight:900}
 
 
 
@@ -2451,4 +2451,105 @@ body.calendar-page .calendar-heading-meta{display:none}
     flex:0 0 auto;
     margin-left:0;
   }
+}
+
+
+/* DOTT homepage v5: intro-aligned warm today card and readable inline calendar metadata (2026-11-25) */
+/* 제목/소개/카드를 분리해 소개 문구 시작선과 오늘 일정의 위쪽을 정확히 맞춥니다. */
+body.calendar-page .hero-heading{min-width:0}
+body.calendar-page .hero-intro-row{min-width:0}
+body.calendar-page .hero-intro-row .hero-copy{min-width:0}
+@media(min-width:901px){
+  body.calendar-page .hero.hero-with-overview{
+    display:block;
+  }
+  body.calendar-page .hero-intro-row{
+    display:grid;
+    grid-template-columns:minmax(0,1fr) minmax(290px,350px);
+    column-gap:28px;
+    align-items:start;
+  }
+  body.calendar-page .hero-sidebar.calendar-overview{
+    align-self:start;
+  }
+  /* 오른쪽 일정 카드는 사이트 기본 베이지/브라운 색감에 맞게 톤을 통일합니다. */
+  body.calendar-page .hero-sidebar .today-box{
+    min-height:0;
+    padding:15px 16px;
+    gap:11px;
+    border:1px solid #ead9c8;
+    border-left:3px solid #d29b7a;
+    border-radius:14px;
+    background:linear-gradient(135deg,#fffaf5 0%,#fff5eb 100%);
+    box-shadow:0 3px 11px rgba(101,71,43,.035);
+  }
+  body.calendar-page .hero-sidebar .today-icon{
+    background:#cb805a;
+    color:#fff;
+    border-radius:9px;
+    width:30px;height:30px;
+  }
+  body.calendar-page .hero-sidebar .today-head strong{
+    font-size:14px;
+    font-weight:800;
+    color:#594231;
+  }
+  body.calendar-page .hero-sidebar .today-head small{color:#8d7a69;font-size:11px}
+  body.calendar-page .hero-sidebar .count-badge{
+    background:#f3e3d6;
+    color:#945f42;
+    border:1px solid #ead3bf;
+    padding:3px 7px;
+  }
+  body.calendar-page .hero-sidebar .mini-events{color:#665347;gap:8px}
+  body.calendar-page .hero-sidebar .mini-event{
+    font-size:11.5px;
+    color:#665347;
+    gap:5px 6px;
+    line-height:1.65;
+  }
+  body.calendar-page .hero-sidebar .mini-event b{color:#483c34}
+  /* 월 제목과 날짜 이동 사이: 작은 설명 대신 읽기 쉬운 한 줄 정보 */
+  body.calendar-page .calendar-card .card-head.calendar-head-with-meta{
+    grid-template-columns:max-content minmax(0,1fr) max-content;
+    gap:13px;
+  }
+  body.calendar-page .calendar-heading-meta{gap:13px}
+  body.calendar-page .calendar-inline-count{
+    font-size:13px;
+    font-weight:600;
+    gap:5px;
+  }
+  body.calendar-page .calendar-inline-count b{
+    font-size:14px;
+    font-weight:850;
+  }
+  body.calendar-page .calendar-inline-category-title{font-size:14px}
+  body.calendar-page .calendar-inline-categories{gap:10px}
+  body.calendar-page .calendar-inline-category{
+    font-size:12.5px;
+    font-weight:600;
+    gap:5px;
+  }
+  body.calendar-page .calendar-inline-category .dot{
+    width:8px;height:8px;flex:0 0 8px;
+  }
+}
+@media(min-width:901px) and (max-width:1080px){
+  body.calendar-page .calendar-heading-meta{gap:9px}
+  body.calendar-page .calendar-inline-categories{gap:7px}
+  body.calendar-page .calendar-inline-count{font-size:12.5px}
+  body.calendar-page .calendar-inline-category{font-size:12px}
+}
+@media(max-width:900px){
+  /* 모바일의 기존 순서와 카드 색상/구성은 유지합니다. */
+  body.calendar-page .hero.hero-with-overview{row-gap:0}
+  body.calendar-page .hero-intro-row{
+    display:flex;
+    flex-direction:column;
+    gap:18px;
+  }
+}
+@media(max-width:700px){
+  body.calendar-page .hero-intro-row{gap:16px}
 }
