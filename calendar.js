@@ -1,6 +1,6 @@
 const app=document.getElementById('app');
 let cursor=new Date();cursor.setDate(1);
-let schedules=[],notices=[],siteSettings=null;
+let schedules=[],scheduleWaits=[],notices=[],siteSettings=null;
 let calendarDetailScrollPad='';
 const DEFAULT_HERO={hero_badge:'◎ 전체 공개 일정',hero_title:'우리의 모든 일정을\n한눈에 확인하세요',hero_description:'월별 캘린더에서 예약 일정을 확인하고, 보드게임·머더미스터리·추리게임 보유 목록도 함께 살펴볼 수 있습니다.'};
 
@@ -18,6 +18,22 @@ function render(){
   document.getElementById('next').onclick=()=>{cursor.setMonth(cursor.getMonth()+1);render()};
   document.getElementById('today').onclick=()=>{cursor=new Date();cursor.setDate(1);render()};
   wireMobileCalendarEvents();
+  wireScheduleWaitActions();
+}
+
+function waitsForSchedule(scheduleId){
+  return scheduleWaits
+    .filter(w=>String(w.schedule_id)===String(scheduleId))
+    .sort((a,b)=>String(a.created_at||'').localeCompare(String(b.created_at||'')));
+}
+function waitCategoryLabel(v){return v==='strategy'?'전략':'보겜'}
+function scheduleWaitHtml(w){
+  const state=w.response==='ok'
+    ? '<span class="calendar-wait-status ok">O 가능</span>'
+    : w.response==='no'
+      ? '<span class="calendar-wait-status no">X 불가</span>'
+      : '';
+  return `<div class="calendar-wait-row"><span class="calendar-wait-label">대기</span><b>${waitCategoryLabel(w.category)}</b><span class="calendar-wait-text">${esc(w.requester_name||'-')} · ${w.people||'-'}명 · ${esc(String(w.requested_time||'').slice(0,5)||'-')}</span>${state}</div>`;
 }
 
 function todayEventHtml(e){
@@ -29,7 +45,7 @@ function calendarHtml(){
   const y=cursor.getFullYear(),m=cursor.getMonth();
   const first=new Date(y,m,1),start=first.getDay(),daysInMonth=new Date(y,m+1,0).getDate();
   const cellCount=Math.ceil((start+daysInMonth)/7)*7;
-  let out=['일','월','화','수','목','금','토'].map(d=>`<div class="dow">${d}</div>`).join('');
+  let out=['일','월','화','수','목','금','토'].map((d,i)=>`<div class="dow ${i===5?'friday-priority':''}" ${i===5?'title="금요일 · 보드게임 우선예약"':''}>${d}</div>`).join('');
   for(let i=0;i<cellCount;i++){
     const dayNum=i-start+1;
     if(dayNum<1||dayNum>daysInMonth){
@@ -38,14 +54,18 @@ function calendarHtml(){
     }
     const date=new Date(y,m,dayNum),ds=ymd(date),ev=schedules.filter(x=>x.event_date===ds);
     const weekendClass=date.getDay()===0?'sunday':date.getDay()===6?'saturday':'';
-    out+=`<div class="day ${ds===todayYmd()?'today':''} ${weekendClass}" data-date="${ds}"><div class="day-num">${dayNum}</div><div class="day-events">${ev.slice(0,3).map(calendarEventHtml).join('')}${ev.length>3?`<div class="day-more">+${ev.length-3}개 일정</div>`:''}</div></div>`;
+    const fridayClass=date.getDay()===5?'friday-priority':'';
+    out+=`<div class="day ${ds===todayYmd()?'today':''} ${weekendClass} ${fridayClass}" data-date="${ds}"><div class="day-num">${dayNum}</div><div class="day-events">${ev.slice(0,3).map(calendarEventHtml).join('')}${ev.length>3?`<div class="day-more">+${ev.length-3}개 일정</div>`:''}</div></div>`;
   }
   return out;
 }
 
 function calendarEventHtml(e){
-  const c=catInfo(e.category),cancelled=isCancelledStatus(e.status);
-  return `<div class="day-event ${cancelled?'is-cancelled':''} ${e.venue_flexible?'venue-flexible':''}" data-event-id="${esc(e.id||'')}" role="button" tabindex="0" style="background:${hexWithAlpha(c.color,'26')};color:#1f1f1f" title="${esc(e.title)}"><div class="event-line event-main"><span class="event-time">${(e.event_time||'').slice(0,5)}</span><span class="event-title">${esc(e.title)}</span>${cancelled?'<span class="cancel-label">취소</span>':''}</div><div class="event-line event-sub"><span>${e.people||'-'}명</span><span>벙주 ${esc(e.manager||'-')}${e.venue_flexible?'<b class="venue-flex-public">✓</b>':''}</span></div></div>`;
+  const c=catInfo(e.category),cancelled=isCancelledStatus(e.status),waits=waitsForSchedule(e.id);
+  const eventCard=`<div class="day-event ${cancelled?'is-cancelled':''} ${e.venue_flexible?'venue-flexible':''}" data-event-id="${esc(e.id||'')}" role="button" tabindex="0" style="background:${hexWithAlpha(c.color,'26')};color:#1f1f1f" title="${esc(e.title)}"><div class="event-line event-main"><span class="event-time">${(e.event_time||'').slice(0,5)}</span><span class="event-title">${esc(e.title)}</span>${cancelled?'<span class="cancel-label">취소</span>':''}</div><div class="event-line event-sub"><span>${e.people||'-'}명</span><span>벙주 ${esc(e.manager||'-')}${e.venue_flexible?'<b class="venue-flex-public">✓</b>':''}</span></div></div>`;
+  const waitRows=waits.map(scheduleWaitHtml).join('');
+  const waitButton=e.wait_allowed&&!cancelled?`<button class="calendar-wait-add" type="button" data-wait-schedule="${esc(e.id||'')}">+ 대기 걸기</button>`:'';
+  return `<div class="calendar-event-wrap">${eventCard}${waitRows}${waitButton}</div>`;
 }
 
 function wireMobileCalendarEvents(){
@@ -57,6 +77,66 @@ function wireMobileCalendarEvents(){
     card.addEventListener('click',open);
     card.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();open()}});
   });
+}
+
+function wireScheduleWaitActions(){
+  document.querySelectorAll('[data-wait-schedule]').forEach(btn=>{
+    btn.onclick=ev=>{
+      ev.preventDefault();ev.stopPropagation();
+      openScheduleWaitModal(btn.dataset.waitSchedule);
+    };
+  });
+}
+function openScheduleWaitModal(scheduleId){
+  const schedule=schedules.find(x=>String(x.id)===String(scheduleId));
+  if(!schedule||!schedule.wait_allowed||isCancelledStatus(schedule.status))return;
+  let back=document.getElementById('calendarWaitModal');
+  if(!back){
+    back=document.createElement('div');
+    back.id='calendarWaitModal';
+    back.className='calendar-wait-backdrop';
+    document.body.appendChild(back);
+  }
+  back.innerHTML=`<div class="calendar-wait-modal" role="dialog" aria-modal="true" aria-label="대기 등록">
+    <div class="calendar-wait-modal-head"><div><small>${fmtDate(schedule.event_date)} · ${esc(String(schedule.event_time||'').slice(0,5))}</small><h3>${esc(schedule.title)}</h3></div><button type="button" class="calendar-wait-close" aria-label="닫기">✕</button></div>
+    <div class="calendar-wait-modal-body">
+      <p class="calendar-wait-guide">이 일정은 <b>대기 가능한 벙</b>입니다. 원하는 보드게임/전략 일정 정보를 남겨주세요.</p>
+      <div class="calendar-wait-form">
+        <div><label>종류</label><select id="waitCategory" class="field"><option value="boardgame">보겜</option><option value="strategy">전략</option></select></div>
+        <div><label>시간</label><input id="waitTime" class="field" type="time" value="${esc(String(schedule.event_time||'20:00').slice(0,5))}"></div>
+        <div><label>신청자 이름</label><input id="waitName" class="field" maxlength="30" placeholder="이름 입력"></div>
+        <div><label>인원</label><input id="waitPeople" class="field" type="number" min="1" max="30" value="4"></div>
+      </div>
+      <p class="calendar-wait-note">등록한 대기는 캘린더에 표시되며, 운영진이 벙주 확인 후 <b>O 가능 / X 불가</b>로 표시합니다.</p>
+    </div>
+    <div class="calendar-wait-modal-foot"><button type="button" class="btn calendar-wait-cancel">취소</button><button type="button" class="btn primary calendar-wait-submit">대기 등록</button></div>
+  </div>`;
+  const close=()=>back.classList.remove('open');
+  back.classList.add('open');
+  back.querySelector('.calendar-wait-close').onclick=close;
+  back.querySelector('.calendar-wait-cancel').onclick=close;
+  back.onclick=ev=>{if(ev.target===back)close()};
+  back.querySelector('.calendar-wait-submit').onclick=async()=>{
+    const btn=back.querySelector('.calendar-wait-submit');
+    const requester=back.querySelector('#waitName').value.trim();
+    const people=Number(back.querySelector('#waitPeople').value||0);
+    const requestedTime=back.querySelector('#waitTime').value;
+    const category=back.querySelector('#waitCategory').value;
+    if(!requester)return alert('신청자 이름을 입력해 주세요.');
+    if(!people||people<1||people>30)return alert('인원을 확인해 주세요.');
+    if(!requestedTime)return alert('시간을 입력해 주세요.');
+    btn.disabled=true;btn.textContent='등록 중...';
+    try{
+      await DOTT_DB.createScheduleWait({schedule_id:schedule.id,category,requester_name:requester,people,requested_time:requestedTime});
+      scheduleWaits=await DOTT_DB.scheduleWaits();
+      writePublicCache();
+      close();render();
+      alert('대기를 등록했습니다.');
+    }catch(e){
+      alert(e.message||e);
+      btn.disabled=false;btn.textContent='대기 등록';
+    }
+  };
 }
 
 function openCalendarDetail(e){
@@ -76,6 +156,7 @@ function openCalendarDetail(e){
       <div class="calendar-detail-row"><span>인원</span><b>${e.people||'-'}명</b></div>
       <div class="calendar-detail-row"><span>벙주</span><b>${esc(e.manager||'-')}${e.venue_flexible?' <span class="venue-flex-public">✓</span>':''}</b></div>
       <div class="calendar-detail-row"><span>상태</span><b class="${cancelled?'detail-cancelled':''}">${scheduleStatusLabel(e.status)}</b></div>
+      ${e.wait_allowed&&!cancelled?`<div class="calendar-detail-wait"><button class="btn primary" type="button" data-detail-wait="${esc(e.id||'')}">+ 대기 걸기</button></div>`:''}
       ${e.note?`<div class="calendar-detail-note"><span>메모</span><p>${nl2br(e.note)}</p></div>`:''}
     </div>
   </div>`;
@@ -90,6 +171,7 @@ function openCalendarDetail(e){
   document.body.classList.add('calendar-detail-open');
   back.classList.add('open');
   back.querySelector('.calendar-detail-close').onclick=close;
+  back.querySelector('[data-detail-wait]')?.addEventListener('click',()=>{close();openScheduleWaitModal(e.id)});
   back.onclick=ev=>{if(ev.target===back)close()};
 }
 
@@ -103,7 +185,7 @@ function readPublicCache(){
   try{const v=JSON.parse(localStorage.getItem(PUBLIC_CACHE_KEY)||'null');return v&&Array.isArray(v.schedules)?v:null}catch(_e){return null}
 }
 function writePublicCache(){
-  try{localStorage.setItem(PUBLIC_CACHE_KEY,JSON.stringify({schedules,notices,siteSettings,savedAt:Date.now()}))}catch(_e){}
+  try{localStorage.setItem(PUBLIC_CACHE_KEY,JSON.stringify({schedules,scheduleWaits,notices,siteSettings,savedAt:Date.now()}))}catch(_e){}
 }
 function showPublicLoadWarning(parts){
   if(!parts.length)return;
@@ -118,15 +200,16 @@ function showPublicLoadWarning(parts){
 async function loadPublicData(initial=true){
   const cached=readPublicCache();
   if(initial&&cached){
-    schedules=cached.schedules||[];notices=cached.notices||[];siteSettings=cached.siteSettings||null;render();
+    schedules=cached.schedules||[];scheduleWaits=cached.scheduleWaits||[];notices=cached.notices||[];siteSettings=cached.siteSettings||null;render();
   }else if(initial){
     app.innerHTML=`${nav('calendar')}<div class="loading">일정을 불러오는 중...</div>`;
   }
-  const results=await Promise.allSettled([DOTT_DB.schedules(),DOTT_DB.notices(),DOTT_DB.settings()]);
+  const results=await Promise.allSettled([DOTT_DB.schedules(),DOTT_DB.notices(),DOTT_DB.settings(),DOTT_DB.scheduleWaits()]);
   const failed=[];
   if(results[0].status==='fulfilled')schedules=results[0].value;else failed.push('일정');
   if(results[1].status==='fulfilled')notices=results[1].value;else failed.push('공지');
   if(results[2].status==='fulfilled')siteSettings=results[2].value;
+  if(results[3].status==='fulfilled')scheduleWaits=results[3].value;else failed.push('대기');
   const hasCore=results[0].status==='fulfilled'||cached;
   if(hasCore){
     render();
