@@ -2254,3 +2254,22 @@ body[data-kind="deduction"] .catalog-page > .hero > h1 {
     line-height:11px!important;
   }
 }
+
+
+/* ===== 2026-11-24 PC 날짜/대기체크 수평 정렬 ===== */
+@media(min-width:701px){
+  .calendar-grid>.day .day-head{
+    margin-bottom:7px;
+  }
+  .calendar-grid>.day .day-date-wrap .day-num{
+    margin-bottom:0!important;
+    line-height:16px;
+  }
+  .calendar-grid>.day .day-date-wrap{
+    align-items:center!important;
+  }
+  .calendar-grid>.day .day-wait-check{
+    align-self:center;
+    margin:0;
+  }
+}
