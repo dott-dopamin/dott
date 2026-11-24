@@ -1914,3 +1914,64 @@ body[data-kind="deduction"] .catalog-page > .hero > h1 {
   }
   .mystery-host-page .mystery-embed-fallback{padding:0 10px}
 }
+
+
+/* ===== DOTT 2026-11-24 금요일 우선예약 + 일정 대기 시스템 ===== */
+.calendar-page .dow.friday-priority{
+  color:#425db7;
+  background:#f4f6ff;
+  box-shadow:inset 2px 0 0 #9fb0ef,inset -2px 0 0 #9fb0ef;
+}
+.calendar-page .day.friday-priority{
+  background:linear-gradient(180deg,#f9faff 0,#fffefa 58%);
+  box-shadow:inset 2px 0 0 #aab8ea,inset -2px 0 0 #aab8ea;
+}
+.calendar-event-wrap{display:flex;flex-direction:column;gap:4px;min-width:0}
+.calendar-wait-row{
+  display:flex;align-items:center;gap:4px;min-width:0;
+  border:1px solid #d7cec5;background:#fff;border-radius:6px;padding:4px 5px;
+  color:#5d554e;font-size:9px;line-height:1.2
+}
+.calendar-wait-label{flex:0 0 auto;background:#eee9e3;border-radius:4px;padding:2px 4px;font-weight:900}
+.calendar-wait-row>b{flex:0 0 auto;font-size:9px}
+.calendar-wait-text{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.calendar-wait-status{margin-left:auto;flex:0 0 auto;border-radius:999px;padding:2px 4px;font-size:8px;font-weight:900}
+.calendar-wait-status.ok{background:#e3f4e7;color:#2f7b46}
+.calendar-wait-status.no{background:#f8e5e3;color:#b1433b}
+.calendar-wait-add{
+  width:max-content;max-width:100%;border:1px dashed #c8beb3;background:#fff;color:#71675e;
+  border-radius:6px;padding:4px 6px;font-size:9px;font-weight:800
+}
+.calendar-wait-add:hover{background:#fff8f2;border-color:#d3a98e}
+.calendar-detail-wait{margin-top:12px}
+.calendar-wait-backdrop{
+  position:fixed;inset:0;z-index:130;display:none;align-items:center;justify-content:center;
+  padding:18px;background:rgba(40,32,24,.38)
+}
+.calendar-wait-backdrop.open{display:flex}
+.calendar-wait-modal{
+  width:min(520px,100%);max-height:90vh;overflow:auto;background:#fff;border:1px solid var(--line);
+  border-radius:18px;box-shadow:0 24px 70px rgba(0,0,0,.18)
+}
+.calendar-wait-modal-head{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;padding:18px 20px;border-bottom:1px solid var(--line)}
+.calendar-wait-modal-head small{display:block;color:var(--muted);font-size:11px;margin-bottom:4px}
+.calendar-wait-modal-head h3{margin:0;font-size:18px}
+.calendar-wait-close{width:34px;height:34px;border:1px solid var(--line);background:#fff;border-radius:9px}
+.calendar-wait-modal-body{padding:20px}
+.calendar-wait-guide{margin:0 0 14px;color:#5d554d;font-size:12px;line-height:1.55}
+.calendar-wait-form{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.calendar-wait-form label{display:block;margin-bottom:6px;color:var(--muted);font-size:11px}
+.calendar-wait-note{margin:12px 0 0;color:var(--muted);font-size:10.5px;line-height:1.55}
+.calendar-wait-modal-foot{display:flex;justify-content:flex-end;gap:8px;padding:16px 20px;border-top:1px solid var(--line)}
+@media(max-width:700px){
+  .calendar-page .dow.friday-priority{box-shadow:inset 1px 0 0 #9fb0ef,inset -1px 0 0 #9fb0ef}
+  .calendar-page .day.friday-priority{box-shadow:inset 1px 0 0 #aab8ea,inset -1px 0 0 #aab8ea}
+  .calendar-event-wrap{gap:3px}
+  .calendar-wait-row{display:block;padding:3px 2px;font-size:7px;line-height:1.2}
+  .calendar-wait-label,.calendar-wait-row>b,.calendar-wait-status{display:inline-flex}
+  .calendar-wait-text{display:block;margin-top:2px;white-space:normal;overflow:hidden;display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2}
+  .calendar-wait-status{margin-left:2px;font-size:6.5px;padding:1px 3px}
+  .calendar-wait-add{padding:3px 4px;font-size:7.5px}
+  .calendar-wait-form{grid-template-columns:1fr}
+  .calendar-wait-modal input.field,.calendar-wait-modal select.field{font-size:16px}
+}
