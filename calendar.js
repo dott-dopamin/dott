@@ -38,7 +38,7 @@ function scheduleWaitHtml(w){
 
 function todayEventHtml(e){
   const cancelled=isCancelledStatus(e.status);
-  return `<div class="mini-event ${cancelled?'is-cancelled':''}">${tag(e.category)} <b>${esc(e.title)}</b> <span>◷ ${(e.event_time||'').slice(0,5)}</span> <span>♙ ${e.people||'-'}명</span> <span>벙주 ${esc(e.manager||'-')}${e.venue_flexible?'<b class="venue-flex-public">✓</b>':''}</span>${cancelled?'<span class="cancel-label">취소</span>':''}</div>`;
+  return `<div class="mini-event ${cancelled?'is-cancelled':''}">${tag(e.category)} <b>${esc(e.title)}</b> <span>◷ ${(e.event_time||'').slice(0,5)}</span> <span>♙ ${e.people||'-'}명</span> <span>벙주 ${esc(e.manager||'-')}</span>${cancelled?'<span class="cancel-label">취소</span>':''}</div>`;
 }
 
 function calendarHtml(){
@@ -62,7 +62,7 @@ function calendarHtml(){
 
 function calendarEventHtml(e){
   const c=catInfo(e.category),cancelled=isCancelledStatus(e.status),waits=waitsForSchedule(e.id);
-  const eventCard=`<div class="day-event ${cancelled?'is-cancelled':''} ${e.venue_flexible?'venue-flexible':''}" data-event-id="${esc(e.id||'')}" role="button" tabindex="0" style="background:${hexWithAlpha(c.color,'26')};color:#1f1f1f" title="${esc(e.title)}"><div class="event-line event-main"><span class="event-time">${(e.event_time||'').slice(0,5)}</span><span class="event-title">${esc(e.title)}</span>${cancelled?'<span class="cancel-label">취소</span>':''}</div><div class="event-line event-sub"><span>${e.people||'-'}명</span><span>벙주 ${esc(e.manager||'-')}${e.venue_flexible?'<b class="venue-flex-public">✓</b>':''}</span></div></div>`;
+  const eventCard=`<div class="day-event ${cancelled?'is-cancelled':''}" data-event-id="${esc(e.id||'')}" role="button" tabindex="0" style="background:${hexWithAlpha(c.color,'26')};color:#1f1f1f" title="${esc(e.title)}"><div class="event-line event-main"><span class="event-time">${(e.event_time||'').slice(0,5)}</span><span class="event-title">${esc(e.title)}</span>${cancelled?'<span class="cancel-label">취소</span>':''}</div><div class="event-line event-sub"><span>${e.people||'-'}명</span><span>벙주 ${esc(e.manager||'-')}</span></div></div>`;
   const waitRows=waits.map(scheduleWaitHtml).join('');
   const waitButton=e.wait_allowed&&!cancelled?`<button class="calendar-wait-add" type="button" data-wait-schedule="${esc(e.id||'')}">+ 대기 걸기</button>`:'';
   return `<div class="calendar-event-wrap">${eventCard}${waitRows}${waitButton}</div>`;
@@ -154,7 +154,7 @@ function openCalendarDetail(e){
       <div class="calendar-detail-row"><span>날짜</span><b>${fmtDate(e.event_date)}</b></div>
       <div class="calendar-detail-row"><span>시간</span><b>${esc((e.event_time||'').slice(0,5)||'-')}</b></div>
       <div class="calendar-detail-row"><span>인원</span><b>${e.people||'-'}명</b></div>
-      <div class="calendar-detail-row"><span>벙주</span><b>${esc(e.manager||'-')}${e.venue_flexible?' <span class="venue-flex-public">✓</span>':''}</b></div>
+      <div class="calendar-detail-row"><span>벙주</span><b>${esc(e.manager||'-')}</b></div>
       <div class="calendar-detail-row"><span>상태</span><b class="${cancelled?'detail-cancelled':''}">${scheduleStatusLabel(e.status)}</b></div>
       ${e.wait_allowed&&!cancelled?`<div class="calendar-detail-wait"><button class="btn primary" type="button" data-detail-wait="${esc(e.id||'')}">+ 대기 걸기</button></div>`:''}
       ${e.note?`<div class="calendar-detail-note"><span>메모</span><p>${nl2br(e.note)}</p></div>`:''}
