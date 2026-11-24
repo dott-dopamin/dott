@@ -2281,3 +2281,93 @@ body.calendar-page .page > .hero > p b,
 body.calendar-page .page > .hero > p strong{font-weight:800}
 body.calendar-page .page > .hero > .eyebrow b,
 body.calendar-page .page > .hero > .eyebrow strong{font-weight:900}
+
+
+/* DOTT calendar: compact today + schedule counts + category legend (2026-11-25) */
+body.calendar-page .calendar-overview{
+  display:grid;
+  grid-template-columns:minmax(0,1.32fr) minmax(195px,.62fr) minmax(285px,.83fr);
+  align-items:stretch;
+  gap:14px;
+  margin-top:20px;
+}
+body.calendar-page .calendar-overview > *{min-width:0}
+body.calendar-page .calendar-overview .today-box{
+  grid-template-columns:auto minmax(0,1fr);
+  gap:10px;
+  padding:12px 13px;
+}
+body.calendar-page .calendar-overview .today-icon{
+  width:30px;height:30px;border-radius:8px;
+}
+body.calendar-page .calendar-overview .today-head{
+  gap:6px 8px;margin-bottom:6px;
+}
+body.calendar-page .calendar-overview .today-head strong{font-size:13px}
+body.calendar-page .calendar-overview .today-head small{font-size:11px}
+body.calendar-page .calendar-overview .mini-event{
+  gap:5px;font-size:11px;line-height:1.55;
+}
+body.calendar-page .calendar-overview .mini-event b{
+  overflow-wrap:anywhere;
+}
+body.calendar-page .overview-stats{
+  border:1px solid #e4d8ca;
+  border-radius:14px;
+  background:#fffbf5;
+  padding:12px 14px;
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+  gap:7px;
+}
+body.calendar-page .overview-stat{
+  display:flex;align-items:center;justify-content:space-between;
+  min-height:27px;gap:8px;
+}
+body.calendar-page .overview-stat + .overview-stat{
+  border-top:1px solid #eee5da;padding-top:7px;
+}
+body.calendar-page .overview-stat-label{
+  color:#73665b;font-size:11px;font-weight:700;white-space:nowrap;
+}
+body.calendar-page .overview-stat strong{
+  color:#4b433a;font-size:19px;font-weight:850;
+  font-variant-numeric:tabular-nums;
+  white-space:nowrap;
+}
+body.calendar-page .overview-stat strong small{
+  color:#8d8176;font-size:10px;font-weight:600;margin-left:3px;
+}
+body.calendar-page .calendar-overview .legend{
+  padding:13px 14px;
+}
+body.calendar-page .calendar-overview .legend-title{
+  font-size:12px;font-weight:750;margin-bottom:9px;
+}
+body.calendar-page .calendar-overview .legend-row{gap:6px}
+body.calendar-page .calendar-overview .legend-chip{font-size:10.5px;padding:5px 7px}
+@media(max-width:1050px){
+  body.calendar-page .calendar-overview{
+    grid-template-columns:minmax(0,1.15fr) minmax(0,1fr);
+    gap:12px;
+  }
+  body.calendar-page .calendar-overview .today-box{grid-row:span 2}
+}
+@media(max-width:700px){
+  body.calendar-page .calendar-overview{grid-template-columns:minmax(0,1fr);gap:10px}
+  body.calendar-page .calendar-overview .today-box{grid-row:auto;grid-template-columns:minmax(0,1fr)}
+  body.calendar-page .overview-stats{
+    display:grid;grid-template-columns:repeat(2,minmax(0,1fr));
+    gap:0;padding:10px 11px;
+  }
+  body.calendar-page .overview-stat{
+    display:flex;flex-direction:column;align-items:center;justify-content:center;
+    min-height:47px;gap:2px;
+  }
+  body.calendar-page .overview-stat + .overview-stat{
+    border-top:0;border-left:1px solid #eee5da;padding-top:0;
+  }
+  body.calendar-page .overview-stat strong{font-size:20px}
+  body.calendar-page .calendar-overview .legend{padding:12px 13px}
+}
