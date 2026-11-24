@@ -2058,3 +2058,97 @@ body[data-kind="deduction"] .catalog-page > .hero > h1 {
 .calendar-wait-detail-state.ok{background:#e3f4e7;color:#2f7b46}
 .calendar-wait-detail-state.no{background:#f8e5e3;color:#b1433b}
 .calendar-wait-detail-state.pending{background:#f1ede8;color:#766c62}
+
+
+/* ===== 2026-11-24 모바일 날짜 옆 대기 버튼 ===== */
+.day-head{display:flex;align-items:center;justify-content:space-between;gap:3px}
+.mobile-day-wait-trigger{display:none}
+@media(max-width:700px){
+  .calendar-event-wrap .calendar-wait-row,
+  .calendar-event-wrap .calendar-wait-add{
+    display:none!important;
+  }
+  .day-head{
+    min-height:14px;
+    margin-bottom:4px;
+  }
+  .day-head .day-num{
+    margin-bottom:0!important;
+  }
+  .mobile-day-wait-trigger{
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    flex:0 0 auto;
+    border:1px solid #d6cec5;
+    background:#fff;
+    color:#665c53;
+    border-radius:4px;
+    padding:1px 2px;
+    min-width:0;
+    font-size:11px;
+    line-height:1;
+    font-weight:800;
+  }
+}
+@media(max-width:390px){
+  .mobile-day-wait-trigger{
+    font-size:8.5px;
+    padding:1px;
+  }
+}
+
+.mobile-day-wait-modal{width:min(520px,100%)}
+.mobile-day-wait-body{padding:14px 16px 18px}
+.mobile-day-wait-item{
+  width:100%;
+  display:grid;
+  grid-template-columns:auto minmax(0,1fr) auto;
+  align-items:center;
+  gap:8px;
+  padding:10px 11px;
+  border:1px solid var(--line);
+  border-radius:10px;
+  background:#fff;
+  text-align:left;
+  margin-bottom:7px;
+}
+.mobile-day-wait-kind{
+  border-radius:6px;
+  background:#f0ece7;
+  padding:3px 6px;
+  font-size:9px;
+  font-weight:900;
+}
+.mobile-day-wait-main{display:flex;flex-direction:column;gap:2px;min-width:0}
+.mobile-day-wait-main b{font-size:12px}
+.mobile-day-wait-main small{font-size:9.5px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.mobile-day-wait-state{
+  border-radius:999px;
+  padding:3px 5px;
+  font-size:8px;
+  font-weight:900;
+  white-space:nowrap;
+}
+.mobile-day-wait-state.ok{background:#e3f4e7;color:#2f7b46}
+.mobile-day-wait-state.no{background:#f8e5e3;color:#b1433b}
+.mobile-day-wait-empty{padding:18px 10px;text-align:center;color:var(--muted);font-size:11px}
+.mobile-day-wait-register{
+  margin-top:12px;
+  padding-top:12px;
+  border-top:1px solid var(--line);
+  display:flex;
+  flex-direction:column;
+  gap:7px;
+}
+.mobile-day-wait-register>span{font-size:10px;font-weight:800;color:var(--muted)}
+.mobile-day-wait-register-btn{
+  width:100%;
+  border:1px solid #d6cec5;
+  background:#fffaf4;
+  border-radius:9px;
+  padding:9px 10px;
+  text-align:left;
+  font-size:11px;
+}
+.mobile-day-wait-register-btn b{margin-right:5px}
