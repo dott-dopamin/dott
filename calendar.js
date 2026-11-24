@@ -55,7 +55,10 @@ function calendarHtml(){
     const date=new Date(y,m,dayNum),ds=ymd(date),ev=schedules.filter(x=>x.event_date===ds);
     const weekendClass=date.getDay()===0?'sunday':date.getDay()===6?'saturday':'';
     const fridayClass=date.getDay()===5?'friday-priority':'';
-    out+=`<div class="day ${ds===todayYmd()?'today':''} ${weekendClass} ${fridayClass}" data-date="${ds}"><div class="day-num">${dayNum}</div><div class="day-events">${ev.slice(0,3).map(calendarEventHtml).join('')}${ev.length>3?`<div class="day-more">+${ev.length-3}개 일정</div>`:''}</div></div>`;
+    const eligibleWaitSchedules=ev.filter(x=>x.wait_allowed&&!isCancelledStatus(x.status));
+    const dayWaits=scheduleWaits.filter(w=>eligibleWaitSchedules.some(s=>String(s.id)===String(w.schedule_id))||ev.some(s=>String(s.id)===String(w.schedule_id)));
+    const mobileWaitTrigger=(eligibleWaitSchedules.length||dayWaits.length)?`<button class="mobile-day-wait-trigger" type="button" data-day-wait-date="${ds}">${dayWaits.length?`대기${dayWaits.length}`:'대기+'}</button>`:'';
+    out+=`<div class="day ${ds===todayYmd()?'today':''} ${weekendClass} ${fridayClass}" data-date="${ds}"><div class="day-head"><div class="day-num">${dayNum}</div>${mobileWaitTrigger}</div><div class="day-events">${ev.slice(0,3).map(calendarEventHtml).join('')}${ev.length>3?`<div class="day-more">+${ev.length-3}개 일정</div>`:''}</div></div>`;
   }
   return out;
 }
@@ -96,7 +99,79 @@ function wireScheduleWaitActions(){
       if(ev.key==='Enter'||ev.key===' '){ev.preventDefault();ev.stopPropagation();open()}
     });
   });
+  document.querySelectorAll('[data-day-wait-date]').forEach(btn=>{
+    btn.addEventListener('click',ev=>{
+      ev.preventDefault();ev.stopPropagation();
+      openMobileDayWaitPanel(btn.dataset.dayWaitDate);
+    });
+  });
 }
+function openMobileDayWaitPanel(dateStr){
+  const daySchedules=schedules
+    .filter(x=>String(x.event_date)===String(dateStr)&&!isCancelledStatus(x.status))
+    .sort((a,b)=>String(a.event_time||'').localeCompare(String(b.event_time||'')));
+  const eligible=daySchedules.filter(x=>x.wait_allowed);
+  const waits=scheduleWaits
+    .filter(w=>daySchedules.some(s=>String(s.id)===String(w.schedule_id)))
+    .sort((a,b)=>String(a.created_at||'').localeCompare(String(b.created_at||'')));
+
+  if(!waits.length&&eligible.length===1){
+    openScheduleWaitModal(eligible[0].id);
+    return;
+  }
+
+  let back=document.getElementById('mobileDayWaitModal');
+  if(!back){
+    back=document.createElement('div');
+    back.id='mobileDayWaitModal';
+    back.className='calendar-detail-backdrop';
+    document.body.appendChild(back);
+  }
+
+  const waitList=waits.length
+    ? waits.map(w=>{
+        const schedule=daySchedules.find(s=>String(s.id)===String(w.schedule_id));
+        const state=w.response==='ok'
+          ? '<span class="mobile-day-wait-state ok">O 가능</span>'
+          : w.response==='no'
+            ? '<span class="mobile-day-wait-state no">X 불가</span>'
+            : '';
+        return `<button type="button" class="mobile-day-wait-item" data-mobile-wait-id="${esc(w.id||'')}">
+          <span class="mobile-day-wait-kind">${waitCategoryLabel(w.category)}</span>
+          <span class="mobile-day-wait-main"><b>${esc(w.requester_name||'-')}</b><small>${esc(String(w.requested_time||'').slice(0,5)||'-')} · ${w.people||'-'}명 · ${esc(schedule?.title||'일정')}</small></span>
+          ${state}
+        </button>`;
+      }).join('')
+    : '<div class="mobile-day-wait-empty">등록된 대기가 없습니다.</div>';
+
+  const registerList=eligible.length
+    ? `<div class="mobile-day-wait-register"><span>대기 등록</span>${eligible.map(s=>`<button type="button" class="mobile-day-wait-register-btn" data-mobile-wait-schedule="${esc(s.id||'')}"><b>${esc(String(s.event_time||'').slice(0,5))}</b> ${esc(s.title||'일정')}</button>`).join('')}</div>`
+    : '';
+
+  back.innerHTML=`<div class="calendar-detail mobile-day-wait-modal" role="dialog" aria-modal="true" aria-label="대기 현황">
+    <div class="calendar-detail-head"><div><span class="calendar-detail-category">대기</span><h3>${fmtDate(dateStr)}</h3></div><button class="calendar-detail-close" type="button" aria-label="닫기">✕</button></div>
+    <div class="mobile-day-wait-body">
+      ${waitList}
+      ${registerList}
+    </div>
+  </div>`;
+
+  const close=()=>back.classList.remove('open');
+  back.classList.add('open');
+  back.querySelector('.calendar-detail-close').onclick=close;
+  back.onclick=ev=>{if(ev.target===back)close()};
+  back.querySelectorAll('[data-mobile-wait-id]').forEach(btn=>btn.onclick=()=>{
+    const wait=scheduleWaits.find(x=>String(x.id)===String(btn.dataset.mobileWaitId));
+    close();
+    if(wait)openScheduleWaitDetail(wait);
+  });
+  back.querySelectorAll('[data-mobile-wait-schedule]').forEach(btn=>btn.onclick=()=>{
+    const scheduleId=btn.dataset.mobileWaitSchedule;
+    close();
+    openScheduleWaitModal(scheduleId);
+  });
+}
+
 function openScheduleWaitDetail(wait){
   const schedule=schedules.find(x=>String(x.id)===String(wait.schedule_id));
   if(!schedule)return;
