@@ -65,7 +65,7 @@ function scheduleStatusLabel(v){return isCancelledStatus(v)?'취소':'예약'}
 function nav(active='calendar'){
   return `<header class="topbar"><a class="brand" href="index.html?v=20261124-nav-final-v2"><span class="brand-mark">D</span><span><strong>${esc(CFG.siteTitle)}</strong><small>${esc(CFG.siteSubtitle)}</small></span></a><nav class="nav">
     <a class="${active==='calendar'?'active':''}" href="index.html?v=20261124-nav-final-v2">도트 예약</a>
-    <a href="https://hapikl.github.io/taraehyanggi.github.io/" target="_blank" rel="noopener noreferrer">백석공방 예약</a>
+    <a href="https://hapikl.github.io/taraehyanggi.github.io/">백석공방 예약</a>
     <a class="${active==='boardgame'?'active':''}" href="boardgames.html?v=20261124-nav-final-v2">보드게임</a>
     <a class="${active==='murder'?'active':''}" href="murder.html?v=20261124-nav-final-v2">머더미스터리</a>
     <a class="${active==='deduction'?'active':''}" href="deduction.html?v=20261124-nav-final-v2">추리게임</a>
