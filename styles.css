@@ -2692,9 +2692,9 @@ body.calendar-page .hero-sidebar .today-agenda .today-agenda-empty{
 @media(max-width:900px){
   body.calendar-page .hero-sidebar .today-box.today-agenda{
     padding:11px 13px;
-    border:1px solid #e6d7c9;
+    border:1px solid #8FCB9D;
     border-radius:14px;
-    background:#fffaf5;
+    background:#EAF6EC;
   }
   body.calendar-page .hero-sidebar .today-agenda .today-agenda-item{
     padding:9px 0;
