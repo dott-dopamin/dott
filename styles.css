@@ -2700,3 +2700,68 @@ body.calendar-page .hero-sidebar .today-agenda .today-agenda-empty{
     padding:9px 0;
   }
 }
+
+/* DOTT mobile: one shared card for category legend and schedule totals */
+@media(max-width:900px){
+  body.calendar-page .hero-sidebar.calendar-overview{
+    display:grid;
+    grid-template-columns:minmax(0,1fr) minmax(115px,31%);
+    grid-template-areas:"agenda agenda" "legend stats";
+    column-gap:0;
+    row-gap:9px;
+    align-items:stretch;
+  }
+  body.calendar-page .hero-sidebar .today-box.today-agenda{
+    grid-area:agenda;
+  }
+  body.calendar-page .hero-sidebar .legend{
+    grid-area:legend;
+    border:1px solid #e4d8ca;
+    border-right:0;
+    border-radius:14px 0 0 14px;
+    background:#fffefa;
+    padding:12px 10px 12px 13px;
+    display:flex;
+    flex-direction:column;
+    justify-content:center;
+  }
+  body.calendar-page .hero-sidebar .legend-row{
+    display:flex;
+    flex-wrap:wrap;
+  }
+  body.calendar-page .hero-sidebar .overview-stats{
+    grid-area:stats;
+    grid-template-columns:minmax(0,1fr);
+    align-content:center;
+    gap:5px;
+    border:1px solid #e4d8ca;
+    border-radius:0 14px 14px 0;
+    background:#fffefa;
+    padding:9px 8px;
+  }
+  body.calendar-page .hero-sidebar .overview-stat{
+    flex-direction:row;
+    justify-content:space-between;
+    align-items:center;
+    min-height:0;
+    gap:4px;
+  }
+  body.calendar-page .hero-sidebar .overview-stat + .overview-stat{
+    border-left:0;
+    padding-left:0;
+    border-top:1px solid #eee5da;
+    padding-top:5px;
+  }
+  body.calendar-page .hero-sidebar .overview-stat strong{
+    line-height:1.15;
+  }
+}
+@media(max-width:400px){
+  body.calendar-page .hero-sidebar.calendar-overview{
+    grid-template-columns:minmax(0,1fr) minmax(124px,37%);
+  }
+  body.calendar-page .hero-sidebar .legend{padding:10px 6px 10px 9px}
+  body.calendar-page .hero-sidebar .legend-row{gap:4px}
+  body.calendar-page .hero-sidebar .overview-stats{padding:8px 5px}
+  body.calendar-page .hero-sidebar .overview-stat strong small{margin-left:1px}
+}
