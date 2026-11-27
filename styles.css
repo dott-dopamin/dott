@@ -2240,20 +2240,10 @@ body[data-kind="deduction"] .catalog-page > .hero > h1 {
     gap:3px!important;
   }
   .calendar-grid>.day .day-wait-check{
-    width:12px;
-    height:12px;
-    font-size:8px!important;
-    line-height:12px!important;
+    display:none!important;
   }
 }
-@media(max-width:390px){
-  .calendar-grid>.day .day-wait-check{
-    width:11px;
-    height:11px;
-    font-size:7.5px!important;
-    line-height:11px!important;
-  }
-}
+
 
 
 /* ===== 2026-11-24 PC 날짜/대기체크 수평 정렬 ===== */
